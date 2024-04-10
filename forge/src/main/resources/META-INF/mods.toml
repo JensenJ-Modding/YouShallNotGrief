@@ -1,0 +1,35 @@
+modLoader = "javafml"
+loaderVersion = "[43,)"
+issueTrackerURL = "https://github.com/JensenJ-Modding/YouShallNotTick/issues"
+license = "MIT License"
+
+[[mods]]
+modId = "youshallnotsteal"
+version = "${version}"
+displayName = "You Shall Not Steal"
+authors = "JensenJ"
+description = '''
+Adds logging utilities used to catch griefers and thieves.
+'''
+logoFile = "logo.png"
+
+[[dependencies.youshallnotsteal]]
+modId = "forge"
+mandatory = true
+versionRange = "[43,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.youshallnotsteal]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.19.2,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.youshallnotsteal]]
+modId = "architectury"
+mandatory = true
+versionRange = "[6.5.85,)"
+ordering = "AFTER"
+side = "BOTH"
