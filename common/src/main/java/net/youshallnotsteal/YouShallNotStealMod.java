@@ -3,11 +3,10 @@ package net.youshallnotsteal;
 import dev.architectury.event.CompoundEventResult;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.*;
-import dev.architectury.platform.Platform;
-import dev.architectury.utils.Env;
 import dev.architectury.utils.value.IntValue;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
@@ -20,23 +19,22 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.phys.HitResult;
+import net.youshallnotsteal.database.DatabaseManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public class YouShallNotStealMod {
     public static final String MOD_ID = "youshallnotsteal";
+    public static String DatabaseWorldPath = null;
     
     public static void init() {
         registerEvents();
     }
 
     public static void registerEvents(){
-        //Only register events on serverside
-        if(Platform.getEnv() == Env.CLIENT.toPlatform())
-            return;
-
         //Block Events
         BlockEvent.BREAK.register((Level level, BlockPos pos, BlockState state, ServerPlayer player, @Nullable IntValue xp) -> {
             System.out.println("Break block");
@@ -98,6 +96,14 @@ public class YouShallNotStealMod {
         EntityEvent.ANIMAL_TAME.register((Animal animal, Player player) -> {
             System.out.println("Entity tamed");
             return EventResult.pass();
+        });
+
+        LifecycleEvent.SERVER_STARTED.register((MinecraftServer server) -> {
+            DatabaseWorldPath = server.getWorldPath(LevelResource.ROOT).toString() + "/";
+        });
+
+        LifecycleEvent.SERVER_STOPPED.register((MinecraftServer server) -> {
+            DatabaseWorldPath = null;
         });
 
         //Mixins
