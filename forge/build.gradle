@@ -2,6 +2,21 @@ plugins {
     id 'com.github.johnrengelman.shadow'
 }
 
+repositories {
+    maven {
+        url = 'https://maven.tterrag.com/'
+    }
+    maven {
+        url = "https://maven.blamejared.com/"
+    }
+    maven {
+        url "https://maven.squiddev.cc"
+        content {
+            includeGroup("cc.tweaked")
+        }
+    }
+}
+
 loom {
     forge {
         mixinConfig "youshallnotsteal.mixins.json"
@@ -38,6 +53,11 @@ dependencies {
 
     // SQLite Driver
     implementation "org.xerial:sqlite-jdbc:$rootProject.sqlite_jdbc_version"
+
+    //Dependencies for testing
+    modImplementation "com.simibubi.create:create-${minecraft_version}:${create_version}:slim" transitive false
+    modImplementation "com.jozufozu.flywheel:flywheel-forge-${minecraft_version}:${flywheel_version}"
+    modImplementation "com.tterrag.registrate:Registrate:${registrate_version}"
 
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionForge')

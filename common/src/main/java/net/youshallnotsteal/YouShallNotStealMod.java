@@ -63,7 +63,7 @@ public class YouShallNotStealMod {
         });
 
         InteractionEvent.INTERACT_ENTITY.register((Player player, Entity entity, InteractionHand hand) -> {
-            System.out.println("entity interact");
+            System.out.println("player interact");
             return EventResult.pass();
         });
 
@@ -98,6 +98,7 @@ public class YouShallNotStealMod {
             return EventResult.pass();
         });
 
+        //Lifecycle events
         LifecycleEvent.SERVER_STARTED.register((MinecraftServer server) -> {
             DatabaseWorldPath = server.getWorldPath(LevelResource.ROOT).toString() + "/";
         });
