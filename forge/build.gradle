@@ -3,18 +3,7 @@ plugins {
 }
 
 repositories {
-    maven {
-        url = 'https://maven.tterrag.com/'
-    }
-    maven {
-        url = "https://maven.blamejared.com/"
-    }
-    maven {
-        url "https://maven.squiddev.cc"
-        content {
-            includeGroup("cc.tweaked")
-        }
-    }
+    maven { url = 'https://maven.tterrag.com/' }
 }
 
 loom {

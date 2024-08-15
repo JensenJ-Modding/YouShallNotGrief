@@ -6,7 +6,6 @@ import dev.architectury.event.events.common.*;
 import dev.architectury.utils.value.IntValue;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
@@ -19,16 +18,17 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.phys.HitResult;
 import net.youshallnotsteal.database.DatabaseManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public class YouShallNotStealMod {
     public static final String MOD_ID = "youshallnotsteal";
-    public static String DatabaseWorldPath = null;
+    public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
     
     public static void init() {
         registerEvents();
@@ -98,14 +98,7 @@ public class YouShallNotStealMod {
             return EventResult.pass();
         });
 
-        //Lifecycle events
-        LifecycleEvent.SERVER_STARTED.register((MinecraftServer server) -> {
-            DatabaseWorldPath = server.getWorldPath(LevelResource.ROOT).toString() + "/";
-        });
-
-        LifecycleEvent.SERVER_STOPPED.register((MinecraftServer server) -> {
-            DatabaseWorldPath = null;
-        });
+        DatabaseManager.registerLifecycleEvents();
 
         //Mixins
         //  Fire

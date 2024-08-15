@@ -6,6 +6,20 @@ architectury {
     platformSetupLoomIde()
     fabric()
 }
+repositories {
+    maven { url = "https://mvn.devos.one/snapshots/" }
+    maven { url = "https://mvn.devos.one/releases/" }
+    maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" }
+    maven { url = "https://maven.jamieswhiteshirt.com/libs-release" }
+    maven { url = "https://jitpack.io/" }
+    maven { // Flywheel
+        url = "https://maven.tterrag.com/"
+        content {
+            // need to be specific here due to version overlaps
+            includeGroup("com.jozufozu.flywheel")
+        }
+    }
+}
 
 configurations {
     common {
@@ -35,6 +49,9 @@ dependencies {
 
     // SQLite Driver
     implementation "org.xerial:sqlite-jdbc:$rootProject.sqlite_jdbc_version"
+
+    //Dependencies for testing
+    modImplementation "com.simibubi.create:create-fabric-${minecraft_version}:${create_fabric_version}"
 
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionFabric')

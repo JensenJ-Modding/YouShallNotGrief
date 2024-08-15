@@ -1,4 +1,4 @@
-package net.youshallnotsteal.mixin;
+package net.youshallnotsteal.mixin.forge;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -16,13 +16,13 @@ import java.util.Objects;
 public abstract class BlockMixin {
 
     @Unique
-    HashSet<String> blacklistedModules = new HashSet<>() {{
+    HashSet<String> youshallnotsteal$blacklistedModules = new HashSet<>() {{
         add("minecraft");
         add("forge");
     }};
 
     @Inject(at = @At("TAIL"), method="setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z")
-    private void test(BlockPos blockPos, BlockState blockState, int i, CallbackInfoReturnable<Boolean> cir) {
+    private void youshallnotsteal$detectModdedSetBlockInteractions(BlockPos blockPos, BlockState blockState, int i, CallbackInfoReturnable<Boolean> cir) {
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
         int causeTraceIndex;
         for (causeTraceIndex = 2; causeTraceIndex < stackTraceElements.length - 1; causeTraceIndex++) {
@@ -30,7 +30,7 @@ public abstract class BlockMixin {
                 return;
             }
 
-            if(containsAny(stackTraceElements[causeTraceIndex].getModuleName())){
+            if(youshallnotsteal$containsAny(stackTraceElements[causeTraceIndex].getModuleName())){
                 causeTraceIndex++;
             }else {
                 break;
@@ -54,8 +54,8 @@ public abstract class BlockMixin {
     }
 
     @Unique
-    private boolean containsAny(String stackTraceModule) {
-        for (String blacklistedModule : blacklistedModules) {
+    private boolean youshallnotsteal$containsAny(String stackTraceModule) {
+        for (String blacklistedModule : youshallnotsteal$blacklistedModules) {
             if (stackTraceModule.contains(blacklistedModule)) {
                 return true;
             }

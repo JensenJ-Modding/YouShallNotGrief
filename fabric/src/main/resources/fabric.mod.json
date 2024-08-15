@@ -12,7 +12,7 @@
     "issues": "https://github.com/JensenJ-Modding/YouShallNotTick/issues"
   },
   "license": "MIT License",
-  "icon": "icon.png",
+  "icon": "logo.png",
   "environment": "*",
   "entrypoints": {
     "main": [
