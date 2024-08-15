@@ -3,12 +3,16 @@ package net.youshallnotsteal.mixin.forge;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.youshallnotsteal.data.BlockInteractionData;
+import net.youshallnotsteal.database.DatabaseManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 
@@ -49,8 +53,15 @@ public abstract class BlockMixin {
         methodName = methodName.substring(methodName.lastIndexOf(".") + 1);
         className = className.substring(className.lastIndexOf(".") + 1);
         String fullName = className + ":" + methodName;
-        System.out.println("set block at " + blockPos.toString() + " to " + blockState.getBlock() + ". class Name: " + fullName + ". Mod name: " + moduleName);
-        //TODO: add to database
+        Level level = (Level) (Object) this;
+        DatabaseManager.addBlockInteractionToDatabase(new BlockInteractionData(
+                blockPos,
+                Timestamp.valueOf(LocalDateTime.now()),
+                blockState.getBlock().getName().getString(),
+                level.dimension().location().toString(),
+                moduleName,
+                fullName)
+        );
     }
 
     @Unique
