@@ -30,15 +30,12 @@ public abstract class BlockMixin {
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
         int causeTraceIndex;
         for (causeTraceIndex = 2; causeTraceIndex < stackTraceElements.length - 1; causeTraceIndex++) {
-            System.out.println(stackTraceElements[causeTraceIndex]);
-
             if(youshallnotsteal$containsAny(stackTraceElements[causeTraceIndex].toString())){
                 causeTraceIndex++;
             }else {
                 break;
             }
         }
-        System.out.println("end trace");
 
         //Did not find any modded interactions
         if(causeTraceIndex >= stackTraceElements.length){
@@ -50,6 +47,9 @@ public abstract class BlockMixin {
         String className = causeElement.getClassName();
 
         String moduleName = youshallnotsteal$getModIDFromClassName(className);
+        if(moduleName.contains("java")){
+            return;
+        }
 
         methodName = methodName.substring(methodName.lastIndexOf(".") + 1);
         className = className.substring(className.lastIndexOf(".") + 1);
