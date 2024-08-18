@@ -48,7 +48,7 @@ dependencies {
     modImplementation "dev.architectury:architectury-fabric:$rootProject.architectury_api_version"
 
     // SQLite Driver
-    implementation "org.xerial:sqlite-jdbc:$rootProject.sqlite_jdbc_version"
+    implementation "org.xerial:sqlite-jdbc:$rootProject.sqlite_fabric_version"
 
     //Dependencies for testing
     modImplementation "com.simibubi.create:create-fabric-${minecraft_version}:${create_fabric_version}"

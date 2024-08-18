@@ -24,6 +24,10 @@ public class DatabaseManager {
         });
 
         LifecycleEvent.SERVER_STOPPED.register((MinecraftServer server) -> {
+            if(databaseConnection == null){
+                return;
+            }
+
             try {
                 databaseConnection.close();
                 databaseConnection = null;
@@ -51,6 +55,10 @@ public class DatabaseManager {
     }
 
     public static void addBlockInteractionToDatabase(BlockInteractionData data){
+        if(databaseConnection == null){
+            return;
+        }
+
         String addBlockInteractionSQL = "INSERT INTO blockSets (x, y, z, timestamp, blockName, dimension, cause, causeDesc) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement preparedStatement = databaseConnection.prepareStatement(addBlockInteractionSQL)){
             preparedStatement.setInt(1, data.pos().getX());

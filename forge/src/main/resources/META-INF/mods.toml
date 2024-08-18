@@ -33,3 +33,10 @@ mandatory = true
 versionRange = "[9.2.14,)"
 ordering = "AFTER"
 side = "BOTH"
+
+[[dependencies.youshallnotsteal]]
+modId = "sqlite_jdbc"
+mandatory = true
+versionRange = "[3.41.2.1,)"
+ordering = "AFTER"
+side = "BOTH"

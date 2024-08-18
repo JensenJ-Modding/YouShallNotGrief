@@ -4,6 +4,7 @@ plugins {
 
 repositories {
     maven { url = 'https://maven.tterrag.com/' }
+    maven {url = "https://api.modrinth.com/maven"}
 }
 
 loom {
@@ -41,7 +42,7 @@ dependencies {
     modImplementation "dev.architectury:architectury-forge:$rootProject.architectury_api_version"
 
     // SQLite Driver
-    implementation "org.xerial:sqlite-jdbc:$rootProject.sqlite_jdbc_version"
+    modImplementation "maven.modrinth:sqlite-jdbc:${sqlite_forge_version}"
 
     //Dependencies for testing
     modImplementation "com.simibubi.create:create-${minecraft_version}:${create_version}:slim" transitive false
