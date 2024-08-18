@@ -37,64 +37,64 @@ public class YouShallNotStealMod {
     public static void registerEvents(){
         //Block Events
         BlockEvent.BREAK.register((Level level, BlockPos pos, BlockState state, ServerPlayer player, @Nullable IntValue xp) -> {
-            System.out.println("Break block");
+            //System.out.println("Break block");
             return EventResult.pass();
         });
 
         BlockEvent.PLACE.register((Level level, BlockPos pos, BlockState state, @Nullable Entity placer) -> {
-            System.out.println("Place block");
+            //System.out.println("Place block");
             return EventResult.pass();
         });
 
         BlockEvent.FALLING_LAND.register((Level level, BlockPos pos, BlockState fallState, BlockState landOn, FallingBlockEntity entity) -> {
-            System.out.println("Falling block");
+            //System.out.println("Falling block");
         });
 
         //Player events
         PlayerEvent.FILL_BUCKET.register((Player player, Level level, ItemStack stack, @Nullable HitResult target) -> {
-            System.out.println("Fill bucket");
+            //System.out.println("Fill bucket");
             return CompoundEventResult.pass();
         });
 
         //Interaction events
         InteractionEvent.FARMLAND_TRAMPLE.register((Level world, BlockPos pos, BlockState state, float distance, Entity entity) -> {
-            System.out.println("Trample");
+            //System.out.println("Trample");
             return EventResult.pass();
         });
 
         InteractionEvent.INTERACT_ENTITY.register((Player player, Entity entity, InteractionHand hand) -> {
-            System.out.println("player interact");
+            //System.out.println("player interact");
             return EventResult.pass();
         });
 
         InteractionEvent.RIGHT_CLICK_ITEM.register((Player player, InteractionHand hand) -> {
-            System.out.println("click item on block");
+            //System.out.println("click item on block");
             return CompoundEventResult.pass();
         });
 
         InteractionEvent.RIGHT_CLICK_BLOCK.register((Player player, InteractionHand hand, BlockPos pos, Direction face) ->{
-            System.out.println("clicked block");
+            //System.out.println("clicked block");
             return EventResult.pass();
         });
 
         //Explosion Event
         ExplosionEvent.DETONATE.register((Level level, Explosion explosion, List<Entity> affectedEntities) -> {
-            System.out.println("Explosion");
+            //System.out.println("Explosion");
         });
 
         //Entity Events
         EntityEvent.LIVING_DEATH.register((LivingEntity entity, DamageSource source) -> {
-            System.out.println("Entity death");
+            //System.out.println("Entity death");
             return EventResult.pass();
         });
 
         EntityEvent.LIVING_HURT.register((LivingEntity entity, DamageSource source, float amount) -> {
-            System.out.println("Entity hurt");
+            //System.out.println("Entity hurt");
             return EventResult.pass();
         });
 
         EntityEvent.ANIMAL_TAME.register((Animal animal, Player player) -> {
-            System.out.println("Entity tamed");
+            //System.out.println("Entity tamed");
             return EventResult.pass();
         });
 

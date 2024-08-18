@@ -4,8 +4,8 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.youshallnotsteal.data.BlockInteractionData;
-import net.youshallnotsteal.database.DatabaseManager;
+import net.youshallnotsteal.data.BlockSetData;
+import net.youshallnotsteal.database.BlockSetManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -60,7 +60,7 @@ public abstract class BlockMixin {
         String fullName = className + ":" + methodName;
 
         Level level = (Level) (Object) this;
-        DatabaseManager.addBlockInteractionToDatabase(new BlockInteractionData(
+        BlockSetManager.addToDatabase(new BlockSetData(
                 blockPos,
                 Timestamp.valueOf(LocalDateTime.now()),
                 blockState.getBlock().getName().getString(),
