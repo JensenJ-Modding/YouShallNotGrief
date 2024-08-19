@@ -4,16 +4,18 @@ import dev.architectury.event.events.common.LifecycleEvent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
 import net.youshallnotsteal.YouShallNotStealMod;
+import net.youshallnotsteal.database.manager.BlockSetManager;
+import net.youshallnotsteal.database.manager.DataManager;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class DatabaseManager {
 
     public static Connection databaseConnection = null;
 
-    public static void commitAllQueuedDataToDatabase(){
-        BlockSetManager.commitQueuedToDatabase();
-    }
+    private static final ArrayList<DataManager<?>> DATA_MANAGERS = new ArrayList<>();
+    public static final BlockSetManager BLOCK_SET_MANAGER = registerDataManager(new BlockSetManager());
 
     public static void registerLifecycleEvents(){
         LifecycleEvent.SERVER_STARTED.register((MinecraftServer server) -> {
@@ -59,11 +61,25 @@ public class DatabaseManager {
         return connection;
     }
 
+    private static <T extends DataManager<?>> T registerDataManager(T dataManager){
+        DATA_MANAGERS.add(dataManager);
+        return dataManager;
+    }
+
+    public static void commitAllQueuedDataToDatabase(){
+        for(DataManager<?> dataManager : DATA_MANAGERS){
+            dataManager.commitQueuedToDatabase();
+        }
+    }
+
     public static boolean initialiseDatabase(){
         if(databaseConnection == null) {
             return false;
         }
 
-        return DatabaseUtils.createTable("CREATE TABLE IF NOT EXISTS blockSets (id INTEGER PRIMARY KEY AUTOINCREMENT, x INTEGER, y INTEGER, z INTEGER, timestamp DATETIME NOT NULL, blockName TEXT NOT NULL, dimension TEXT NOT NULL, cause TEXT NOT NULL, causeDesc TEXT NOT NULL);");
+        for(DataManager<?> dataManager : DATA_MANAGERS){
+            dataManager.createTableIfNotExists();
+        }
+        return true;
     }
 }

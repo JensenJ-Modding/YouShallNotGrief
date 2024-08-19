@@ -5,7 +5,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.youshallnotsteal.data.BlockSetData;
-import net.youshallnotsteal.database.BlockSetManager;
+import net.youshallnotsteal.database.DatabaseManager;
+import net.youshallnotsteal.database.manager.BlockSetManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -50,7 +51,7 @@ public abstract class BlockMixin {
         String methodName = causeElement.getMethodName();
         String className = causeElement.getClassName();
 
-        String moduleName = youshallnotsteal$getModIDFromClassName(className);
+        String moduleName = "#" + youshallnotsteal$getModIDFromClassName(className);
         if(moduleName.contains("java")){
             return;
         }
@@ -60,7 +61,7 @@ public abstract class BlockMixin {
         String fullName = className + ":" + methodName;
 
         Level level = (Level) (Object) this;
-        BlockSetManager.addToDatabase(new BlockSetData(
+        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(new BlockSetData(
                 blockPos,
                 Timestamp.valueOf(LocalDateTime.now()),
                 blockState.getBlock().getName().getString(),
