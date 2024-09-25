@@ -1,27 +1,27 @@
 {
   "schemaVersion": 1,
-  "id": "youshallnotsteal",
+  "id": "youshallnotgrief",
   "version": "${version}",
-  "name": "You Shall Not Steal",
+  "name": "You Shall Not Grief",
   "description": "Adds logging utilities used to catch griefers and thieves.",
   "authors": [
     "JensenJ"
   ],
   "contact": {
-    "sources": "https://github.com/JensenJ-Modding/YouShallNotSteal",
-    "issues": "https://github.com/JensenJ-Modding/YouShallNotTick/issues"
+    "sources": "https://github.com/JensenJ-Modding/YouShallNotGrief",
+    "issues": "https://github.com/JensenJ-Modding/YouShallNotGrief/issues"
   },
   "license": "MIT License",
   "icon": "logo.png",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.youshallnotsteal.fabric.YouShallNotStealModFabric"
+      "net.youshallnotgrief.fabric.YouShallNotGriefModFabric"
     ]
   },
   "mixins": [
-    "youshallnotsteal.mixins.json",
-    "youshallnotsteal-common.mixins.json"
+    "youshallnotgrief.mixins.json",
+    "youshallnotgrief-common.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.16.0",

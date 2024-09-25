@@ -7,7 +7,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'youshallnotsteal'
+rootProject.name = 'youshallnotgrief'
 
 include 'common'
 include 'fabric'

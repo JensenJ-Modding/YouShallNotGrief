@@ -9,7 +9,7 @@ repositories {
 
 loom {
     forge {
-        mixinConfig "youshallnotsteal.mixins.json"
+        mixinConfig "youshallnotgrief.mixins.json"
     }
 }
 

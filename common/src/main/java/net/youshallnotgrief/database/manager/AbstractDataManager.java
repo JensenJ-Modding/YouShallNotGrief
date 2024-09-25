@@ -1,7 +1,7 @@
-package net.youshallnotsteal.database.manager;
+package net.youshallnotgrief.database.manager;
 
-import net.youshallnotsteal.YouShallNotStealMod;
-import net.youshallnotsteal.database.DatabaseManager;
+import net.youshallnotgrief.YouShallNotGriefMod;
+import net.youshallnotgrief.database.DatabaseManager;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -39,11 +39,11 @@ public abstract class AbstractDataManager<T> implements DataManager<T> {
             DatabaseManager.databaseConnection.commit();
             queuedData.clear();
         } catch (SQLException e) {
-            YouShallNotStealMod.LOGGER.error(e.toString());
+            YouShallNotGriefMod.LOGGER.error(e.toString());
             try {
                 DatabaseManager.databaseConnection.rollback();
             } catch (SQLException ex) {
-                YouShallNotStealMod.LOGGER.error(ex.toString());
+                YouShallNotGriefMod.LOGGER.error(ex.toString());
             }
         }
     }
@@ -54,11 +54,11 @@ public abstract class AbstractDataManager<T> implements DataManager<T> {
             preparedStatement.execute();
             DatabaseManager.databaseConnection.commit();
         }catch(SQLException e){
-            YouShallNotStealMod.LOGGER.error(e.toString());
+            YouShallNotGriefMod.LOGGER.error(e.toString());
             try {
                 DatabaseManager.databaseConnection.rollback();
             } catch (SQLException ex) {
-                YouShallNotStealMod.LOGGER.error(ex.toString());
+                YouShallNotGriefMod.LOGGER.error(ex.toString());
             }
         }
     }

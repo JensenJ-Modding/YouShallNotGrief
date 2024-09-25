@@ -1,40 +1,40 @@
 modLoader = "javafml"
 loaderVersion = "[47,)"
-issueTrackerURL = "https://github.com/JensenJ-Modding/YouShallNotTick/issues"
+issueTrackerURL = "https://github.com/JensenJ-Modding/YouShallNotGrief/issues"
 license = "MIT License"
 
 [[mods]]
-modId = "youshallnotsteal"
+modId = "youshallnotgrief"
 version = "${version}"
-displayName = "You Shall Not Steal"
+displayName = "You Shall Not Grief"
 authors = "JensenJ"
 description = '''
 Adds logging utilities used to catch griefers and thieves.
 '''
 logoFile = "logo.png"
 
-[[dependencies.youshallnotsteal]]
+[[dependencies.youshallnotgrief]]
 modId = "forge"
 mandatory = true
 versionRange = "[47,)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.youshallnotsteal]]
+[[dependencies.youshallnotgrief]]
 modId = "minecraft"
 mandatory = true
 versionRange = "[1.20.1,)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.youshallnotsteal]]
+[[dependencies.youshallnotgrief]]
 modId = "architectury"
 mandatory = true
 versionRange = "[9.2.14,)"
 ordering = "AFTER"
 side = "BOTH"
 
-[[dependencies.youshallnotsteal]]
+[[dependencies.youshallnotgrief]]
 modId = "sqlite_jdbc"
 mandatory = true
 versionRange = "[3.41.2.1,)"

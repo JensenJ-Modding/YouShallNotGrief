@@ -1,4 +1,4 @@
-package net.youshallnotsteal;
+package net.youshallnotgrief;
 
 import dev.architectury.event.CompoundEventResult;
 import dev.architectury.event.EventResult;
@@ -19,15 +19,15 @@ import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.HitResult;
-import net.youshallnotsteal.database.DatabaseManager;
+import net.youshallnotgrief.database.DatabaseManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class YouShallNotStealMod {
-    public static final String MOD_ID = "youshallnotsteal";
+public class YouShallNotGriefMod {
+    public static final String MOD_ID = "youshallnotgrief";
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
     
     public static void init() {

@@ -1,13 +1,11 @@
 {
   "required": true,
-  "package": "net.youshallnotsteal.mixin.fabric",
+  "package": "net.youshallnotgrief.mixin",
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
-  "client": [
-  ],
-  "mixins": [
-    "BlockMixin"
-  ],
+  "client": [],
+  "server": [],
+  "mixins": [],
   "injectors": {
     "defaultRequire": 1
   }

@@ -1,11 +1,11 @@
-package net.youshallnotsteal.database;
+package net.youshallnotgrief.database;
 
 import dev.architectury.event.events.common.LifecycleEvent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
-import net.youshallnotsteal.YouShallNotStealMod;
-import net.youshallnotsteal.database.manager.BlockSetManager;
-import net.youshallnotsteal.database.manager.DataManager;
+import net.youshallnotgrief.YouShallNotGriefMod;
+import net.youshallnotgrief.database.manager.BlockSetManager;
+import net.youshallnotgrief.database.manager.DataManager;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -21,10 +21,10 @@ public class DatabaseManager {
         LifecycleEvent.SERVER_STARTED.register((MinecraftServer server) -> {
             databaseConnection = getDatabaseConnection(server);
             if(databaseConnection != null){
-                YouShallNotStealMod.LOGGER.info("Established Database Connection");
+                YouShallNotGriefMod.LOGGER.info("Established Database Connection");
             }
             if(!initialiseDatabase()){
-                YouShallNotStealMod.LOGGER.error("Failed to initialise database.");
+                YouShallNotGriefMod.LOGGER.error("Failed to initialise database.");
             }
         });
 
@@ -38,9 +38,9 @@ public class DatabaseManager {
             try {
                 databaseConnection.close();
                 databaseConnection = null;
-                YouShallNotStealMod.LOGGER.info("Closing database connection.");
+                YouShallNotGriefMod.LOGGER.info("Closing database connection.");
             } catch (SQLException e) {
-                YouShallNotStealMod.LOGGER.error(e.toString());
+                YouShallNotGriefMod.LOGGER.error(e.toString());
             }
         });
     }
@@ -56,7 +56,7 @@ public class DatabaseManager {
             connection = DriverManager.getConnection(databasePath);
             connection.setAutoCommit(false);
         } catch (SQLException e) {
-            YouShallNotStealMod.LOGGER.error(e.toString());
+            YouShallNotGriefMod.LOGGER.error(e.toString());
         }
         return connection;
     }

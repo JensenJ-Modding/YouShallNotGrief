@@ -1,6 +1,6 @@
-package net.youshallnotsteal.database.manager;
+package net.youshallnotgrief.database.manager;
 
-import net.youshallnotsteal.data.BlockSetData;
+import net.youshallnotgrief.data.BlockSetData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
