@@ -4,16 +4,19 @@ import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.database.DatabaseManager;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.HashSet;
 
-public abstract class AbstractDataManager<T> implements DataManager<T> {
+public abstract class AbstractDataManager<T, K> implements DataManager<T, K> {
     protected HashSet<T> queuedData = new HashSet<>();
     private static final int MAX_QUEUE_SIZE = 10000;
 
     @Override
     public void addToDatabase(T data){
-        if(DatabaseManager.databaseConnection == null){
+        if(DatabaseManager.getDatabaseConnection() == null){
             return;
         }
 
@@ -25,45 +28,52 @@ public abstract class AbstractDataManager<T> implements DataManager<T> {
 
     @Override
     public void commitQueuedToDatabase(){
-        if(DatabaseManager.databaseConnection == null){
+        Connection database = DatabaseManager.getDatabaseConnection();
+        if(database == null){
             return;
         }
 
-        try (PreparedStatement preparedStatement = DatabaseManager.databaseConnection.prepareStatement(getInsertSQL())) {
+        try (PreparedStatement preparedStatement = database.prepareStatement(getInsertSQL())) {
             for (T data : queuedData) {
-                setPreparedStatementValues(preparedStatement, data);
+                setInsertPreparedStatementValues(preparedStatement, data);
                 preparedStatement.addBatch();
             }
 
             preparedStatement.executeBatch();
-            DatabaseManager.databaseConnection.commit();
+            database.commit();
             queuedData.clear();
         } catch (SQLException e) {
+            YouShallNotGriefMod.LOGGER.error("Error inserting data into database:");
             YouShallNotGriefMod.LOGGER.error(e.toString());
             try {
-                DatabaseManager.databaseConnection.rollback();
+                database.rollback();
             } catch (SQLException ex) {
+                YouShallNotGriefMod.LOGGER.error("Error performing rollback of database:");
                 YouShallNotGriefMod.LOGGER.error(ex.toString());
             }
         }
     }
 
     @Override
-    public void createTableIfNotExists(){
-        try (PreparedStatement preparedStatement = DatabaseManager.databaseConnection.prepareStatement(getCreateTableSQL())){
-            preparedStatement.execute();
-            DatabaseManager.databaseConnection.commit();
-        }catch(SQLException e){
-            YouShallNotGriefMod.LOGGER.error(e.toString());
-            try {
-                DatabaseManager.databaseConnection.rollback();
-            } catch (SQLException ex) {
-                YouShallNotGriefMod.LOGGER.error(ex.toString());
-            }
+    public ArrayList<T> retrieveFromDatabase(K data) {
+        ArrayList<T> dataToReturn = new ArrayList<T>();
+        Connection database = DatabaseManager.getDatabaseConnection();
+        if(database == null){
+            return null;
         }
-    }
 
-    protected abstract String getInsertSQL();
-    protected abstract String getCreateTableSQL();
-    protected abstract void setPreparedStatementValues(PreparedStatement preparedStatement, T data) throws SQLException;
+        try(PreparedStatement preparedStatement = database.prepareStatement(getQuerySQL())){
+            setQueryPreparedStatementValues(preparedStatement, data);
+            try(ResultSet set = preparedStatement.executeQuery()){
+                while(set.next()){
+                    dataToReturn.add(mapDataFromResultSet(set));
+                }
+            }
+        } catch (SQLException e) {
+            YouShallNotGriefMod.LOGGER.error("Error retrieving data from database:");
+            YouShallNotGriefMod.LOGGER.error(e.toString());
+        }
+
+        return dataToReturn;
+    }
 }

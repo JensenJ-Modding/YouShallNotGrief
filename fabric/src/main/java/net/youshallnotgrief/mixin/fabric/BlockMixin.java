@@ -30,11 +30,11 @@ public abstract class BlockMixin {
     HashMap<String, String> stackPathToModID = new HashMap<>();
 
     @Inject(at = @At("TAIL"), method="setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z")
-    private void youshallnotsteal$detectModdedSetBlockInteractions(BlockPos blockPos, BlockState blockState, int i, CallbackInfoReturnable<Boolean> cir) {
+    private void youshallnotgrief$detectModdedSetBlockInteractions(BlockPos blockPos, BlockState blockState, int i, CallbackInfoReturnable<Boolean> cir) {
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
         int causeTraceIndex;
         for (causeTraceIndex = 2; causeTraceIndex < stackTraceElements.length - 1; causeTraceIndex++) {
-            if(youshallnotsteal$containsAny(stackTraceElements[causeTraceIndex].toString())){
+            if(youshallnotgrief$containsAny(stackTraceElements[causeTraceIndex].toString())){
                 causeTraceIndex++;
             }else {
                 break;
@@ -50,7 +50,7 @@ public abstract class BlockMixin {
         String methodName = causeElement.getMethodName();
         String className = causeElement.getClassName();
 
-        String moduleName = "#" + youshallnotsteal$getModIDFromClassName(className);
+        String moduleName = "#" + youshallnotgrief$getModIDFromClassName(className);
         if(moduleName.contains("java")){
             return;
         }
@@ -62,16 +62,16 @@ public abstract class BlockMixin {
         Level level = (Level) (Object) this;
         DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(new BlockSetData(
                 blockPos,
+                level.dimension().location().toString(),
                 Timestamp.valueOf(LocalDateTime.now()),
                 blockState.getBlock().getName().getString(),
-                level.dimension().location().toString(),
                 moduleName,
                 fullName)
         );
     }
 
     @Unique
-    private boolean youshallnotsteal$containsAny(String stackTraceModule) {
+    private boolean youshallnotgrief$containsAny(String stackTraceModule) {
         for (String blacklistedModule : blacklistedModules) {
             if (stackTraceModule.contains(blacklistedModule)) {
                 return true;
@@ -81,7 +81,7 @@ public abstract class BlockMixin {
     }
 
     @Unique
-    private String youshallnotsteal$getModIDFromClassName(String className){
+    private String youshallnotgrief$getModIDFromClassName(String className){
         String[] elementParts = className.split("\\.");
         String moduleName = elementParts[0] + "." + elementParts[1] + "." + elementParts[2];
 

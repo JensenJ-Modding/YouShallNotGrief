@@ -19,11 +19,14 @@ import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.HitResult;
+import net.youshallnotgrief.data.BlockSetData;
+import net.youshallnotgrief.data.BlockSetQueryData;
 import net.youshallnotgrief.database.DatabaseManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class YouShallNotGriefMod {
@@ -74,6 +77,17 @@ public class YouShallNotGriefMod {
 
         InteractionEvent.RIGHT_CLICK_BLOCK.register((Player player, InteractionHand hand, BlockPos pos, Direction face) ->{
             //System.out.println("clicked block");
+            if(player.level().isClientSide){
+                return EventResult.pass();
+            }
+            if(hand == InteractionHand.OFF_HAND){
+                return EventResult.pass();
+            }
+
+            ArrayList<BlockSetData> data = DatabaseManager.BLOCK_SET_MANAGER.retrieveFromDatabase(new BlockSetQueryData(pos, player.level().dimension().location().toString()));
+            for (int i = 0; i < data.size(); i++){
+                LOGGER.info("{}: {} {} {}", i, data.get(i).blockName(), data.get(i).time(), data.get(i).cause());
+            }
             return EventResult.pass();
         });
 
