@@ -33,6 +33,10 @@ public abstract class AbstractDataManager<T, K> implements DataManager<T, K> {
             return;
         }
 
+        if(queuedData.isEmpty()){
+            return;
+        }
+
         try (PreparedStatement preparedStatement = database.prepareStatement(getInsertSQL())) {
             for (T data : queuedData) {
                 setInsertPreparedStatementValues(preparedStatement, data);

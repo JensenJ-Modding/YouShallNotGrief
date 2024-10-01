@@ -12,13 +12,13 @@ public class BlockSetManager extends AbstractDataManager<BlockSetData, BlockSetQ
 
     @Override
     public String getInsertSQL() {
-        return "INSERT INTO blockSets (x, y, z, dimension, timestamp, blockName, cause, causeDesc) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        return "INSERT INTO blockSets (x, y, z, dimension, timestamp, blockName, blockID, action, source, sourceDesc) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     }
 
     @Override
     public String getQuerySQL() {
-        return "SELECT x, y, z, dimension, timestamp, blockName, cause, causeDesc " +
+        return "SELECT x, y, z, dimension, timestamp, blockName, blockID, action, source, sourceDesc " +
                 "FROM blockSets " +
                 "WHERE x = ? AND y = ? AND z = ? AND dimension = ?";
     }
@@ -27,7 +27,7 @@ public class BlockSetManager extends AbstractDataManager<BlockSetData, BlockSetQ
     public String getCreateTableSQL() {
         return "CREATE TABLE IF NOT EXISTS blockSets " +
                 "(id INTEGER PRIMARY KEY AUTOINCREMENT, x INTEGER, y INTEGER, z INTEGER, dimension TEXT NOT NULL, " +
-                "timestamp DATETIME NOT NULL, blockName TEXT NOT NULL, cause TEXT NOT NULL, causeDesc TEXT NOT NULL);";
+                "timestamp DATETIME NOT NULL, blockName TEXT NOT NULL, blockID TEXT NOT NULL, action TEXT NOT NULL, source TEXT NOT NULL, sourceDesc TEXT NOT NULL);";
     }
 
     @Override
@@ -38,8 +38,10 @@ public class BlockSetManager extends AbstractDataManager<BlockSetData, BlockSetQ
         preparedStatement.setString(4, data.dimension());
         preparedStatement.setTimestamp(5, data.time());
         preparedStatement.setString(6, data.blockName());
-        preparedStatement.setString(7, data.cause());
-        preparedStatement.setString(8, data.causeDesc());
+        preparedStatement.setString(7, data.blockID());
+        preparedStatement.setString(8, data.action());
+        preparedStatement.setString(9, data.source());
+        preparedStatement.setString(10, data.sourceDesc());
     }
 
     @Override
@@ -57,8 +59,10 @@ public class BlockSetManager extends AbstractDataManager<BlockSetData, BlockSetQ
                 resultSet.getString("dimension"),
                 resultSet.getTimestamp("timestamp"),
                 resultSet.getString("blockName"),
-                resultSet.getString("cause"),
-                resultSet.getString("causeDesc")
+                resultSet.getString("blockID"),
+                resultSet.getString("action"),
+                resultSet.getString("source"),
+                resultSet.getString("sourceDesc")
         );
     }
 }

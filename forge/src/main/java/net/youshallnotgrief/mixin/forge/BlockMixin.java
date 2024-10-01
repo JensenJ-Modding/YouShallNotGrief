@@ -3,16 +3,15 @@ package net.youshallnotgrief.mixin.forge;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.youshallnotgrief.data.BlockSetData;
+import net.youshallnotgrief.data.BlockSetActions;
 import net.youshallnotgrief.database.DatabaseManager;
+import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 
@@ -54,14 +53,7 @@ public abstract class BlockMixin {
         className = className.substring(className.lastIndexOf(".") + 1);
         String causeDesc = className + ":" + methodName;
         Level level = (Level) (Object) this;
-        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(new BlockSetData(
-                blockPos,
-                level.dimension().location().toString(),
-                Timestamp.valueOf(LocalDateTime.now()),
-                blockState.getBlock().getName().getString(),
-                moduleName,
-                causeDesc)
-        );
+        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos, level, BlockSetActions.SET, moduleName, causeDesc));
     }
 
     @Unique

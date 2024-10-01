@@ -6,6 +6,7 @@ import dev.architectury.event.events.common.*;
 import dev.architectury.utils.value.IntValue;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
@@ -19,9 +20,11 @@ import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.HitResult;
+import net.youshallnotgrief.data.BlockSetActions;
 import net.youshallnotgrief.data.BlockSetData;
 import net.youshallnotgrief.data.BlockSetQueryData;
 import net.youshallnotgrief.database.DatabaseManager;
+import net.youshallnotgrief.util.BlockUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -40,28 +43,35 @@ public class YouShallNotGriefMod {
     public static void registerEvents(){
         //Block Events
         BlockEvent.BREAK.register((Level level, BlockPos pos, BlockState state, ServerPlayer player, @Nullable IntValue xp) -> {
-            //System.out.println("Break block");
+            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(pos, level, BlockSetActions.REMOVED, player, ""));
             return EventResult.pass();
         });
 
         BlockEvent.PLACE.register((Level level, BlockPos pos, BlockState state, @Nullable Entity placer) -> {
-            //System.out.println("Place block");
+            if(level.isClientSide()){
+                return EventResult.pass();
+            }
+            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(pos, level, BlockSetActions.PLACED, placer, ""));
             return EventResult.pass();
         });
 
-        BlockEvent.FALLING_LAND.register((Level level, BlockPos pos, BlockState fallState, BlockState landOn, FallingBlockEntity entity) -> {
-            //System.out.println("Falling block");
-        });
+        BlockEvent.FALLING_LAND.register((Level level, BlockPos pos, BlockState fallState, BlockState landOn, FallingBlockEntity entity) ->
+                DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(pos, level, BlockSetActions.FELL, "", "")));
 
         //Player events
         PlayerEvent.FILL_BUCKET.register((Player player, Level level, ItemStack stack, @Nullable HitResult target) -> {
             //System.out.println("Fill bucket");
+            if(target != null) {
+                BlockPos pos = new BlockPos(new Vec3i((int) target.getLocation().x, (int) target.getLocation().y, (int) target.getLocation().z));
+                DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(pos, level, BlockSetActions.BUCKETED, "", ""));
+            }
             return CompoundEventResult.pass();
         });
 
         //Interaction events
-        InteractionEvent.FARMLAND_TRAMPLE.register((Level world, BlockPos pos, BlockState state, float distance, Entity entity) -> {
+        InteractionEvent.FARMLAND_TRAMPLE.register((Level level, BlockPos pos, BlockState state, float distance, Entity entity) -> {
             //System.out.println("Trample");
+            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(pos, level, BlockSetActions.TRAMPLED, entity, ""));
             return EventResult.pass();
         });
 
@@ -76,7 +86,6 @@ public class YouShallNotGriefMod {
         });
 
         InteractionEvent.RIGHT_CLICK_BLOCK.register((Player player, InteractionHand hand, BlockPos pos, Direction face) ->{
-            //System.out.println("clicked block");
             if(player.level().isClientSide){
                 return EventResult.pass();
             }
@@ -84,9 +93,12 @@ public class YouShallNotGriefMod {
                 return EventResult.pass();
             }
 
-            ArrayList<BlockSetData> data = DatabaseManager.BLOCK_SET_MANAGER.retrieveFromDatabase(new BlockSetQueryData(pos, player.level().dimension().location().toString()));
+            //TEMPORARY: force queued data to database
+            DatabaseManager.commitAllQueuedDataToDatabase();
+
+            ArrayList<BlockSetData> data = DatabaseManager.BLOCK_SET_MANAGER.retrieveFromDatabase(new BlockSetQueryData(pos, BlockUtils.getDimensionNameFromLevel(player.level())));
             for (int i = 0; i < data.size(); i++){
-                LOGGER.info("{}: {} {} {}", i, data.get(i).blockName(), data.get(i).time(), data.get(i).cause());
+                LOGGER.info("{}: {} {} {}", i, data.get(i).blockName(), data.get(i).time(), data.get(i).source());
             }
             return EventResult.pass();
         });
@@ -94,6 +106,7 @@ public class YouShallNotGriefMod {
         //Explosion Event
         ExplosionEvent.DETONATE.register((Level level, Explosion explosion, List<Entity> affectedEntities) -> {
             //System.out.println("Explosion");
+            //May need to mixin to get affected blocks
         });
 
         //Entity Events

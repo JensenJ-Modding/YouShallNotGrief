@@ -5,7 +5,25 @@
   "minVersion": "0.8",
   "client": [],
   "server": [],
-  "mixins": [],
+  "mixins": [
+    "AnvilMenuMixin",
+    "AxeItemMixin",
+    "FlintAndSteelItemMixin",
+    "FrostWalkerEnchantmentMixin",
+    "HoeItemMixin",
+    "HoneycombItemMixin",
+    "NetherPortalMixin",
+    "RavagerEntityMixin",
+    "ShovelItemMixin",
+    "SnowGolemEntityMixin",
+    "blocks.BambooBlockMixin",
+    "blocks.FireBlockMixin",
+    "blocks.IceBlockMixin",
+    "blocks.LeavesBlockMixin",
+    "blocks.PointedDripstoneBlockMixin",
+    "blocks.RootedDirtBlockMixin",
+    "blocks.ScaffoldingBlockMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }
