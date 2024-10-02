@@ -5,7 +5,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.enchantment.FrostWalkerEnchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.youshallnotgrief.data.BlockSetActions;
+import net.youshallnotgrief.data.block.BlockSetAction;
 import net.youshallnotgrief.database.DatabaseManager;
 import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,6 +25,6 @@ public abstract class FrostWalkerEnchantmentMixin {
     private static void youshallnotgrief$logFrostWalkerPlacement(LivingEntity livingEntity, Level level, BlockPos blockPos, int i, CallbackInfo ci,
                                                                  BlockState blockState, int j, BlockPos.MutableBlockPos mutableBlockPos, Iterator<BlockPos> var7, BlockPos blockPos2) {
 
-        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos2, level, BlockSetActions.FROZE, livingEntity, "frost walker"));
+        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos2, level, BlockSetAction.FROZE, livingEntity, "frost walker"));
     }
 }

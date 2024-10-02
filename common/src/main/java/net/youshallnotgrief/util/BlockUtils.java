@@ -3,11 +3,9 @@ package net.youshallnotgrief.util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.youshallnotgrief.data.BlockSetData;
-import net.youshallnotgrief.data.BlockSetActions;
+import net.youshallnotgrief.data.block.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,28 +35,20 @@ public class BlockUtils {
         return location != null ? location.toString() : "";
     }
 
-    public static BlockSetData makeBlockSetData(@NotNull BlockPos pos, @NotNull Level level, @NotNull String action, @Nullable Entity source, @Nullable String sourceDesc){
-        return new BlockSetData(
-                pos,
-                getDimensionNameFromLevel(level),
+    public static BlockSetData makeBlockSetData(@NotNull BlockPos pos, @NotNull Level level, @NotNull BlockSetAction action, @Nullable Entity source, @Nullable String sourceDesc){
+        return new BlockSetData(new BlockSetPosData(pos, getDimensionNameFromLevel(level)),
                 Timestamp.valueOf(LocalDateTime.now()),
-                getBlockNameFromBlockPos(level, pos),
-                getBlockIDFromBlockPos(level, pos),
-                source != null ? action : BlockSetActions.SET,
-                source != null ? source.getName().getString() : "",
-                sourceDesc != null ? sourceDesc : "");
+                new BlockSetBlockData(getBlockNameFromBlockPos(level, pos), getBlockIDFromBlockPos(level, pos)),
+                source != null ? action : BlockSetAction.SET,
+                new BlockSetSourceData(source != null ? source.getName().getString() : "", sourceDesc != null ? sourceDesc : ""));
     }
 
-    public static BlockSetData makeBlockSetData(@NotNull BlockPos pos, @NotNull Level level, @NotNull String action, @Nullable String source, @Nullable String sourceDesc){
-        return new BlockSetData(
-                pos,
-                getDimensionNameFromLevel(level),
+    public static BlockSetData makeBlockSetData(@NotNull BlockPos pos, @NotNull Level level, @NotNull BlockSetAction action, @Nullable String source, @Nullable String sourceDesc){
+        return new BlockSetData(new BlockSetPosData(pos, getDimensionNameFromLevel(level)),
                 Timestamp.valueOf(LocalDateTime.now()),
-                getBlockNameFromBlockPos(level, pos),
-                getBlockIDFromBlockPos(level, pos),
-                source != null ? action : BlockSetActions.SET,
-                source != null ? source : "",
-                sourceDesc != null ? sourceDesc : "");
+                new BlockSetBlockData(getBlockNameFromBlockPos(level, pos), getBlockIDFromBlockPos(level, pos)),
+                source != null ? action : BlockSetAction.SET,
+                new BlockSetSourceData(source != null ? source : "", sourceDesc != null ? sourceDesc : ""));
     }
 }
 

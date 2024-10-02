@@ -1,4 +1,4 @@
-package net.youshallnotgrief.data;
+package net.youshallnotgrief.data.block;
 
 import net.minecraft.core.BlockPos;
 

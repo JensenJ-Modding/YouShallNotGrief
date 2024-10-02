@@ -5,7 +5,7 @@ import net.minecraft.world.entity.monster.Ravager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.youshallnotgrief.data.BlockSetActions;
+import net.youshallnotgrief.data.block.BlockSetAction;
 import net.youshallnotgrief.database.DatabaseManager;
 import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,6 +23,6 @@ public abstract class RavagerEntityMixin {
     @Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;destroyBlock(Lnet/minecraft/core/BlockPos;ZLnet/minecraft/world/entity/Entity;)Z", shift = At.Shift.AFTER), locals = CAPTURE_FAILEXCEPTION)
     public void youshallnotgrief$logRavagerBreakingLeaves(CallbackInfo ci, boolean bl, AABB aABB, Iterator<BlockPos> var3, BlockPos blockPos, BlockState blockState) {
         Level level = ((Ravager) (Object) this).level();
-        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos, level, BlockSetActions.RAVAGER, "", ""));
+        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos, level, BlockSetAction.RAVAGER, "", ""));
     }
 }

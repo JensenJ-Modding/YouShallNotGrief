@@ -4,7 +4,7 @@ import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.state.BlockState;
-import net.youshallnotgrief.data.BlockSetActions;
+import net.youshallnotgrief.data.block.BlockSetAction;
 import net.youshallnotgrief.database.DatabaseManager;
 import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,6 +28,6 @@ public abstract class HoeItemMixin {
 
     @Unique
     private static void youshallnotgrief$log(UseOnContext context) {
-        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(context.getClickedPos(), context.getLevel(), BlockSetActions.PLOUGHED, context.getPlayer(), ""));
+        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(context.getClickedPos(), context.getLevel(), BlockSetAction.PLOUGHED, context.getPlayer(), ""));
     }
 }

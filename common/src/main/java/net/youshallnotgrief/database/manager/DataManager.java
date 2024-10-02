@@ -1,20 +1,23 @@
 package net.youshallnotgrief.database.manager;
 
+import net.youshallnotgrief.database.manager.block.TableManager;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public interface DataManager<T, K> {
-    void addToDatabase(T data);
-    ArrayList<T> retrieveFromDatabase(K data);
+public interface DataManager<InsertData, QueryData> {
+    void addToDatabase(InsertData data);
+    ArrayList<InsertData> retrieveFromDatabase(QueryData data);
     void commitQueuedToDatabase();
 
-    String getCreateTableSQL();
-    String getInsertSQL();
+    //Order of registration matters, it is the order in which foreign tables are added into the database.
+    void registerForeignTables();
+    ArrayList<TableManager<InsertData>> getForeignTables();
+
     String getQuerySQL();
-    void setInsertPreparedStatementValues(PreparedStatement preparedStatement, T data) throws SQLException;
-    void setQueryPreparedStatementValues(PreparedStatement preparedStatement, K data) throws SQLException;
-    T mapDataFromResultSet(ResultSet set) throws SQLException;
+    void setQueryPreparedStatementValues(PreparedStatement preparedStatement, QueryData data) throws SQLException;
+    InsertData mapDataFromResultSet(ResultSet set) throws SQLException;
 
 }

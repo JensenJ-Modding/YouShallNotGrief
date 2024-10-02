@@ -4,8 +4,10 @@ import dev.architectury.event.events.common.LifecycleEvent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
 import net.youshallnotgrief.YouShallNotGriefMod;
-import net.youshallnotgrief.database.manager.BlockSetManager;
+import net.youshallnotgrief.database.manager.AbstractDataManager;
+import net.youshallnotgrief.database.manager.block.BlockSetDataManager;
 import net.youshallnotgrief.database.manager.DataManager;
+import net.youshallnotgrief.database.manager.block.TableManager;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -15,8 +17,8 @@ public class DatabaseManager {
     private static Connection cachedDatabaseConnection = null;
     private static MinecraftServer minecraftServer = null;
 
-    private static final ArrayList<DataManager<?, ?>> DATA_MANAGERS = new ArrayList<>();
-    public static final BlockSetManager BLOCK_SET_MANAGER = registerDataManager(new BlockSetManager());
+    private static final ArrayList<AbstractDataManager<?, ?>> DATA_MANAGERS = new ArrayList<>();
+    public static final BlockSetDataManager BLOCK_SET_MANAGER = registerDataManager(new BlockSetDataManager());
 
     public static void registerLifecycleEvents(){
         LifecycleEvent.SERVER_STARTED.register((MinecraftServer server) -> {
@@ -72,7 +74,11 @@ public class DatabaseManager {
 
         //First time connection setup
         if(isFirstConnection && connection != null) {
-            for (DataManager<?, ?> dataManager : DATA_MANAGERS) {
+            for (AbstractDataManager<?, ?> dataManager : DATA_MANAGERS) {
+                //Set up all foreign tables
+                for(TableManager<?> table : dataManager.getForeignTables()){
+                    createTableIfNotExists(connection, table.getCreateTableSQL());
+                }
                 createTableIfNotExists(connection, dataManager.getCreateTableSQL());
             }
         }
@@ -95,9 +101,9 @@ public class DatabaseManager {
         }
     }
 
-
-    private static <T extends DataManager<?, ?>> T registerDataManager(T dataManager){
+    private static <DataManager extends AbstractDataManager<?, ?>> DataManager registerDataManager(DataManager dataManager){
         DATA_MANAGERS.add(dataManager);
+        dataManager.registerForeignTables();
         return dataManager;
     }
 

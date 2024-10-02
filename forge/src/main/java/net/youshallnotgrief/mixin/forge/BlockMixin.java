@@ -3,7 +3,7 @@ package net.youshallnotgrief.mixin.forge;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.youshallnotgrief.data.BlockSetActions;
+import net.youshallnotgrief.data.block.BlockSetAction;
 import net.youshallnotgrief.database.DatabaseManager;
 import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
@@ -53,7 +53,7 @@ public abstract class BlockMixin {
         className = className.substring(className.lastIndexOf(".") + 1);
         String causeDesc = className + ":" + methodName;
         Level level = (Level) (Object) this;
-        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos, level, BlockSetActions.SET, moduleName, causeDesc));
+        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos, level, BlockSetAction.SET, moduleName, causeDesc));
     }
 
     @Unique

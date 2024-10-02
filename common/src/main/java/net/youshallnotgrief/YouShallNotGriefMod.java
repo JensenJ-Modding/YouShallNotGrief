@@ -20,9 +20,9 @@ import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.HitResult;
-import net.youshallnotgrief.data.BlockSetActions;
-import net.youshallnotgrief.data.BlockSetData;
-import net.youshallnotgrief.data.BlockSetQueryData;
+import net.youshallnotgrief.data.block.BlockSetAction;
+import net.youshallnotgrief.data.block.BlockSetData;
+import net.youshallnotgrief.data.block.BlockSetQueryData;
 import net.youshallnotgrief.database.DatabaseManager;
 import net.youshallnotgrief.util.BlockUtils;
 import org.apache.logging.log4j.LogManager;
@@ -43,7 +43,7 @@ public class YouShallNotGriefMod {
     public static void registerEvents(){
         //Block Events
         BlockEvent.BREAK.register((Level level, BlockPos pos, BlockState state, ServerPlayer player, @Nullable IntValue xp) -> {
-            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(pos, level, BlockSetActions.REMOVED, player, ""));
+            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(pos, level, BlockSetAction.REMOVED, player, ""));
             return EventResult.pass();
         });
 
@@ -51,37 +51,33 @@ public class YouShallNotGriefMod {
             if(level.isClientSide()){
                 return EventResult.pass();
             }
-            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(pos, level, BlockSetActions.PLACED, placer, ""));
+            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(pos, level, BlockSetAction.PLACED, placer, ""));
             return EventResult.pass();
         });
 
         BlockEvent.FALLING_LAND.register((Level level, BlockPos pos, BlockState fallState, BlockState landOn, FallingBlockEntity entity) ->
-                DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(pos, level, BlockSetActions.FELL, "", "")));
+                DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(pos, level, BlockSetAction.FELL, "", "")));
 
         //Player events
         PlayerEvent.FILL_BUCKET.register((Player player, Level level, ItemStack stack, @Nullable HitResult target) -> {
-            //System.out.println("Fill bucket");
             if(target != null) {
                 BlockPos pos = new BlockPos(new Vec3i((int) target.getLocation().x, (int) target.getLocation().y, (int) target.getLocation().z));
-                DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(pos, level, BlockSetActions.BUCKETED, "", ""));
+                DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(pos, level, BlockSetAction.BUCKETED, "", ""));
             }
             return CompoundEventResult.pass();
         });
 
         //Interaction events
         InteractionEvent.FARMLAND_TRAMPLE.register((Level level, BlockPos pos, BlockState state, float distance, Entity entity) -> {
-            //System.out.println("Trample");
-            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(pos, level, BlockSetActions.TRAMPLED, entity, ""));
+            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(pos, level, BlockSetAction.TRAMPLED, entity, ""));
             return EventResult.pass();
         });
 
         InteractionEvent.INTERACT_ENTITY.register((Player player, Entity entity, InteractionHand hand) -> {
-            //System.out.println("player interact");
             return EventResult.pass();
         });
 
         InteractionEvent.RIGHT_CLICK_ITEM.register((Player player, InteractionHand hand) -> {
-            //System.out.println("click item on block");
             return CompoundEventResult.pass();
         });
 
@@ -93,35 +89,32 @@ public class YouShallNotGriefMod {
                 return EventResult.pass();
             }
 
-            //TEMPORARY: force queued data to database
+            //TEMPORARY: force queued data to database, so we can query up to date results
+            //TODO: Find a nicer way of doing this if performance hit is large.
             DatabaseManager.commitAllQueuedDataToDatabase();
 
             ArrayList<BlockSetData> data = DatabaseManager.BLOCK_SET_MANAGER.retrieveFromDatabase(new BlockSetQueryData(pos, BlockUtils.getDimensionNameFromLevel(player.level())));
             for (int i = 0; i < data.size(); i++){
-                LOGGER.info("{}: {} {} {}", i, data.get(i).blockName(), data.get(i).time(), data.get(i).source());
+                LOGGER.info("{}: {} {} {}", i, data.get(i).blockSetBlockData().blockName(), data.get(i).time(), data.get(i).blockSetSourceData().source());
             }
             return EventResult.pass();
         });
 
         //Explosion Event
         ExplosionEvent.DETONATE.register((Level level, Explosion explosion, List<Entity> affectedEntities) -> {
-            //System.out.println("Explosion");
             //May need to mixin to get affected blocks
         });
 
         //Entity Events
         EntityEvent.LIVING_DEATH.register((LivingEntity entity, DamageSource source) -> {
-            //System.out.println("Entity death");
             return EventResult.pass();
         });
 
         EntityEvent.LIVING_HURT.register((LivingEntity entity, DamageSource source, float amount) -> {
-            //System.out.println("Entity hurt");
             return EventResult.pass();
         });
 
         EntityEvent.ANIMAL_TAME.register((Animal animal, Player player) -> {
-            //System.out.println("Entity tamed");
             return EventResult.pass();
         });
 
