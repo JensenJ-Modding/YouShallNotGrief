@@ -10,6 +10,9 @@ import net.youshallnotgrief.database.manager.block.TableManager;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class DatabaseManager {
 
@@ -19,22 +22,38 @@ public class DatabaseManager {
     private static final ArrayList<AbstractDataManager<?, ?>> DATA_MANAGERS = new ArrayList<>();
     public static final BlockSetDataManager BLOCK_SET_MANAGER = registerDataManager(new BlockSetDataManager());
 
+    private static final int databaseThreadCount = 4;
+    public static ExecutorService executorService = Executors.newFixedThreadPool(databaseThreadCount);
+
     public static void registerLifecycleEvents(){
         LifecycleEvent.SERVER_STARTED.register((MinecraftServer server) -> {
             minecraftServer = server;
             cachedDatabaseConnection = getDatabaseConnection();
             clearAllCaches();
+            executorService = Executors.newFixedThreadPool(databaseThreadCount);
         });
 
         LifecycleEvent.SERVER_STOPPED.register((MinecraftServer server) -> {
             commitAllQueuedDataToDatabase();
             clearAllCaches();
             minecraftServer = null;
+            int threadTimeout = 10;
+            executorService.shutdown();
+            YouShallNotGriefMod.LOGGER.info("Shutting down database threads. Waiting {} seconds before closing forcefully.", threadTimeout);
+            try {
+                if(executorService.awaitTermination(threadTimeout, TimeUnit.SECONDS)){
+                    YouShallNotGriefMod.LOGGER.info("Threads shut down gracefully.");
+                }else{
+                    YouShallNotGriefMod.LOGGER.error("Threads were terminated as timeout expired.");
+                }
+            } catch (InterruptedException e) {
+                YouShallNotGriefMod.LOGGER.error("Thread shutdown was interrupted.");
+            }
 
             try {
                 cachedDatabaseConnection.close();
                 cachedDatabaseConnection = null;
-                YouShallNotGriefMod.LOGGER.info("Closing database connection.");
+                YouShallNotGriefMod.LOGGER.info("Closed database connection.");
             } catch (SQLException e) {
                 YouShallNotGriefMod.LOGGER.error(e.toString());
             }

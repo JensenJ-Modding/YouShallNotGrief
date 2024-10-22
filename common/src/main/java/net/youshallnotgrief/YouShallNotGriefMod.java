@@ -31,6 +31,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class YouShallNotGriefMod {
     public static final String MOD_ID = "youshallnotgrief";
@@ -89,16 +93,23 @@ public class YouShallNotGriefMod {
                 return EventResult.pass();
             }
 
-            //TEMPORARY: force queued data to database, so we can query up to date results
-            //TODO: Find a nicer way of doing this if performance hit is large.
+            //TODO: TEMPORARY: force queued data to database, so we can query up to date results
             DatabaseManager.commitAllQueuedDataToDatabase();
+            Future<ArrayList<BlockSetData>> futureData = DatabaseManager.BLOCK_SET_MANAGER.retrieveFromDatabase(new BlockSetQueryData(pos, BlockUtils.getDimensionNameFromLevel(player.level())));
 
-            ArrayList<BlockSetData> data = DatabaseManager.BLOCK_SET_MANAGER.retrieveFromDatabase(new BlockSetQueryData(pos, BlockUtils.getDimensionNameFromLevel(player.level())));
-            if(data == null){
+            //TODO: REPLACE WITH INSPECT COMMAND AND CLEANUP
+            try {
+                //TODO: Replace with call to isDone to prevent blocking the main game loop
+                ArrayList<BlockSetData> data = futureData.get(5, TimeUnit.SECONDS);
+                if(data == null){
+                    return EventResult.pass();
+                }
+                for (int i = 0; i < data.size(); i++){
+                    LOGGER.info("{}: {} {} {}", i, data.get(i).blockSetBlockData().blockName(), data.get(i).time(), data.get(i).blockSetSourceData().source());
+                }
                 return EventResult.pass();
-            }
-            for (int i = 0; i < data.size(); i++){
-                LOGGER.info("{}: {} {} {}", i, data.get(i).blockSetBlockData().blockName(), data.get(i).time(), data.get(i).blockSetSourceData().source());
+            } catch (ExecutionException | InterruptedException | TimeoutException e) {
+                LOGGER.error("Failed to retrieve blockData in time");
             }
             return EventResult.pass();
         });

@@ -6,10 +6,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.concurrent.Future;
 
 public interface DataManager<InsertData, QueryData> {
     void addToDatabase(InsertData data);
-    ArrayList<InsertData> retrieveFromDatabase(QueryData data);
+    Future<ArrayList<InsertData>> retrieveFromDatabase(QueryData data);
     void commitQueuedToDatabase();
 
     //Order of registration matters, it is the order in which foreign tables are added into the database.

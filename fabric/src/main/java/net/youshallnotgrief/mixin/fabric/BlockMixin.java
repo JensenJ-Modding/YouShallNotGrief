@@ -30,6 +30,10 @@ public abstract class BlockMixin {
 
     @Inject(at = @At("TAIL"), method="setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z")
     private void youshallnotgrief$detectModdedSetBlockInteractions(BlockPos blockPos, BlockState blockState, int i, CallbackInfoReturnable<Boolean> cir) {
+        Level level = (Level) (Object) this;
+        if(level.isClientSide){
+            return;
+        }
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
         int causeTraceIndex;
         for (causeTraceIndex = 2; causeTraceIndex < stackTraceElements.length - 1; causeTraceIndex++) {
@@ -58,7 +62,6 @@ public abstract class BlockMixin {
         className = className.substring(className.lastIndexOf(".") + 1);
         String fullName = className + ":" + methodName;
 
-        Level level = (Level) (Object) this;
         DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos, level, BlockSetAction.SET, moduleName, fullName));
     }
 
