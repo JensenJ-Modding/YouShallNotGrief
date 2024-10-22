@@ -6,11 +6,9 @@
   "client": [],
   "server": [],
   "mixins": [
-    "AnvilMenuMixin",
     "AxeItemMixin",
     "FlintAndSteelItemMixin",
     "FrostWalkerEnchantmentMixin",
-    "HoeItemMixin",
     "HoneycombItemMixin",
     "NetherPortalMixin",
     "RavagerEntityMixin",

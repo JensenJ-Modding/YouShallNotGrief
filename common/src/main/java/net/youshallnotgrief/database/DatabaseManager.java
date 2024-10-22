@@ -6,7 +6,6 @@ import net.minecraft.world.level.storage.LevelResource;
 import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.database.manager.AbstractDataManager;
 import net.youshallnotgrief.database.manager.block.BlockSetDataManager;
-import net.youshallnotgrief.database.manager.DataManager;
 import net.youshallnotgrief.database.manager.block.TableManager;
 
 import java.sql.*;
@@ -24,10 +23,12 @@ public class DatabaseManager {
         LifecycleEvent.SERVER_STARTED.register((MinecraftServer server) -> {
             minecraftServer = server;
             cachedDatabaseConnection = getDatabaseConnection();
+            clearAllCaches();
         });
 
         LifecycleEvent.SERVER_STOPPED.register((MinecraftServer server) -> {
             commitAllQueuedDataToDatabase();
+            clearAllCaches();
             minecraftServer = null;
 
             try {
@@ -83,6 +84,7 @@ public class DatabaseManager {
             }
         }
 
+        clearAllCaches();
         cachedDatabaseConnection = connection;
         return connection;
     }
@@ -93,6 +95,7 @@ public class DatabaseManager {
             database.commit();
         }catch(SQLException e){
             YouShallNotGriefMod.LOGGER.error(e.toString());
+            YouShallNotGriefMod.LOGGER.error(createTableSQL);
             try {
                 database.rollback();
             } catch (SQLException ex) {
@@ -108,8 +111,17 @@ public class DatabaseManager {
     }
 
     public static void commitAllQueuedDataToDatabase(){
-        for(DataManager<?, ?> dataManager : DATA_MANAGERS){
+        for(AbstractDataManager<?, ?> dataManager : DATA_MANAGERS){
             dataManager.commitQueuedToDatabase();
+        }
+    }
+
+    public static void clearAllCaches(){
+        for(AbstractDataManager<?, ?> dataManager : DATA_MANAGERS){
+            for(TableManager<?> tableManager : dataManager.getForeignTables()){
+                tableManager.clearCache();
+            }
+            dataManager.clearCache();
         }
     }
 }

@@ -6,7 +6,9 @@
   "client": [
   ],
   "mixins": [
-    "BlockMixin"
+    "BlockMixin",
+    "AnvilMenuMixin",
+    "HoeItemMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -9,10 +9,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractDataManager<InsertData, QueryData> implements DataManager<InsertData, QueryData>, TableManager<InsertData> {
-    protected HashSet<InsertData> QUEUED_DATA = new HashSet<>();
+    protected Set<InsertData> QUEUED_DATA = ConcurrentHashMap.newKeySet();
     protected ArrayList<TableManager<InsertData>> TABLE_MANAGERS = new ArrayList<>();
     private static final int MAX_QUEUE_SIZE = 10000;
 
@@ -60,9 +61,11 @@ public abstract class AbstractDataManager<InsertData, QueryData> implements Data
 
             preparedStatement.executeBatch();
             database.commit();
+            tableManager.onInsertionCompleted();
         } catch (SQLException e) {
             YouShallNotGriefMod.LOGGER.error("Error inserting data into database:");
             YouShallNotGriefMod.LOGGER.error(e.toString());
+            YouShallNotGriefMod.LOGGER.error(tableManager.getInsertSQL());
             try {
                 database.rollback();
             } catch (SQLException ex) {
@@ -82,14 +85,22 @@ public abstract class AbstractDataManager<InsertData, QueryData> implements Data
 
         try(PreparedStatement preparedStatement = database.prepareStatement(getQuerySQL())){
             setQueryPreparedStatementValues(preparedStatement, data);
-            try(ResultSet set = preparedStatement.executeQuery()){
-                while(set.next()){
+            ResultSet set = preparedStatement.executeQuery();
+            while(set.next()){
+                try {
                     dataToReturn.add(mapDataFromResultSet(set));
+                }catch (SQLException e){
+                    YouShallNotGriefMod.LOGGER.error("Error retrieving data from database when performing mapping data from result set.");
+                    YouShallNotGriefMod.LOGGER.error(e.toString());
+                    YouShallNotGriefMod.LOGGER.error(getQuerySQL());
+                    return null;
                 }
             }
         } catch (SQLException e) {
             YouShallNotGriefMod.LOGGER.error("Error retrieving data from database:");
             YouShallNotGriefMod.LOGGER.error(e.toString());
+            YouShallNotGriefMod.LOGGER.error(getQuerySQL());
+            return null;
         }
 
         return dataToReturn;

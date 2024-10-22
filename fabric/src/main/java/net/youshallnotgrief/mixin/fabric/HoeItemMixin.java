@@ -1,4 +1,4 @@
-package net.youshallnotgrief.mixin;
+package net.youshallnotgrief.mixin.fabric;
 
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.context.UseOnContext;

@@ -94,6 +94,9 @@ public class YouShallNotGriefMod {
             DatabaseManager.commitAllQueuedDataToDatabase();
 
             ArrayList<BlockSetData> data = DatabaseManager.BLOCK_SET_MANAGER.retrieveFromDatabase(new BlockSetQueryData(pos, BlockUtils.getDimensionNameFromLevel(player.level())));
+            if(data == null){
+                return EventResult.pass();
+            }
             for (int i = 0; i < data.size(); i++){
                 LOGGER.info("{}: {} {} {}", i, data.get(i).blockSetBlockData().blockName(), data.get(i).time(), data.get(i).blockSetSourceData().source());
             }
