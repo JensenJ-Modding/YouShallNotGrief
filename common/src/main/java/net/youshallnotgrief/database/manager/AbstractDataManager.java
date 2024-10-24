@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.database.DatabaseManager;
 import net.youshallnotgrief.database.manager.block.TableManager;
+import net.youshallnotgrief.util.RetrieveResult;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,8 +25,9 @@ public abstract class AbstractDataManager<InsertData, QueryData> implements Data
 
     @Override
     public void addToDatabase(InsertData data){
-        if(Minecraft.getInstance().isSameThread()){
-            YouShallNotGriefMod.LOGGER.error("Error adding entry to database. addToDatabase executed on client side.");
+        if(isClientSide()){
+            YouShallNotGriefMod.LOGGER.error("Failed to add data to Database Queue. addToDatabase called from clientside.");
+            return;
         }
         QUEUED_DATA.add(data);
         if(QUEUED_DATA.size() >= MAX_QUEUE_SIZE && isCommitting.compareAndSet(false, true)) {
@@ -88,7 +90,7 @@ public abstract class AbstractDataManager<InsertData, QueryData> implements Data
     }
 
     @Override
-    public Future<ArrayList<InsertData>> retrieveFromDatabase(QueryData data) {
+    public Future<RetrieveResult<InsertData>> retrieveFromDatabase(QueryData data, int limit, int offset) {
         return DatabaseManager.executorService.submit(() -> {
             ArrayList<InsertData> dataToReturn = new ArrayList<>();
             Connection database = DatabaseManager.getDatabaseConnection();
@@ -96,8 +98,22 @@ public abstract class AbstractDataManager<InsertData, QueryData> implements Data
                 return null;
             }
 
+            int count = 0;
+            try (PreparedStatement preparedStatement = database.prepareStatement(getCountSQL())) {
+                setCountPreparedStatementValues(preparedStatement, data);
+                ResultSet set = preparedStatement.executeQuery();
+                if (set.next()) {
+                    count = set.getInt(1);
+                }
+            } catch (SQLException e) {
+                YouShallNotGriefMod.LOGGER.error("Error retrieving count from database:");
+                YouShallNotGriefMod.LOGGER.error(e.toString());
+                YouShallNotGriefMod.LOGGER.error(getCountSQL());
+                return null;
+            }
+
             try (PreparedStatement preparedStatement = database.prepareStatement(getQuerySQL())) {
-                setQueryPreparedStatementValues(preparedStatement, data);
+                setQueryPreparedStatementValues(preparedStatement, data, limit, offset);
                 ResultSet set = preparedStatement.executeQuery();
                 while (set.next()) {
                     try {
@@ -116,7 +132,15 @@ public abstract class AbstractDataManager<InsertData, QueryData> implements Data
                 return null;
             }
 
-            return dataToReturn;
+            return new RetrieveResult<>(dataToReturn, count);
         });
+    }
+
+    private static boolean isClientSide() {
+        try {
+            return Minecraft.getInstance().isSameThread();
+        } catch (RuntimeException e) {
+            return false;
+        }
     }
 }

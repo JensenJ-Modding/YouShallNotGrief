@@ -38,7 +38,7 @@ public class BlockUtils {
     public static BlockSetData makeBlockSetData(@NotNull BlockPos pos, @NotNull Level level, @NotNull BlockSetAction action, @Nullable Entity source, @Nullable String sourceDesc){
         return new BlockSetData(new BlockSetPosData(pos, getDimensionNameFromLevel(level)),
                 Timestamp.valueOf(LocalDateTime.now()),
-                new BlockSetBlockData(getBlockNameFromBlockPos(level, pos), getBlockIDFromBlockPos(level, pos)),
+                new BlockSetBlockData(getBlockIDFromBlockPos(level, pos), getBlockNameFromBlockPos(level, pos)),
                 source != null ? action : BlockSetAction.SET,
                 new BlockSetSourceData(source != null ? source.getName().getString() : "", sourceDesc != null ? sourceDesc : ""));
     }
@@ -46,7 +46,7 @@ public class BlockUtils {
     public static BlockSetData makeBlockSetData(@NotNull BlockPos pos, @NotNull Level level, @NotNull BlockSetAction action, @Nullable String source, @Nullable String sourceDesc){
         return new BlockSetData(new BlockSetPosData(pos, getDimensionNameFromLevel(level)),
                 Timestamp.valueOf(LocalDateTime.now()),
-                new BlockSetBlockData(getBlockNameFromBlockPos(level, pos), getBlockIDFromBlockPos(level, pos)),
+                new BlockSetBlockData(getBlockIDFromBlockPos(level, pos), getBlockNameFromBlockPos(level, pos)),
                 source != null ? action : BlockSetAction.SET,
                 new BlockSetSourceData(source != null ? source : "", sourceDesc != null ? sourceDesc : ""));
     }

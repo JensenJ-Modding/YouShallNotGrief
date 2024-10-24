@@ -45,7 +45,20 @@ public class BlockSetDataManager extends AbstractDataManager<BlockSetData, Block
                 "JOIN blockSet_Blocks ON blockSet.blockID = blockSet_Blocks.blockID " +
                 "JOIN blockSet_Actions ON blockSet.actionID = blockSet_Actions.actionID " +
                 "JOIN blockSet_Sources ON blockSet.sourceID = blockSet_Sources.sourceID " +
-                "WHERE blockSet_Positions.x = ? AND blockSet_Positions.y = ? AND blockSet_Positions.z = ? AND blockSet_Dimensions.dimension = ?;";
+                "WHERE blockSet_Positions.x = ? AND blockSet_Positions.y = ? AND blockSet_Positions.z = ? AND blockSet_Dimensions.dimension = ? " +
+                "ORDER BY timestamp DESC " +
+                "LIMIT ? OFFSET ?;";
+    }
+
+    @Override
+    public String getCountSQL() {
+        return "SELECT COUNT(*) from blockSet " +
+                "JOIN blockSet_Positions ON blockSet.posID = blockSet_Positions.posID " +
+                "JOIN blockSet_Dimensions ON blockSet_Positions.dimID = blockSet_Dimensions.dimID " +
+                "JOIN blockSet_Blocks ON blockSet.blockID = blockSet_Blocks.blockID " +
+                "JOIN blockSet_Actions ON blockSet.actionID = blockSet_Actions.actionID " +
+                "JOIN blockSet_Sources ON blockSet.sourceID = blockSet_Sources.sourceID " +
+                "WHERE blockSet_Positions.x = ? AND blockSet_Positions.y = ? AND blockSet_Positions.z = ? AND blockSet_Dimensions.dimension = ? ";
     }
 
     @Override
@@ -105,7 +118,17 @@ public class BlockSetDataManager extends AbstractDataManager<BlockSetData, Block
     }
 
     @Override
-    public void setQueryPreparedStatementValues(PreparedStatement preparedStatement, BlockSetQueryData data) throws SQLException {
+    public void setQueryPreparedStatementValues(PreparedStatement preparedStatement, BlockSetQueryData data, int limit, int offset) throws SQLException {
+        preparedStatement.setInt(1, data.pos().getX());
+        preparedStatement.setInt(2, data.pos().getY());
+        preparedStatement.setInt(3, data.pos().getZ());
+        preparedStatement.setString(4, data.dimension());
+        preparedStatement.setInt(5, limit);
+        preparedStatement.setInt(6, offset);
+    }
+
+    @Override
+    public void setCountPreparedStatementValues(PreparedStatement preparedStatement, BlockSetQueryData data) throws SQLException {
         preparedStatement.setInt(1, data.pos().getX());
         preparedStatement.setInt(2, data.pos().getY());
         preparedStatement.setInt(3, data.pos().getZ());
@@ -173,15 +196,15 @@ public class BlockSetDataManager extends AbstractDataManager<BlockSetData, Block
     private int getBlockID(BlockSetBlockData data) {
         Connection database = DatabaseManager.getDatabaseConnection();
         if(database == null){
-            YouShallNotGriefMod.LOGGER.error("Failed to get blockID for blockName {} when inserting blockset. Database connection failed.", data.blockID());
+            YouShallNotGriefMod.LOGGER.error("Failed to get blockID for blockInternalName {} when inserting blockset. Database connection failed.", data.blockInternalName());
             return -1;
         }
 
-        return BLOCK_CACHE.computeIfAbsent(data.blockID(), (String blockIDName)-> {
+        return BLOCK_CACHE.computeIfAbsent(data.blockInternalName(), (String blockInternalName)-> {
             String query = "SELECT blockID, blockInternalName, blockName FROM blockSet_Blocks WHERE blockInternalName = ? AND blockName = ?;";
             try {
                 PreparedStatement queryStatement = database.prepareStatement(query);
-                queryStatement.setString(1, data.blockID());
+                queryStatement.setString(1, data.blockInternalName());
                 queryStatement.setString(2, data.blockName());
                 try (ResultSet resultSet = queryStatement.executeQuery()) {
                     if (resultSet.next()) {
@@ -189,7 +212,7 @@ public class BlockSetDataManager extends AbstractDataManager<BlockSetData, Block
                     }
                 }
             } catch (SQLException e) {
-                YouShallNotGriefMod.LOGGER.error("Failed to get blockID for blockName {} when inserting blockset. ", blockIDName);
+                YouShallNotGriefMod.LOGGER.error("Failed to get blockID for blockInternalName {} when inserting blockset. ", blockInternalName);
                 YouShallNotGriefMod.LOGGER.error(e.toString());
                 YouShallNotGriefMod.LOGGER.error(query);
             }

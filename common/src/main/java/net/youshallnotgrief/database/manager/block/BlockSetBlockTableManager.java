@@ -22,7 +22,7 @@ public class BlockSetBlockTableManager implements TableManager<BlockSetData>{
 
     @Override
     public void setInsertPreparedStatementValues(PreparedStatement preparedStatement, BlockSetData blockSetData) throws SQLException {
-        preparedStatement.setString(1, blockSetData.blockSetBlockData().blockID());
+        preparedStatement.setString(1, blockSetData.blockSetBlockData().blockInternalName());
         preparedStatement.setString(2, blockSetData.blockSetBlockData().blockName());
     }
 }

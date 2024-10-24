@@ -5,7 +5,6 @@ import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.*;
 import dev.architectury.utils.value.IntValue;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -21,30 +20,29 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.HitResult;
 import net.youshallnotgrief.data.block.BlockSetAction;
-import net.youshallnotgrief.data.block.BlockSetData;
-import net.youshallnotgrief.data.block.BlockSetQueryData;
 import net.youshallnotgrief.database.DatabaseManager;
 import net.youshallnotgrief.util.BlockUtils;
+import net.youshallnotgrief.util.CommandManager;
+import net.youshallnotgrief.util.InspectionMode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public class YouShallNotGriefMod {
     public static final String MOD_ID = "youshallnotgrief";
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
-    
+
     public static void init() {
         registerEvents();
     }
 
     public static void registerEvents(){
+        DatabaseManager.registerLifecycleEvents();
+        CommandManager.registerCommands();
+        InspectionMode.registerEvents();
+
         //Block Events
         BlockEvent.BREAK.register((Level level, BlockPos pos, BlockState state, ServerPlayer player, @Nullable IntValue xp) -> {
             DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(pos, level, BlockSetAction.REMOVED, player, ""));
@@ -85,35 +83,6 @@ public class YouShallNotGriefMod {
             return CompoundEventResult.pass();
         });
 
-        InteractionEvent.RIGHT_CLICK_BLOCK.register((Player player, InteractionHand hand, BlockPos pos, Direction face) ->{
-            if(player.level().isClientSide){
-                return EventResult.pass();
-            }
-            if(hand == InteractionHand.OFF_HAND){
-                return EventResult.pass();
-            }
-
-            //TODO: TEMPORARY: force queued data to database, so we can query up to date results
-            DatabaseManager.commitAllQueuedDataToDatabase();
-            Future<ArrayList<BlockSetData>> futureData = DatabaseManager.BLOCK_SET_MANAGER.retrieveFromDatabase(new BlockSetQueryData(pos, BlockUtils.getDimensionNameFromLevel(player.level())));
-
-            //TODO: REPLACE WITH INSPECT COMMAND AND CLEANUP
-            try {
-                //TODO: Replace with call to isDone to prevent blocking the main game loop
-                ArrayList<BlockSetData> data = futureData.get(5, TimeUnit.SECONDS);
-                if(data == null){
-                    return EventResult.pass();
-                }
-                for (int i = 0; i < data.size(); i++){
-                    LOGGER.info("{}: {} {} {}", i, data.get(i).blockSetBlockData().blockName(), data.get(i).time(), data.get(i).blockSetSourceData().source());
-                }
-                return EventResult.pass();
-            } catch (ExecutionException | InterruptedException | TimeoutException e) {
-                LOGGER.error("Failed to retrieve blockData in time");
-            }
-            return EventResult.pass();
-        });
-
         //Explosion Event
         ExplosionEvent.DETONATE.register((Level level, Explosion explosion, List<Entity> affectedEntities) -> {
             //May need to mixin to get affected blocks
@@ -131,9 +100,6 @@ public class YouShallNotGriefMod {
         EntityEvent.ANIMAL_TAME.register((Animal animal, Player player) -> {
             return EventResult.pass();
         });
-
-        DatabaseManager.registerLifecycleEvents();
-
         //Mixins
         //  Fire
         //  Adding and removing items from inventory
