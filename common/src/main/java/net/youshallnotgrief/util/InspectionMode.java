@@ -38,7 +38,7 @@ public class InspectionMode {
     private static final int MAX_CHARACTERS_PER_LINE = 53;
 
     public static void registerEvents(){
-        InteractionEvent.RIGHT_CLICK_BLOCK.register((Player player, InteractionHand hand, BlockPos pos, Direction face) ->{
+        InteractionEvent.LEFT_CLICK_BLOCK.register((Player player, InteractionHand hand, BlockPos pos, Direction face) ->{
             if(player.level().isClientSide){
                 return EventResult.pass();
             }
@@ -50,6 +50,22 @@ public class InspectionMode {
             }
 
             CURRENTLY_SELECTED_BLOCK.put(player, pos);
+            showDetails(player, 0);
+            return EventResult.interruptFalse();
+        });
+
+        InteractionEvent.RIGHT_CLICK_BLOCK.register((Player player, InteractionHand hand, BlockPos pos, Direction face) -> {
+            if(player.level().isClientSide){
+                return EventResult.pass();
+            }
+            if(hand == InteractionHand.OFF_HAND){
+                return EventResult.pass();
+            }
+            if(!INSPECTING_PLAYERS.contains(player)){
+                return EventResult.pass();
+            }
+
+            CURRENTLY_SELECTED_BLOCK.put(player, pos.relative(face, 1));
             showDetails(player, 0);
             return EventResult.interruptFalse();
         });
