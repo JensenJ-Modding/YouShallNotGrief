@@ -25,6 +25,6 @@ public abstract class FrostWalkerEnchantmentMixin {
     private static void youshallnotgrief$logFrostWalkerPlacement(LivingEntity livingEntity, Level level, BlockPos blockPos, int i, CallbackInfo ci,
                                                                  BlockState blockState, int j, BlockPos.MutableBlockPos mutableBlockPos, Iterator<BlockPos> var7, BlockPos blockPos2) {
 
-        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos2, level, BlockSetAction.FROZE, livingEntity, "frost walker"));
+        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos2, level, BlockSetAction.FROZE, livingEntity, "Frost Walker"));
     }
 }

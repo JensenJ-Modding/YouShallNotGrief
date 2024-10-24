@@ -56,7 +56,7 @@ public abstract class BlockMixin {
         methodName = methodName.substring(methodName.lastIndexOf(".") + 1);
         className = className.substring(className.lastIndexOf(".") + 1);
         String causeDesc = className + ":" + methodName;
-        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos, level, BlockSetAction.SET, moduleName, causeDesc));
+        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetDataFromModdedInteraction(blockPos, level, moduleName, causeDesc));
     }
 
     @Unique

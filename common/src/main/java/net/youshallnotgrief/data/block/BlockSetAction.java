@@ -8,16 +8,9 @@ public enum BlockSetAction {
     TRAMPLED,
     SCRAPED,
     BUCKETED,
-    GREW,
-    BURNED,
     LIT,
-    MELTED,
-    FELL,
     PLOUGHED,
     DECAYED,
     FROZE,
     WAXED,
-    PORTALED,
-    RAVAGER,
-    SNOW_GOLEM;
 }

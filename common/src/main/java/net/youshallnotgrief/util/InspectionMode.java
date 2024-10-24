@@ -16,6 +16,8 @@ import net.minecraft.world.level.Level;
 import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.data.block.BlockSetData;
 import net.youshallnotgrief.data.block.BlockSetQueryData;
+import net.youshallnotgrief.data.block.cause.BlockSetCause;
+import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.database.DatabaseManager;
 
 import java.sql.Timestamp;
@@ -143,30 +145,38 @@ public class InspectionMode {
                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(formatTime(data.time()))))
                 );
 
-        MutableComponent sourceComp;
-        if(data.blockSetSourceData().sourceDesc().isEmpty()){
-            sourceComp = Component.literal(data.blockSetSourceData().source())
-                    .withStyle(style -> style
-                            .withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_AQUA))
-                    );
-        }else{
-            sourceComp = Component.literal(data.blockSetSourceData().source())
-                    .withStyle(style -> style
-                            .withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_AQUA))
-                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(data.blockSetSourceData().sourceDesc())))
-                    );
-        }
-
-        MutableComponent actionComp = Component.literal(String.valueOf(data.action()).toLowerCase());
-
         MutableComponent blockComp = Component.literal(data.blockSetBlockData().blockName())
                 .withStyle(style -> style
                         .withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_AQUA))
                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(data.blockSetBlockData().blockInternalName())))
                 );
 
-        MutableComponent comp = Component.empty();
-        return comp.append(timeComp).append(" - ").append(sourceComp).append(" ").append(actionComp).append(" ").append(blockComp);
+        String source = data.blockSetSourceData().source();
+        BlockSetCause cause = BlockSetCauses.getCauseFromTag(source);
+
+        MutableComponent sourceComp;
+        MutableComponent actionComp;
+        MutableComponent comp = Component.empty().append(timeComp).append(" - ");
+        if(cause == null){
+            actionComp = Component.literal(String.valueOf(data.action()).toLowerCase());
+
+            if(data.blockSetSourceData().sourceDesc().isEmpty()){
+                sourceComp = Component.literal(data.blockSetSourceData().source())
+                        .withStyle(style -> style
+                                .withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_AQUA))
+                        );
+            }else{
+                sourceComp = Component.literal(data.blockSetSourceData().source())
+                        .withStyle(style -> style
+                                .withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_AQUA))
+                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(data.blockSetSourceData().sourceDesc())))
+                        );
+            }
+
+            return comp.append(sourceComp).append(" ").append(actionComp).append(" ").append(blockComp);
+        }else {
+            return comp.append(cause.getInspectMessage(blockComp));
+        }
     }
 
     private static Component getFooter(int currentPage, int maxPageCount) {
