@@ -7,11 +7,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.youshallnotgrief.data.block.*;
 import net.youshallnotgrief.data.block.cause.BlockSetCause;
+import net.youshallnotgrief.data.block.cause.UnsupportedCause;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 public class BlockUtils {
 
@@ -39,16 +41,16 @@ public class BlockUtils {
     //To be used in most cases.
     public static BlockSetData makeBlockSetData(@NotNull BlockPos pos, @NotNull Level level, @NotNull BlockSetAction action, @Nullable Entity source, @Nullable String sourceDesc){
         return new BlockSetData(new BlockSetPosData(pos, getDimensionNameFromLevel(level)),
-                Timestamp.valueOf(LocalDateTime.now()),
+                getCurrentTime(null),
                 new BlockSetBlockData(getBlockIDFromBlockPos(level, pos), getBlockNameFromBlockPos(level, pos)),
                 source != null ? action : BlockSetAction.SET,
                 new BlockSetSourceData(source != null ? source.getName().getString() : "", sourceDesc != null ? sourceDesc : ""));
     }
 
-    //To be used when we want to capture a blockstate which won't be in the level at the time the event is called.
+    //To be used when we want to capture a block state which won't be in the level at the time the event is called.
     public static BlockSetData makeBlockSetDataFromBlockState(@NotNull BlockState state, @NotNull BlockPos pos, @NotNull Level level, @NotNull BlockSetAction action, @Nullable Entity source, @Nullable String sourceDesc){
         return new BlockSetData(new BlockSetPosData(pos, getDimensionNameFromLevel(level)),
-                Timestamp.valueOf(LocalDateTime.now()),
+                getCurrentTime(null),
                 new BlockSetBlockData(getBlockIDFromBlockState(state), getBlockNameFromBlockState(state)),
                 source != null ? action : BlockSetAction.SET,
                 new BlockSetSourceData(source != null ? source.getName().getString() : "", sourceDesc != null ? sourceDesc : ""));
@@ -57,8 +59,17 @@ public class BlockUtils {
     //To be used when the cause is a non-player vanilla interaction.
     public static BlockSetData makeBlockSetDataFromNonPlayerCause(@NotNull BlockPos pos, @NotNull Level level, @NotNull BlockSetCause cause, @Nullable String details){
         return new BlockSetData(new BlockSetPosData(pos, getDimensionNameFromLevel(level)),
-                Timestamp.valueOf(LocalDateTime.now()),
+                getCurrentTime(null),
                 new BlockSetBlockData(getBlockIDFromBlockPos(level, pos), getBlockNameFromBlockPos(level, pos)),
+                BlockSetAction.SET,
+                new BlockSetSourceData(cause.getDatabaseTag(), details != null ? details : ""));
+    }
+
+    //To be used when the cause is a non-player vanilla interaction, and we want to capture a block state.
+    public static BlockSetData makeBlockSetDataFromNonPlayerCauseBlockState(@NotNull BlockState state, @NotNull BlockPos pos, @NotNull Level level, @NotNull BlockSetCause cause, @Nullable String details){
+        return new BlockSetData(new BlockSetPosData(pos, getDimensionNameFromLevel(level)),
+                getCurrentTime(cause),
+                new BlockSetBlockData(getBlockIDFromBlockState(state), getBlockNameFromBlockState(state)),
                 BlockSetAction.SET,
                 new BlockSetSourceData(cause.getDatabaseTag(), details != null ? details : ""));
     }
@@ -66,10 +77,18 @@ public class BlockUtils {
     //To be used for modded interactions
     public static BlockSetData makeBlockSetDataFromModdedInteraction(@NotNull BlockPos pos, @NotNull Level level, @NotNull String modID, @NotNull String modFunction){
         return new BlockSetData(new BlockSetPosData(pos, getDimensionNameFromLevel(level)),
-                Timestamp.valueOf(LocalDateTime.now()),
+                getCurrentTime(null),
                 new BlockSetBlockData(getBlockIDFromBlockPos(level, pos), getBlockNameFromBlockPos(level, pos)),
                 BlockSetAction.SET,
                 new BlockSetSourceData(modID, modFunction));
+    }
+
+    private static Timestamp getCurrentTime(@Nullable BlockSetCause cause){
+        if(cause instanceof UnsupportedCause){
+            //This is limited to seconds otherwise some actions will be logged multiple times due to some implementations of checking for support.
+            return Timestamp.valueOf(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+        }
+        return Timestamp.valueOf(LocalDateTime.now());
     }
 }
 

@@ -18,7 +18,7 @@ public abstract class ScaffoldingBlockMixin {
 
     @Inject(method = "tick", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/server/level/ServerLevel;destroyBlock(Lnet/minecraft/core/BlockPos;Z)Z", shift = At.Shift.AFTER))
-    public void youshallnotgrief$logScaffoldGravityBreak(BlockState state, ServerLevel level, BlockPos pos, RandomSource random, CallbackInfo ci) {
+    public void youshallnotgrief$logScaffoldGravityFall(BlockState state, ServerLevel level, BlockPos pos, RandomSource random, CallbackInfo ci) {
         DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetDataFromNonPlayerCause(pos, level, BlockSetCauses.GRAVITY, ""));
     }
 

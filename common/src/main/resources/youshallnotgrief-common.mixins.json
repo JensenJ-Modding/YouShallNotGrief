@@ -15,12 +15,16 @@
     "ShovelItemMixin",
     "SnowGolemEntityMixin",
     "blocks.BambooBlockMixin",
+    "blocks.BambooSaplingBlockMixin",
+    "blocks.BlockBehaviourMixin",
+    "blocks.CactusBlockMixin",
+    "blocks.FallingBlockMixin",
     "blocks.FireBlockMixin",
     "blocks.IceBlockMixin",
     "blocks.LeavesBlockMixin",
-    "blocks.PointedDripstoneBlockMixin",
     "blocks.RootedDirtBlockMixin",
-    "blocks.ScaffoldingBlockMixin"
+    "blocks.ScaffoldingBlockMixin",
+    "blocks.SugarcaneBlockMixin"
   ],
   "injectors": {
     "defaultRequire": 1
