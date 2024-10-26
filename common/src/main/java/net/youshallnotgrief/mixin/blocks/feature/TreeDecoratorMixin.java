@@ -27,7 +27,7 @@ public class TreeDecoratorMixin {
     private void youshallnotgrief$logTreeDecorationPlacement(BlockPos blockPos, BlockState blockState, CallbackInfo ci){
         if(!FeatureMixinHolder.wasWorldgen){
             if(level instanceof Level) {
-                DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetDataFromNonPlayerCauseBlockState(blockState, blockPos, (Level) level, BlockSetCauses.GROW, ""));
+                DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetDataFromNonPlayerCauseBlockState(blockState, blockPos.immutable(), (Level) level, BlockSetCauses.GROW, ""));
             }
         }
     }

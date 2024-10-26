@@ -27,8 +27,8 @@ public class TrunkPlacerMixin {
     private void youshallnotgrief$logTreeTrunkPlacement(LevelSimulatedReader levelSimulatedReader, BiConsumer<BlockPos, BlockState> biConsumer, RandomSource randomSource, BlockPos blockPos, TreeConfiguration treeConfiguration, Function<BlockState, BlockState> function, CallbackInfoReturnable<Boolean> cir){
         if(!FeatureMixinHolder.wasWorldgen){
             if(levelSimulatedReader instanceof Level level) {
-                BlockState state = function.apply(treeConfiguration.trunkProvider.getState(randomSource, blockPos));
-                DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetDataFromNonPlayerCauseBlockState(state, blockPos, level, BlockSetCauses.GROW, ""));
+                BlockState state = function.apply(treeConfiguration.trunkProvider.getState(randomSource, blockPos.immutable()));
+                DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetDataFromNonPlayerCauseBlockState(state, blockPos.immutable(), level, BlockSetCauses.GROW, ""));
             }
         }
     }

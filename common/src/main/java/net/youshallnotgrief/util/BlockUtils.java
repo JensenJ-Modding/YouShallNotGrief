@@ -7,6 +7,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.youshallnotgrief.data.block.*;
 import net.youshallnotgrief.data.block.cause.BlockSetCause;
+import net.youshallnotgrief.data.block.cause.GrowCause;
 import net.youshallnotgrief.data.block.cause.UnsupportedCause;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -84,7 +85,7 @@ public class BlockUtils {
     }
 
     private static Timestamp getCurrentTime(@Nullable BlockSetCause cause){
-        if(cause instanceof UnsupportedCause){
+        if(cause instanceof UnsupportedCause || cause instanceof GrowCause){
             //This is limited to seconds otherwise some actions will be logged multiple times due to some implementations of checking for support.
             return Timestamp.valueOf(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         }
