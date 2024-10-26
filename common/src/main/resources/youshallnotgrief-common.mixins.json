@@ -14,8 +14,8 @@
     "RavagerEntityMixin",
     "ShovelItemMixin",
     "SnowGolemEntityMixin",
-    "blocks.BambooBlockMixin",
     "blocks.BambooSaplingBlockMixin",
+    "blocks.BambooStalkBlockMixin",
     "blocks.BlockBehaviourMixin",
     "blocks.CactusBlockMixin",
     "blocks.FallingBlockMixin",
@@ -24,7 +24,15 @@
     "blocks.LeavesBlockMixin",
     "blocks.RootedDirtBlockMixin",
     "blocks.ScaffoldingBlockMixin",
-    "blocks.SugarcaneBlockMixin"
+    "blocks.StemBlockMixin",
+    "blocks.SugarcaneBlockMixin",
+    "blocks.VineBlockMixin",
+    "blocks.feature.AbstractTreeGrowerMixin",
+    "blocks.feature.FoliagePlacerMixin",
+    "blocks.feature.RootPlacerMixin",
+    "blocks.feature.TreeDecoratorMixin",
+    "blocks.feature.TreeFeatureMixin",
+    "blocks.feature.TrunkPlacerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BambooStalkBlock.class)
-public abstract class BambooBlockMixin {
+public abstract class BambooStalkBlockMixin {
     @Inject(method = "growBamboo", at = @At(value = "TAIL"))
     public void youshallnotgrief$logBambooGrow(BlockState blockState, Level level, BlockPos blockPos, RandomSource randomSource, int i, CallbackInfo ci) {
         DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetDataFromNonPlayerCause(blockPos.above(), level, BlockSetCauses.GROW, ""));

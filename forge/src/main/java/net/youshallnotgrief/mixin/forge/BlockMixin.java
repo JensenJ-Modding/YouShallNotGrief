@@ -22,6 +22,8 @@ public abstract class BlockMixin {
     HashSet<String> youshallnotsteal$blacklistedModules = new HashSet<>() {{
         add("minecraft");
         add("forge");
+        add("google");
+        add("unimi");
     }};
 
     @Inject(at = @At("TAIL"), method="setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z")

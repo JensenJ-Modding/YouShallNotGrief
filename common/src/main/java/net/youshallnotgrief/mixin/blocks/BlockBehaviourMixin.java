@@ -30,7 +30,9 @@ public class BlockBehaviourMixin {
 
         if(!levelReader.isClientSide()){
             if (!originalResult) {
-                DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetDataFromNonPlayerCauseBlockState(blockState, blockPos, (Level) levelReader, BlockSetCauses.UNSUPPORTED, ""));
+                if(levelReader instanceof Level level){
+                    DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetDataFromNonPlayerCauseBlockState(blockState, blockPos.immutable(), level, BlockSetCauses.UNSUPPORTED, ""));
+                }
             }
         }
 
