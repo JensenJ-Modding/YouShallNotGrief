@@ -18,6 +18,7 @@ public class BlockSetCauses {
     public static BlockSetCause RAVAGER = registerCause(new RavagerCause());
     public static BlockSetCause SNOW_GOLEM = registerCause(new SnowGolemCause());
     public static BlockSetCause UNSUPPORTED = registerCause(new UnsupportedCause());
+    public static BlockSetCause GOLEM_CREATION_CAUSE = registerCause(new GolemCreationCause());
 
     private static BlockSetCause registerCause(BlockSetCause cause){
         if(CAUSES.containsKey(cause.getDatabaseTag())){

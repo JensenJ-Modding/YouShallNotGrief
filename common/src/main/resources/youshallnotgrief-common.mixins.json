@@ -17,6 +17,7 @@
     "blocks.BambooStalkBlockMixin",
     "blocks.BlockBehaviourMixin",
     "blocks.CactusBlockMixin",
+    "blocks.CarvedPumpkinBlockMixin",
     "blocks.FallingBlockMixin",
     "blocks.FireBlockMixin",
     "blocks.IceBlockMixin",
