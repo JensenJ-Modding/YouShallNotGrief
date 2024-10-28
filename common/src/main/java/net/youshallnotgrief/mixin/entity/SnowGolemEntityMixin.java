@@ -1,4 +1,4 @@
-package net.youshallnotgrief.mixin;
+package net.youshallnotgrief.mixin.entity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.animal.SnowGolem;

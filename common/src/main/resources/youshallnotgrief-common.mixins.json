@@ -7,15 +7,12 @@
   "server": [],
   "mixins": [
     "AxeItemMixin",
-    "EatBlockGoalMixin",
     "ExplosionMixin",
     "FlintAndSteelItemMixin",
     "FrostWalkerEnchantmentMixin",
     "HoneycombItemMixin",
     "NetherPortalMixin",
-    "RavagerEntityMixin",
     "ShovelItemMixin",
-    "SnowGolemEntityMixin",
     "blocks.BambooSaplingBlockMixin",
     "blocks.BambooStalkBlockMixin",
     "blocks.BlockBehaviourMixin",
@@ -34,7 +31,12 @@
     "blocks.feature.RootPlacerMixin",
     "blocks.feature.TreeDecoratorMixin",
     "blocks.feature.TreeFeatureMixin",
-    "blocks.feature.TrunkPlacerMixin"
+    "blocks.feature.TrunkPlacerMixin",
+    "entity.EatBlockGoalMixin",
+    "entity.EndermanLeaveBlockGoalMixin",
+    "entity.EndermanTakeBlockGoalMixin",
+    "entity.RavagerEntityMixin",
+    "entity.SnowGolemEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1
