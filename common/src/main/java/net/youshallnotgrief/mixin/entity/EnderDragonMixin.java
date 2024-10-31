@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(EnderDragon.class)
 public class EnderDragonMixin {
-
+    @SuppressWarnings("all")
     @Inject(method="checkWalls", at = @At(value="INVOKE", target="Lnet/minecraft/world/level/Level;removeBlock(Lnet/minecraft/core/BlockPos;Z)Z"), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
     private void youshallnotgrief$logEnderDragonBreakBlock(AABB aABB, CallbackInfoReturnable<Boolean> cir, @Local(ordinal=0) BlockPos blockPos){
         EnderDragon dragon = (EnderDragon) (Object) this;

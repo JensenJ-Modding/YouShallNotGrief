@@ -14,5 +14,7 @@ public enum BlockSetAction {
     FROZE,
     WAXED,
     EXPLODED,
-    ATE
+    ATE,
+    OPENED,
+    CLOSED
 }
