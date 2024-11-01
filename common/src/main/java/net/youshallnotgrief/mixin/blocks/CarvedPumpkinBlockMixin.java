@@ -21,7 +21,7 @@ public class CarvedPumpkinBlockMixin {
     @Inject(method="clearPatternBlocks", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
     private static void youshallnotgrief$logGolemCreation(Level level, BlockPattern.BlockPatternMatch blockPatternMatch, CallbackInfo ci, @Local BlockInWorld blockinWorld) {
         if(!level.isClientSide()) {
-            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetDataFromNonPlayerCause(blockinWorld.getPos().immutable(), level, BlockSetCauses.GOLEM_CREATION_CAUSE, ""));
+            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetDataFromNonPlayerCause(blockinWorld.getPos().immutable(), level, BlockSetCauses.GOLEM_CREATION, ""));
         }
     }
 }
