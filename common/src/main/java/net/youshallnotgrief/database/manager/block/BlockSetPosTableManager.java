@@ -1,12 +1,9 @@
 package net.youshallnotgrief.database.manager.block;
 
-import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.data.block.BlockSetData;
-import net.youshallnotgrief.database.DatabaseManager;
+import net.youshallnotgrief.util.DatabaseUtils;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 
@@ -47,28 +44,7 @@ public class BlockSetPosTableManager implements TableManager<BlockSetData> {
     }
 
     public static int getDimensionID(String dimension) {
-        Connection database = DatabaseManager.getDatabaseConnection();
-        if(database == null){
-            YouShallNotGriefMod.LOGGER.error("Failed to get dimensionID for dimension {} when inserting block position. Database connection failed.", dimension);
-            return -1;
-        }
-
-        return DIMENSION_CACHE.computeIfAbsent(dimension, (String dim)-> {
-            String dimensionQuery = "SELECT dimID, dimension FROM blockSet_Dimensions WHERE dimension = ?";
-            try {
-                PreparedStatement queryStatement = database.prepareStatement(dimensionQuery);
-                queryStatement.setString(1, dim);
-                try (ResultSet resultSet = queryStatement.executeQuery()) {
-                    if (resultSet.next()) {
-                        return resultSet.getInt("dimID");
-                    }
-                }
-            } catch (SQLException e) {
-                YouShallNotGriefMod.LOGGER.error("Failed to get dimensionID for dimension {} when inserting block position. ", dim);
-                YouShallNotGriefMod.LOGGER.error(e.toString());
-            }
-
-            return -1;
-        });
+        String dimensionQuery = "SELECT dimID, dimension FROM blockSet_Dimensions WHERE dimension = ?";
+        return DatabaseUtils.getForeignID(dimension, dimensionQuery, (statement, dimID) -> statement.setString(1, dimID), DIMENSION_CACHE);
     }
 }

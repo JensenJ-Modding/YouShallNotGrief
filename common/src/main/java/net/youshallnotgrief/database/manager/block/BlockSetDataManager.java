@@ -3,10 +3,9 @@ package net.youshallnotgrief.database.manager.block;
 import net.minecraft.core.BlockPos;
 import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.data.block.*;
-import net.youshallnotgrief.database.DatabaseManager;
 import net.youshallnotgrief.database.manager.AbstractDataManager;
+import net.youshallnotgrief.util.DatabaseUtils;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -159,120 +158,38 @@ public class BlockSetDataManager extends AbstractDataManager<BlockSetData, Block
     }
 
     private int getPositionID(BlockSetPosData data) {
-        Connection database = DatabaseManager.getDatabaseConnection();
-        if(database == null){
-            YouShallNotGriefMod.LOGGER.error("Failed to get posID for position {} in {} when inserting blockset. Database connection failed.", data.pos(), data.dimension());
-            return -1;
-        }
-
         int dimID = BlockSetPosTableManager.getDimensionID(data.dimension());
         if(dimID == -1){
             return -1;
         }
 
-        return POSITION_CACHE.computeIfAbsent(data.pos(), (BlockPos position)-> {
-            String query = "SELECT posID, x, y, z, dimID FROM blockSet_Positions WHERE x = ? AND y = ? AND z = ? AND dimID = ?";
-            try {
-                PreparedStatement queryStatement = database.prepareStatement(query);
-                queryStatement.setInt(1, position.getX());
-                queryStatement.setInt(2, position.getY());
-                queryStatement.setInt(3, position.getZ());
-                queryStatement.setInt(4, dimID);
-                try (ResultSet resultSet = queryStatement.executeQuery()) {
-                    if (resultSet.next()) {
-                        return resultSet.getInt("posID");
-                    }
-                }
-            } catch (SQLException e) {
-                YouShallNotGriefMod.LOGGER.error("Failed to get posID for position {} in {} when inserting blockset. ", data.pos(), data.dimension());
-                YouShallNotGriefMod.LOGGER.error(e.toString());
-                YouShallNotGriefMod.LOGGER.error(query);
-            }
-
-            return -1;
-        });
+        String posQuery = "SELECT posID, x, y, z, dimID FROM blockSet_Positions WHERE x = ? AND y = ? AND z = ? AND dimID = ?";
+        return DatabaseUtils.getForeignID(data.pos(), posQuery, (statement, pos) -> {
+            statement.setInt(1, pos.getX());
+            statement.setInt(2, pos.getY());
+            statement.setInt(3, pos.getZ());
+            statement.setInt(4, dimID);
+        }, POSITION_CACHE);
     }
 
     private int getBlockID(BlockSetBlockData data) {
-        Connection database = DatabaseManager.getDatabaseConnection();
-        if(database == null){
-            YouShallNotGriefMod.LOGGER.error("Failed to get blockID for blockInternalName {} when inserting blockset. Database connection failed.", data.blockInternalName());
-            return -1;
-        }
-
-        return BLOCK_CACHE.computeIfAbsent(data.blockInternalName(), (String blockInternalName)-> {
-            String query = "SELECT blockID, blockInternalName, blockName FROM blockSet_Blocks WHERE blockInternalName = ? AND blockName = ?;";
-            try {
-                PreparedStatement queryStatement = database.prepareStatement(query);
-                queryStatement.setString(1, data.blockInternalName());
-                queryStatement.setString(2, data.blockName());
-                try (ResultSet resultSet = queryStatement.executeQuery()) {
-                    if (resultSet.next()) {
-                        return resultSet.getInt("blockID");
-                    }
-                }
-            } catch (SQLException e) {
-                YouShallNotGriefMod.LOGGER.error("Failed to get blockID for blockInternalName {} when inserting blockset. ", blockInternalName);
-                YouShallNotGriefMod.LOGGER.error(e.toString());
-                YouShallNotGriefMod.LOGGER.error(query);
-            }
-
-            return -1;
-        });
+        String blockQuery = "SELECT blockID, blockInternalName, blockName FROM blockSet_Blocks WHERE blockInternalName = ? AND blockName = ?;";
+        return DatabaseUtils.getForeignID(data.blockInternalName(), blockQuery, (statement, block) -> {
+            statement.setString(1, data.blockInternalName());
+            statement.setString(2, data.blockName());
+        }, BLOCK_CACHE);
     }
 
     private int getActionID(BlockSetAction action) {
-        Connection database = DatabaseManager.getDatabaseConnection();
-        if(database == null){
-            YouShallNotGriefMod.LOGGER.error("Failed to get actionID for action {} when inserting blockset. Database connection failed.", action);
-            return -1;
-        }
-
-        return ACTION_CACHE.computeIfAbsent(String.valueOf(action), (String actionName)-> {
-            String query = "SELECT actionID, action FROM blockSet_Actions WHERE action = ?;";
-            try {
-                PreparedStatement queryStatement = database.prepareStatement(query);
-                queryStatement.setString(1, actionName);
-                try (ResultSet resultSet = queryStatement.executeQuery()) {
-                    if (resultSet.next()) {
-                        return resultSet.getInt("actionID");
-                    }
-                }
-            } catch (SQLException e) {
-                YouShallNotGriefMod.LOGGER.error("Failed to get actionID for action {} when inserting blockset. ", actionName);
-                YouShallNotGriefMod.LOGGER.error(e.toString());
-                YouShallNotGriefMod.LOGGER.error(query);
-            }
-
-            return -1;
-        });
+        String actionQuery = "SELECT actionID, action FROM blockSet_Actions WHERE action = ?;";
+        return DatabaseUtils.getForeignID(String.valueOf(action), actionQuery, (statement, actionKey) -> statement.setString(1, actionKey), ACTION_CACHE);
     }
 
     private int getSourceID(BlockSetSourceData data) {
-        Connection database = DatabaseManager.getDatabaseConnection();
-        if(database == null){
-            YouShallNotGriefMod.LOGGER.error("Failed to get sourceID for source {} when inserting blockset. Database connection failed.", data.source());
-            return -1;
-        }
-
-        return SOURCE_CACHE.computeIfAbsent(data.source(), (String sourceData)-> {
-            String query = "SELECT sourceID, source, sourceDesc FROM blockSet_Sources WHERE source = ? AND sourceDesc = ?;";
-            try {
-                PreparedStatement queryStatement = database.prepareStatement(query);
-                queryStatement.setString(1, data.source());
-                queryStatement.setString(2, data.sourceDesc());
-                try (ResultSet resultSet = queryStatement.executeQuery()) {
-                    if (resultSet.next()) {
-                        return resultSet.getInt("sourceID");
-                    }
-                }
-            } catch (SQLException e) {
-                YouShallNotGriefMod.LOGGER.error("Failed to get sourceID for source {} when inserting blockset. ", data.source());
-                YouShallNotGriefMod.LOGGER.error(e.toString());
-                YouShallNotGriefMod.LOGGER.error(query);
-            }
-
-            return -1;
-        });
+        String sourceQuery = "SELECT sourceID, source, sourceDesc FROM blockSet_Sources WHERE source = ? AND sourceDesc = ?;";
+        return DatabaseUtils.getForeignID(data.source(), sourceQuery, (statement, sourceKey) -> {
+            statement.setString(1, data.source());
+            statement.setString(2, data.sourceDesc());
+        }, SOURCE_CACHE);
     }
 }
