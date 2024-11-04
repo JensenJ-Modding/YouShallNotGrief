@@ -37,7 +37,7 @@ public abstract class RootPlacerMixin {
         if(!FeatureMixinHolder.wasWorldgen){
             if(levelSimulatedReader instanceof Level level) {
                 BlockState state = getPotentiallyWaterloggedState(levelSimulatedReader, blockPos, this.rootProvider.getState(randomSource, blockPos));
-                DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetDataFromNonPlayerCauseBlockState(state, blockPos, level, BlockSetCauses.GROW, ""));
+                DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos.immutable(), level, null, state, BlockSetCauses.GROW, null, ""));
             }
         }
     }
@@ -49,7 +49,7 @@ public abstract class RootPlacerMixin {
         if(!FeatureMixinHolder.wasWorldgen){
             if(levelSimulatedReader instanceof Level level) {
                 BlockState state = getPotentiallyWaterloggedState(levelSimulatedReader, blockPos2, aboveRootPlacement.aboveRootProvider().getState(randomSource, blockPos2));
-                DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetDataFromNonPlayerCauseBlockState(state, blockPos2, level, BlockSetCauses.GROW, ""));
+                DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos2.immutable(), level, null, state, BlockSetCauses.GROW, null, ""));
             }
         }
     }

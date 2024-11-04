@@ -24,7 +24,7 @@ public class FoliagePlacerMixin {
     private static void youshallnotgrief$logFoliagePlacement(LevelSimulatedReader levelSimulatedReader, FoliagePlacer.FoliageSetter foliageSetter, RandomSource randomSource, TreeConfiguration treeConfiguration, BlockPos blockPos, CallbackInfoReturnable<Boolean> cir, BlockState blockState){
         if(!FeatureMixinHolder.wasWorldgen){
             if(levelSimulatedReader instanceof Level level) {
-                DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetDataFromNonPlayerCauseBlockState(blockState, blockPos.immutable(), level, BlockSetCauses.GROW, ""));
+                DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos.immutable(), level, null, blockState, BlockSetCauses.GROW, null, ""));
             }
         }
     }

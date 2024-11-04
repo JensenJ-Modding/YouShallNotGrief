@@ -21,7 +21,7 @@ public class BlockSetSourceTableManager  implements TableManager<BlockSetData>{
 
     @Override
     public void setInsertPreparedStatementValues(PreparedStatement preparedStatement, BlockSetData data) throws SQLException {
-        preparedStatement.setString(1, data.blockSetSourceData().source());
-        preparedStatement.setString(2, data.blockSetSourceData().sourceDesc());
+        preparedStatement.setString(1, data.source());
+        preparedStatement.setString(2, data.sourceDesc());
     }
 }

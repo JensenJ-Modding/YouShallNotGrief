@@ -4,7 +4,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.BreakDoorGoal;
 import net.minecraft.world.level.Level;
-import net.youshallnotgrief.data.block.BlockSetAction;
+import net.minecraft.world.level.block.Blocks;
+import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.database.DatabaseManager;
 import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,8 +23,8 @@ public class BreakDoorGoalMixin {
         Level level = mob.level();
 
         if(!level.isClientSide()){
-            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(doorPos, level, BlockSetAction.REMOVED, mob, ""));
-            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(doorPos.below(), level, BlockSetAction.REMOVED, mob, ""));
+            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(doorPos, level, null, Blocks.AIR.defaultBlockState(), BlockSetCauses.REMOVED, mob, ""));
+            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(doorPos.below(), level, null, Blocks.AIR.defaultBlockState(), BlockSetCauses.REMOVED, mob, ""));
         }
     }
 }

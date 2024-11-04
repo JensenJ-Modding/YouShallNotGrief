@@ -14,5 +14,5 @@ public interface BlockSetCause {
                         .withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_AQUA))
                 );
     }
-    MutableComponent getInspectMessage(MutableComponent blockComponent);
+    MutableComponent getInspectMessage(MutableComponent oldBlockComponent, MutableComponent newBlockComponent, MutableComponent sourceComponent);
 }

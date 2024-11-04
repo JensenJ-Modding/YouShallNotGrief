@@ -27,10 +27,12 @@ public abstract class NetherPortalMixin {
     @Shadow
     private ServerLevel level;
 
-    @SuppressWarnings("all")
-    @Inject(method = "createPortal", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/core/BlockPos$MutableBlockPos;setWithOffset(Lnet/minecraft/core/Vec3i;III)Lnet/minecraft/core/BlockPos$MutableBlockPos;", shift = At.Shift.AFTER, by = 1), locals = CAPTURE_FAILEXCEPTION)
-    public void youshallnotgrief$logPortalPlacement(BlockPos pos, Direction.Axis axis, CallbackInfoReturnable<Optional<BlockUtil.FoundRectangle>> cir, Direction direction, double d, BlockPos blockPos2, double e, BlockPos blockPos3, WorldBorder worldBorder, int i, BlockPos.MutableBlockPos mutableBlockPos) {
-        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetDataFromNonPlayerCause(mutableBlockPos, level, BlockSetCauses.PORTAL, ""));
-    }
+
+    //TODO: Change to WrapOperation on setBlock so we can get the details easily
+    //@SuppressWarnings("all")
+    //@Inject(method = "createPortal", at = @At(value = "INVOKE",
+    //        target = "Lnet/minecraft/server/level/ServerLevel;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"), locals = CAPTURE_FAILEXCEPTION)
+    //public void youshallnotgrief$logPortalPlacement(BlockPos pos, Direction.Axis axis, CallbackInfoReturnable<Optional<BlockUtil.FoundRectangle>> cir, Direction direction, double d, BlockPos blockPos2, double e, BlockPos blockPos3, WorldBorder worldBorder, int i, BlockPos.MutableBlockPos mutableBlockPos) {
+    //    DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(mutableBlockPos.immutable(), level, BlockSetCauses.PORTAL, ""));
+    //}
 }

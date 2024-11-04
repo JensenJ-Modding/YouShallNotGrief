@@ -3,6 +3,7 @@ package net.youshallnotgrief.mixin.blocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ScaffoldingBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
@@ -17,9 +18,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ScaffoldingBlockMixin {
 
     @Inject(method = "tick", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/server/level/ServerLevel;destroyBlock(Lnet/minecraft/core/BlockPos;Z)Z", shift = At.Shift.AFTER))
+            target = "Lnet/minecraft/server/level/ServerLevel;destroyBlock(Lnet/minecraft/core/BlockPos;Z)Z"))
     public void youshallnotgrief$logScaffoldGravityFall(BlockState state, ServerLevel level, BlockPos pos, RandomSource random, CallbackInfo ci) {
-        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetDataFromNonPlayerCause(pos, level, BlockSetCauses.GRAVITY, ""));
+        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(pos, level, state, Blocks.AIR.defaultBlockState(), BlockSetCauses.GRAVITY, null, ""));
     }
 
 }

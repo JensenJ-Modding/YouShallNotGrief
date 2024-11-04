@@ -10,8 +10,8 @@ public class PortalCause implements BlockSetCause {
     }
 
     @Override
-    public MutableComponent getInspectMessage(MutableComponent blockComponent) {
+    public MutableComponent getInspectMessage(MutableComponent oldBlockComponent, MutableComponent newBlockComponent, MutableComponent sourceComponent) {
         MutableComponent comp = Component.empty();
-        return comp.append(getDatabaseTagComponent()).append(" materialised ").append(blockComponent);
+        return comp.append(getDatabaseTagComponent()).append(" materialised ").append(newBlockComponent);
     }
 }

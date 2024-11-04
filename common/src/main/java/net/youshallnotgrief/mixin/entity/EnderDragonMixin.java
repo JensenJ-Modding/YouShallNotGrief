@@ -4,8 +4,9 @@ import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
-import net.youshallnotgrief.data.block.BlockSetAction;
+import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.database.DatabaseManager;
 import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,8 +23,7 @@ public class EnderDragonMixin {
         EnderDragon dragon = (EnderDragon) (Object) this;
         Level level = dragon.level();
         if(!level.isClientSide()){
-            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos.immutable(), level, BlockSetAction.REMOVED, dragon, ""));
+            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos, level, null, Blocks.AIR.defaultBlockState(), BlockSetCauses.REMOVED, dragon, ""));
         }
     }
-
 }

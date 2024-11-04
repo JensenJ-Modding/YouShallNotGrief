@@ -27,11 +27,11 @@ public class BlockSetPosTableManager implements TableManager<BlockSetData> {
 
     @Override
     public void setInsertPreparedStatementValues(PreparedStatement preparedStatement, BlockSetData data) throws SQLException {
-        preparedStatement.setInt(1, data.blockSetPosData().pos().getX());
-        preparedStatement.setInt(2, data.blockSetPosData().pos().getY());
-        preparedStatement.setInt(3, data.blockSetPosData().pos().getZ());
+        preparedStatement.setInt(1, data.pos().getX());
+        preparedStatement.setInt(2, data.pos().getY());
+        preparedStatement.setInt(3, data.pos().getZ());
 
-        int dimID = getDimensionID(data.blockSetPosData().dimension());
+        int dimID = getDimensionID(data.dimension());
         if(dimID == -1){
             return;
         }
@@ -45,6 +45,6 @@ public class BlockSetPosTableManager implements TableManager<BlockSetData> {
 
     public static int getDimensionID(String dimension) {
         String dimensionQuery = "SELECT dimID, dimension FROM blockSet_Dimensions WHERE dimension = ?";
-        return DatabaseUtils.getForeignID(dimension, dimensionQuery, (statement, dimID) -> statement.setString(1, dimID), DIMENSION_CACHE);
+        return DatabaseUtils.getForeignID(dimension, dimensionQuery, (statement) -> statement.setString(1, dimension), DIMENSION_CACHE);
     }
 }

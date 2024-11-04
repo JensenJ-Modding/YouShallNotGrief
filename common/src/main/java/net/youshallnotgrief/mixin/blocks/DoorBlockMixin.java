@@ -6,7 +6,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
-import net.youshallnotgrief.data.block.BlockSetAction;
+import net.youshallnotgrief.data.block.cause.BlockSetCause;
+import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.database.DatabaseManager;
 import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,10 +23,10 @@ public class DoorBlockMixin {
     private void youshallnotgrief$logDoorOpen(Entity entity, Level level, BlockState blockState, BlockPos blockPos, boolean bl, CallbackInfo ci){
         if(!level.isClientSide()){
             BlockPos blockPos2 = blockState.getValue(HALF) == DoubleBlockHalf.LOWER ? blockPos.above() : blockPos.below();
-            BlockSetAction action = bl ? BlockSetAction.OPENED : BlockSetAction.CLOSED;
+            BlockSetCause cause = bl ? BlockSetCauses.OPENED : BlockSetCauses.CLOSED;
 
-            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos, level, action, entity, ""));
-            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos2, level, action, entity, ""));
+            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos, level, null, null, cause, entity, ""));
+            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos2, level, null, null, cause, entity, ""));
         }
     }
 }

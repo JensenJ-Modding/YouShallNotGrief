@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.Map;
 
 public class DatabaseUtils {
-    public static <T> int getForeignID(T key, String query, ThrowableBiConsumer<PreparedStatement, T> parameterSetter, Map<T, Integer> map) {
+    public static <T> int getForeignID(T key, String query, ThrowableConsumer<PreparedStatement> parameterSetter, Map<T, Integer> map) {
         Connection database = DatabaseManager.getDatabaseConnection();
         if (database == null) {
             YouShallNotGriefMod.LOGGER.error("Failed to get ID for {} when inserting. Database connection failed.", key);
@@ -20,7 +20,7 @@ public class DatabaseUtils {
 
         return map.computeIfAbsent(key, (T k) -> {
             try (PreparedStatement queryStatement = database.prepareStatement(query)) {
-                parameterSetter.accept(queryStatement, key);
+                parameterSetter.accept(queryStatement);
                 try (ResultSet resultSet = queryStatement.executeQuery()) {
                     if (resultSet.next()) {
                         return resultSet.getInt(1);

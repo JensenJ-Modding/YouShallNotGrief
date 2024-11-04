@@ -21,8 +21,8 @@ public class LandCause implements BlockSetCause {
     }
 
     @Override
-    public MutableComponent getInspectMessage(MutableComponent blockComponent) {
+    public MutableComponent getInspectMessage(MutableComponent oldBlockComponent, MutableComponent newBlockComponent, MutableComponent sourceComponent) {
         MutableComponent comp = Component.empty();
-        return comp.append(getDatabaseTagComponent()).append(" caused ").append(blockComponent).append(" to land");
+        return comp.append(getDatabaseTagComponent()).append(" caused ").append(newBlockComponent).append(" to land");
     }
 }

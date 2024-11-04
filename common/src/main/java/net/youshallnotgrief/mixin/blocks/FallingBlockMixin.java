@@ -18,6 +18,6 @@ public class FallingBlockMixin {
 
     @Inject(method = "tick", at = @At(value = "INVOKE", target="Lnet/minecraft/world/entity/item/FallingBlockEntity;fall(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Lnet/minecraft/world/entity/item/FallingBlockEntity;", shift = At.Shift.AFTER))
     public void youshallnotgrief$logFallingBlock(BlockState state, ServerLevel level, BlockPos pos, RandomSource arg4, CallbackInfo ci) {
-        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetDataFromNonPlayerCauseBlockState(state, pos, level, BlockSetCauses.GRAVITY, ""));
+        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(pos, level, null, state, BlockSetCauses.GRAVITY, null, ""));
     }
 }

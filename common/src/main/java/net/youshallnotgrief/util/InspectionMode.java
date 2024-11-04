@@ -118,7 +118,10 @@ public class InspectionMode {
 
             player.sendSystemMessage(getHeader(player.level(), pos, dimensionName));
             for (BlockSetData datum : data) {
-                player.sendSystemMessage(getData(datum));
+                Component dataToSend = getData(datum);
+                if(dataToSend != null){
+                    player.sendSystemMessage(dataToSend);
+                }
             }
 
             player.sendSystemMessage(getFooter(pageNumber, maxPageCount));
@@ -134,10 +137,10 @@ public class InspectionMode {
     }
 
     private static Component getHeader(Level level, BlockPos pos, String dimensionName){
-        MutableComponent blockComp = Component.literal(BlockUtils.getBlockNameFromBlockPos(level, pos))
+        MutableComponent blockComp = Component.literal(BlockUtils.getBlockIDFromBlockState(level.getBlockState(pos)))
                 .withStyle(style -> style
                         .withColor(TextColor.fromLegacyFormat(ChatFormatting.GRAY))
-                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(BlockUtils.getBlockIDFromBlockPos(level, pos))))
+                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal((BlockUtils.getBlockIDFromBlockState(level.getBlockState(pos))))))
                 );
 
         MutableComponent position = Component.literal("(" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")")
@@ -161,38 +164,41 @@ public class InspectionMode {
                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(formatTime(data.time()))))
                 );
 
-        MutableComponent blockComp = Component.literal(data.blockSetBlockData().blockName())
+        //TODO: Use localised name of blocks
+        MutableComponent oldBlockComp = Component.literal(data.oldBlock())
                 .withStyle(style -> style
                         .withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_AQUA))
-                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(data.blockSetBlockData().blockInternalName())))
+                        //.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(data.blockSetBlockData().blockInternalName())))
                 );
 
-        String source = data.blockSetSourceData().source();
-        BlockSetCause cause = BlockSetCauses.getCauseFromTag(source);
+        MutableComponent newBlockComp = Component.literal(data.newBlock())
+                .withStyle(style -> style
+                                .withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_AQUA))
+                        //.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(data.blockSetBlockData().blockInternalName())))
+                );
+
+        String source = data.source();
+        BlockSetCause cause = BlockSetCauses.getCauseFromTag(data.cause());
+        if(cause == null){
+            return null;
+        }
 
         MutableComponent sourceComp;
-        MutableComponent actionComp;
         MutableComponent comp = Component.empty().append(timeComp).append(" - ");
-        if(cause == null){
-            actionComp = Component.literal(String.valueOf(data.action()).toLowerCase());
-
-            if(data.blockSetSourceData().sourceDesc().isEmpty()){
-                sourceComp = Component.literal(data.blockSetSourceData().source())
-                        .withStyle(style -> style
-                                .withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_AQUA))
-                        );
-            }else{
-                sourceComp = Component.literal(data.blockSetSourceData().source())
-                        .withStyle(style -> style
-                                .withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_AQUA))
-                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(data.blockSetSourceData().sourceDesc())))
-                        );
-            }
-
-            return comp.append(sourceComp).append(" ").append(actionComp).append(" ").append(blockComp);
-        }else {
-            return comp.append(cause.getInspectMessage(blockComp));
+        if(data.sourceDesc().isEmpty()){
+            sourceComp = Component.literal(source)
+                    .withStyle(style -> style
+                            .withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_AQUA))
+                    );
+        }else{
+            sourceComp = Component.literal(source)
+                    .withStyle(style -> style
+                            .withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_AQUA))
+                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(data.sourceDesc())))
+                    );
         }
+        return comp.append(cause.getInspectMessage(oldBlockComp, newBlockComp, sourceComp));
+
     }
 
     private static Component getFooter(int currentPage, int maxPageCount) {

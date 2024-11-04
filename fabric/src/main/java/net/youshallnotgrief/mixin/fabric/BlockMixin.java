@@ -19,7 +19,7 @@ import java.util.HashSet;
 public abstract class BlockMixin {
 
     @Unique
-    HashSet<String> blacklistedModules = new HashSet<>() {{
+    HashSet<String> youshallnotgrief$blacklistedModules = new HashSet<>() {{
         add("minecraft");
         add("fabricmc");
         add("google");
@@ -27,7 +27,7 @@ public abstract class BlockMixin {
     }};
 
     @Unique
-    HashMap<String, String> stackPathToModID = new HashMap<>();
+    HashMap<String, String> youshallnotgrief$stackPathToModID = new HashMap<>();
 
     @Inject(at = @At("TAIL"), method="setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z")
     private void youshallnotgrief$detectModdedSetBlockInteractions(BlockPos blockPos, BlockState blockState, int i, CallbackInfoReturnable<Boolean> cir) {
@@ -54,7 +54,7 @@ public abstract class BlockMixin {
         String methodName = causeElement.getMethodName();
         String className = causeElement.getClassName();
 
-        String moduleName = "#" + youshallnotgrief$getModIDFromClassName(className);
+        String moduleName = "@" + youshallnotgrief$getModIDFromClassName(className);
         if(moduleName.contains("java")){
             return;
         }
@@ -63,12 +63,12 @@ public abstract class BlockMixin {
         className = className.substring(className.lastIndexOf(".") + 1);
         String fullName = className + ":" + methodName;
 
-        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetDataFromModdedInteraction(blockPos, level, moduleName, fullName));
+        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeModdedBlockSetData(blockPos, level, level.getBlockState(blockPos), blockState, moduleName, fullName));
     }
 
     @Unique
     private boolean youshallnotgrief$containsAny(String stackTraceModule) {
-        for (String blacklistedModule : blacklistedModules) {
+        for (String blacklistedModule : youshallnotgrief$blacklistedModules) {
             if (stackTraceModule.contains(blacklistedModule)) {
                 return true;
             }
@@ -81,19 +81,19 @@ public abstract class BlockMixin {
         String[] elementParts = className.split("\\.");
         String moduleName = elementParts[0] + "." + elementParts[1] + "." + elementParts[2];
 
-        if(stackPathToModID.containsKey(moduleName)){
-            return stackPathToModID.get(moduleName);
+        if(youshallnotgrief$stackPathToModID.containsKey(moduleName)){
+            return youshallnotgrief$stackPathToModID.get(moduleName);
         }
 
         FabricLoader.getInstance().getAllMods().forEach(modContainer -> {
             String modID = modContainer.getMetadata().getId();
             if(moduleName.contains(modID)){
-                stackPathToModID.put(moduleName, modID);
+                youshallnotgrief$stackPathToModID.put(moduleName, modID);
             }
         });
 
-        if(stackPathToModID.containsKey(moduleName)){
-            return stackPathToModID.get(moduleName);
+        if(youshallnotgrief$stackPathToModID.containsKey(moduleName)){
+            return youshallnotgrief$stackPathToModID.get(moduleName);
         }
 
         return moduleName;

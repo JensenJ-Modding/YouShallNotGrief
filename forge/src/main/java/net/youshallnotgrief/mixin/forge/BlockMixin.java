@@ -3,7 +3,6 @@ package net.youshallnotgrief.mixin.forge;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.youshallnotgrief.data.block.BlockSetAction;
 import net.youshallnotgrief.database.DatabaseManager;
 import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
@@ -52,13 +51,13 @@ public abstract class BlockMixin {
         }
 
         StackTraceElement causeElement = stackTraceElements[causeTraceIndex];
-        String moduleName = "#" + causeElement.getModuleName();
+        String moduleName = "@" + causeElement.getModuleName();
         String methodName = causeElement.getMethodName();
         String className = causeElement.getClassName();
         methodName = methodName.substring(methodName.lastIndexOf(".") + 1);
         className = className.substring(className.lastIndexOf(".") + 1);
         String causeDesc = className + ":" + methodName;
-        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetDataFromModdedInteraction(blockPos, level, moduleName, causeDesc));
+        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeModdedBlockSetData(blockPos, level, level.getBlockState(blockPos), blockState, moduleName, causeDesc));
     }
 
     @Unique

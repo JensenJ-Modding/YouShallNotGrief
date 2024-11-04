@@ -2,7 +2,6 @@ package net.youshallnotgrief.mixin.entity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.animal.SnowGolem;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.database.DatabaseManager;
@@ -20,7 +19,6 @@ public abstract class SnowGolemEntityMixin {
     @Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;setBlockAndUpdate(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Z", shift = At.Shift.AFTER, by = 1), locals = CAPTURE_FAILEXCEPTION)
     public void youshallnotgrief$logSnowGolemSnow(CallbackInfo ci, BlockState blockState, int i, int j, int k, int l, BlockPos blockPos) {
         SnowGolem golem = ((SnowGolem) (Object) this);
-        Level level = golem.level();
-        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetDataFromNonPlayerCause(blockPos, level, BlockSetCauses.SNOW_GOLEM, ""));
+        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos.immutable(), golem.level(), null, blockState, BlockSetCauses.REMOVED, golem, ""));
     }
 }

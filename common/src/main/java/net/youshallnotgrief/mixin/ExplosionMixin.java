@@ -8,8 +8,9 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseFireBlock;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.youshallnotgrief.data.block.BlockSetAction;
+import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.database.DatabaseManager;
 import net.youshallnotgrief.util.BlockUtils;
 import org.jetbrains.annotations.Nullable;
@@ -42,7 +43,7 @@ public abstract class ExplosionMixin {
             return;
         }
 
-        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetDataFromBlockState(state, pos, level, BlockSetAction.EXPLODED, source, youshallnotgrief$getSourceDescription()));
+        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(pos, level, null, Blocks.AIR.defaultBlockState(), BlockSetCauses.EXPLOSION, source, youshallnotgrief$getSourceDescription()));
     }
 
     @SuppressWarnings("all")
@@ -52,9 +53,10 @@ public abstract class ExplosionMixin {
             return;
         }
         BlockState state = BaseFireBlock.getState(this.level, pos);
-        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetDataFromBlockState(state, pos, level, BlockSetAction.PLACED, source, youshallnotgrief$getSourceDescription()));
+        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(pos, level, null, state, BlockSetCauses.PLACED, source, youshallnotgrief$getSourceDescription()));
     }
 
+    //TODO: Redo this formatting
     @Unique
     private String youshallnotgrief$getSourceDescription(){
         LivingEntity sourceEntity = getIndirectSourceEntity();

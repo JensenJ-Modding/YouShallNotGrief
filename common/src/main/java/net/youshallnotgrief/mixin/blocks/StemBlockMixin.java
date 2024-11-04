@@ -20,9 +20,9 @@ import static org.spongepowered.asm.mixin.injection.callback.LocalCapture.CAPTUR
 public class StemBlockMixin {
     @SuppressWarnings("all")
     @Inject(method = "randomTick", at = @At(value = "INVOKE", target="Lnet/minecraft/server/level/ServerLevel;setBlockAndUpdate(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Z", ordinal=0), locals = CAPTURE_FAILEXCEPTION)
-    public void youshallnotgrief$logStemBlockGrow(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, RandomSource randomSource, CallbackInfo ci, float f, int i, Direction direction, BlockPos blockPos2) {
+    public void youshallnotgrief$logStemBlockGrow(BlockState blockState, ServerLevel serverLevel, BlockPos pos, RandomSource randomSource, CallbackInfo ci, float f, int i, Direction direction, BlockPos blockPos2) {
         StemBlock block = (StemBlock) (Object) this;
-        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetDataFromNonPlayerCauseBlockState(block.getFruit().defaultBlockState(), blockPos2, serverLevel, BlockSetCauses.GROW, ""));
+        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos2, serverLevel, null, block.getFruit().defaultBlockState(), BlockSetCauses.GROW, null, ""));
     }
 }
 

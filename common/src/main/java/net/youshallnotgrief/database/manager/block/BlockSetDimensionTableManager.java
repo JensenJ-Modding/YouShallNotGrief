@@ -21,6 +21,6 @@ public class BlockSetDimensionTableManager implements TableManager<BlockSetData>
 
     @Override
     public void setInsertPreparedStatementValues(PreparedStatement preparedStatement, BlockSetData data) throws SQLException {
-        preparedStatement.setString(1, data.blockSetPosData().dimension());
+        preparedStatement.setString(1, data.dimension());
     }
 }

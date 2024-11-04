@@ -5,22 +5,22 @@ import net.youshallnotgrief.data.block.BlockSetData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class BlockSetActionTableManager implements TableManager<BlockSetData>{
+public class BlockSetCauseTableManager implements TableManager<BlockSetData>{
 
     @Override
     public String getInsertSQL() {
-        return "INSERT INTO blockSet_Actions (action) " +
-                "VALUES (?) ON CONFLICT(action) DO NOTHING;";
+        return "INSERT INTO blockSet_Causes (cause) " +
+                "VALUES (?) ON CONFLICT(cause) DO NOTHING;";
     }
 
     @Override
     public String getCreateTableSQL() {
-        return "CREATE TABLE IF NOT EXISTS blockSet_Actions " +
-                "(actionID INTEGER PRIMARY KEY AUTOINCREMENT, action TEXT NOT NULL, UNIQUE(action));";
+        return "CREATE TABLE IF NOT EXISTS blockSet_Causes " +
+                "(causeID INTEGER PRIMARY KEY AUTOINCREMENT, cause TEXT NOT NULL, UNIQUE(cause));";
     }
 
     @Override
     public void setInsertPreparedStatementValues(PreparedStatement preparedStatement, BlockSetData data) throws SQLException {
-        preparedStatement.setString(1, data.action().toString());
+        preparedStatement.setString(1, data.cause());
     }
 }

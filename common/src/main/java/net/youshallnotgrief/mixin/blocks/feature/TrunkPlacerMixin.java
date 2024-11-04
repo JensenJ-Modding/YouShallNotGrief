@@ -28,7 +28,7 @@ public class TrunkPlacerMixin {
         if(!FeatureMixinHolder.wasWorldgen){
             if(levelSimulatedReader instanceof Level level) {
                 BlockState state = function.apply(treeConfiguration.trunkProvider.getState(randomSource, blockPos.immutable()));
-                DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetDataFromNonPlayerCauseBlockState(state, blockPos.immutable(), level, BlockSetCauses.GROW, ""));
+                DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos.immutable(), level, null, state, BlockSetCauses.GROW, null, ""));
             }
         }
     }

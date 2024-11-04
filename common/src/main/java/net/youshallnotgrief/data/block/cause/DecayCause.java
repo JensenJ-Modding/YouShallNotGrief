@@ -10,8 +10,8 @@ public class DecayCause implements BlockSetCause{
     }
 
     @Override
-    public MutableComponent getInspectMessage(MutableComponent blockComponent) {
+    public MutableComponent getInspectMessage(MutableComponent oldBlockComponent, MutableComponent newBlockComponent, MutableComponent sourceComponent) {
         MutableComponent comp = Component.empty();
-        return comp.append((blockComponent).append(" decayed"));
+        return comp.append((oldBlockComponent).append(" decayed"));
     }
 }

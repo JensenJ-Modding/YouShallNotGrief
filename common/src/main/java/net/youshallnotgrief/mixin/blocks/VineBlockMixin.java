@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class VineBlockMixin {
     @WrapOperation(method="randomTick", at = @At(value="INVOKE", target="Lnet/minecraft/server/level/ServerLevel;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
     private boolean youshallnotgrief$logVineGrowth(ServerLevel level, BlockPos blockPos, BlockState blockState, int i, Operation<Boolean> original) {
-        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetDataFromNonPlayerCauseBlockState(blockState, blockPos, level, BlockSetCauses.GROW, ""));
+        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos, level, null, blockState, BlockSetCauses.GROW, null, ""));
         return original.call(level, blockPos, blockState, i);
     }
 
@@ -31,7 +31,7 @@ public class VineBlockMixin {
         if(cir.getReturnValue() == Blocks.AIR.defaultBlockState()) {
             if(!levelAccessor.isClientSide()){
                 if(levelAccessor instanceof Level level) {
-                    DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetDataFromNonPlayerCauseBlockState(blockState, blockPos, level, BlockSetCauses.UNSUPPORTED, ""));
+                    DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos, level, null, blockState, BlockSetCauses.UNSUPPORTED, null, ""));
                 }
             }
         }

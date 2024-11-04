@@ -4,8 +4,9 @@ import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.youshallnotgrief.data.block.BlockSetAction;
+import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.database.DatabaseManager;
 import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Final;
@@ -27,7 +28,7 @@ public class EndermanTakeBlockGoalMixin {
     @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;removeBlock(Lnet/minecraft/core/BlockPos;Z)Z"), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
     private void youshallnotgrief$logEndermanTakeBlock(CallbackInfo ci, @Local Level level, @Local BlockPos blockPos, @Local BlockState blockState) {
         if (!level.isClientSide()) {
-            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetDataFromBlockState(blockState, blockPos.immutable(), level, BlockSetAction.REMOVED, enderman, ""));
+            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos.immutable(), level, blockState, Blocks.AIR.defaultBlockState(), BlockSetCauses.REMOVED, enderman, ""));
         }
     }
 }

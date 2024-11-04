@@ -10,8 +10,8 @@ public class GolemCreationCause implements BlockSetCause {
     }
 
     @Override
-    public MutableComponent getInspectMessage(MutableComponent blockComponent) {
+    public MutableComponent getInspectMessage(MutableComponent oldBlockComponent, MutableComponent newBlockComponent, MutableComponent sourceComponent) {
         MutableComponent comp = Component.empty();
-        return comp.append(blockComponent).append(" was combined into a golem");
+        return comp.append(oldBlockComponent).append(" was combined into a golem");
     }
 }
