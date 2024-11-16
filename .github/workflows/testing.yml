@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set up Java
@@ -18,9 +18,6 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
-
-      - name: Validate Gradle Wrapper Integrity
-        uses: gradle/wrapper-validation-action@v2
 
       - name: Build the mod
         run: ./gradlew build
