@@ -1,6 +1,6 @@
 name: Testing
 
-on: [ pull_request, push ]
+on: [pull_request, push]
 
 jobs:
   build:
@@ -8,20 +8,13 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Loom Cache
-        uses: actions/cache@v4
-        with:
-          path: "**/.gradle/loom-cache"
-          key: "${{ runner.os }}-gradle-${{ hashFiles('**/libs.versions.*', '**/*.gradle*', '**/gradle-wrapper.properties') }}"
-          restore-keys: "${{ runner.os }}-gradle-"
+          distribution: "temurin"
+          java-version: "17"
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
@@ -31,3 +24,12 @@ jobs:
 
       - name: Build the mod
         run: ./gradlew build
+
+      - name: Capture Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Artifacts
+          path: |
+            common/build/libs/
+            fabric/build/libs/
+            forge/build/libs/
