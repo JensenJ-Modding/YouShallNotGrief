@@ -27,6 +27,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.10"
+          cache-read-only: false
 
       - name: Build the mod
         run: gradle build
@@ -74,6 +75,7 @@ jobs:
           mc: ${{ env.MINECRAFT_VERSION }}
           modloader: ${{ matrix.loader }}
           regex: .*${{ matrix.loader }}.*
-          mc-runtime-test: none
+          #this action expects forge to be lexforge, when migrating to neoforge we can just use matrix.loader directly
+          mc-runtime-test: ${{ matrix.loader == 'forge' && 'lexforge' || 'fabric' }}
           java: ${{ env.JAVA_VERSION }}
           fabric-api: ${{ matrix.loader == 'fabric' && env.FABRIC_API_VERSION || 'none' }}
