@@ -27,7 +27,7 @@ jobs:
           distribution: "temurin"
           java-version: ${{ env.JAVA_VERSION }}
 
-      - name: Setup Gradle
+      - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.10"
@@ -46,7 +46,7 @@ jobs:
             fabric/build/libs/
             forge/build/libs/
 
-  test-launch:
+  launch-client:
     timeout-minutes: 5
     strategy:
       fail-fast: false
@@ -58,7 +58,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download build artifact
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           name: Artifacts
@@ -69,27 +69,23 @@ jobs:
           echo "MINECRAFT_VERSION=$(grep '^minecraft_version =' gradle.properties | cut -d'=' -f2 | tr -d ' ')" >> "$GITHUB_ENV"
           echo "FABRIC_API_VERSION=$(grep '^fabric_api_version =' gradle.properties | cut -d'=' -f2 | tr -d ' ' | sed 's/+.*//')" >> "$GITHUB_ENV"
 
-      - name: Setup environment in run/mods
+      - name: Move artifact to run/mods
         run: |
           mkdir -p run/mods
           cp ${{ matrix.loader }}/build/libs/youshallnotgrief-${{ env.MINECRAFT_VERSION }}-${{ matrix.loader }}-${{ env.MOD_VERSION }}.jar run/mods
 
-      - name: Setup dependencies in run/mods
+      - name: Download forge dependencies to run/mods
         if: matrix.loader == 'forge'
         run: |
           wget ${{env.ARCHITECTURY_CF_FORGE_URL}} -O run/mods/architectury-api.jar
 
-      - name: Setup dependencies in run/mods
+      - name: Download fabric dependencies to run/mods
         if: matrix.loader == 'fabric'
         run: |
           wget ${{env.ARCHITECTURY_CF_FABRIC_URL}} -O run/mods/architectury-api.jar
 
-      - name: List files in the directory
-        run: |
-          ls -al run/mods
-
       # Lock to a specific commit, incase of breaking changes
-      - name: Run client
+      - name: Test Client
         uses: 3arthqu4ke/mc-runtime-test@077c3b731692cc531233c711688ea14a6f4a6622
         with:
           mc: ${{ env.MINECRAFT_VERSION }}
