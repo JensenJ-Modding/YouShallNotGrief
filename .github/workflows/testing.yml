@@ -43,6 +43,7 @@ jobs:
             forge/build/libs/
 
   test-launch:
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
