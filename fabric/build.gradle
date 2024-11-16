@@ -12,6 +12,7 @@ repositories {
     maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" }
     maven { url = "https://maven.jamieswhiteshirt.com/libs-release" }
     maven { url = "https://jitpack.io/" }
+    maven {url = "https://api.modrinth.com/maven"}
     maven { // Flywheel
         url = "https://maven.tterrag.com/"
         content {
@@ -48,7 +49,7 @@ dependencies {
     modImplementation "dev.architectury:architectury-fabric:$rootProject.architectury_api_version"
 
     // SQLite Driver
-    implementation "org.xerial:sqlite-jdbc:$rootProject.sqlite_fabric_version"
+    include "maven.modrinth:sqlite-jdbc:${sqlite_version}"
 
     //Dependencies for testing
     modImplementation "com.simibubi.create:create-fabric-${minecraft_version}:${create_fabric_version}"

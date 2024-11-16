@@ -42,7 +42,7 @@ dependencies {
     modImplementation "dev.architectury:architectury-forge:$rootProject.architectury_api_version"
 
     // SQLite Driver
-    modImplementation "maven.modrinth:sqlite-jdbc:${sqlite_forge_version}"
+    include "maven.modrinth:sqlite-jdbc:${sqlite_version}"
 
     //Dependencies for testing
     modImplementation "com.simibubi.create:create-${minecraft_version}:${create_version}:slim" transitive false
