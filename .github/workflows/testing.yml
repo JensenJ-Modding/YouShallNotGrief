@@ -77,12 +77,16 @@ jobs:
       - name: Setup dependencies in run/mods
         if: matrix.loader == 'forge'
         run: |
-          wget ${{env.ARCHITECTURY_CF_FORGE_URL}} -O architectury-api.jar
+          wget ${{env.ARCHITECTURY_CF_FORGE_URL}} -O run/mods/architectury-api.jar
 
       - name: Setup dependencies in run/mods
         if: matrix.loader == 'fabric'
         run: |
-          wget ${{env.ARCHITECTURY_CF_FABRIC_URL}} -O architectury-api.jar
+          wget ${{env.ARCHITECTURY_CF_FABRIC_URL}} -O run/mods/architectury-api.jar
+
+      - name: List files in the directory
+        run: |
+          ls -al run/mods
 
       # Lock to a specific commit, incase of breaking changes
       - name: Run client
