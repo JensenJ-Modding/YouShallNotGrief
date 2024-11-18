@@ -30,7 +30,8 @@ public class BlockEvents {
                 return EventResult.pass();
             }
 
-            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(pos, level, state, null, BlockSetCauses.REMOVED, player, ""));
+            BlockState newState = level.getBlockState(pos);
+            BlockUtils.addToDatabase(pos, level, state, newState, BlockSetCauses.REMOVED, player, "");
 
             return EventResult.pass();
         });
@@ -40,16 +41,20 @@ public class BlockEvents {
                 return EventResult.pass();
             }
 
-            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(pos, level, null, state, BlockSetCauses.PLACED, placer, ""));
+            BlockState oldState = level.getBlockState(pos);
+            BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.PLACED, placer, "");
 
             return EventResult.pass();
         });
 
-        BlockEvent.FALLING_LAND.register((Level level, BlockPos pos, BlockState fallState, BlockState landOn, FallingBlockEntity entity) ->
-                DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(pos, level, null, null, BlockSetCauses.LAND, entity, "")));
+        BlockEvent.FALLING_LAND.register((Level level, BlockPos pos, BlockState fallState, BlockState landOn, FallingBlockEntity entity) -> {
+            BlockState newState = level.getBlockState(pos);
+                BlockUtils.addToDatabase(pos, level, Blocks.AIR.defaultBlockState(), newState, BlockSetCauses.LAND, entity, "");
+        });
 
         InteractionEvent.FARMLAND_TRAMPLE.register((Level level, BlockPos pos, BlockState state, float distance, Entity entity) -> {
-            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(pos, level, state, null, BlockSetCauses.TRAMPLED, entity, ""));
+            BlockState newState = level.getBlockState(pos);
+            BlockUtils.addToDatabase(pos, level, state, newState, BlockSetCauses.TRAMPLED, entity, "");
             return EventResult.pass();
         });
 
@@ -59,7 +64,8 @@ public class BlockEvents {
             }
             if(target != null) {
                 BlockPos pos = new BlockPos(new Vec3i((int) target.getLocation().x, (int) target.getLocation().y, (int) target.getLocation().z));
-                DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(pos, level, null, Blocks.AIR.defaultBlockState(), BlockSetCauses.REMOVED, player, ""));
+                BlockState oldState = level.getBlockState(pos);
+                BlockUtils.addToDatabase(pos, level, oldState, Blocks.AIR.defaultBlockState(), BlockSetCauses.REMOVED, player, "");
             }
             return CompoundEventResult.pass();
         });

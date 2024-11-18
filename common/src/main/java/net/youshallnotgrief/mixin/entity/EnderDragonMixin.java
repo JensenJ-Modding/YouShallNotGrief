@@ -1,29 +1,24 @@
 package net.youshallnotgrief.mixin.entity;
 
-import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.phys.AABB;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
-import net.youshallnotgrief.database.DatabaseManager;
 import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-@Mixin(EnderDragon.class)
+@Mixin(value = EnderDragon.class, priority = 10100)
 public class EnderDragonMixin {
-    @SuppressWarnings("all")
-    @Inject(method="checkWalls", at = @At(value="INVOKE", target="Lnet/minecraft/world/level/Level;removeBlock(Lnet/minecraft/core/BlockPos;Z)Z"), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
-    private void youshallnotgrief$logEnderDragonBreakBlock(AABB aABB, CallbackInfoReturnable<Boolean> cir, @Local(ordinal=0) BlockPos blockPos){
+
+    @WrapOperation(method="checkWalls", at = @At(value="INVOKE", target="Lnet/minecraft/world/level/Level;removeBlock(Lnet/minecraft/core/BlockPos;Z)Z"))
+    private boolean youshallnotgrief$logEnderDragonBreakBlock(Level level, BlockPos pos, boolean b, Operation<Boolean> original){
         EnderDragon dragon = (EnderDragon) (Object) this;
-        Level level = dragon.level();
-        if(!level.isClientSide()){
-            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos, level, null, Blocks.AIR.defaultBlockState(), BlockSetCauses.REMOVED, dragon, ""));
-        }
+        return BlockUtils.wrapLevelRemoveBlock(level, pos, b, original, oldState -> {
+            BlockUtils.addToDatabase(pos, level, oldState, Blocks.AIR.defaultBlockState(), BlockSetCauses.REMOVED, dragon, "");
+        });
     }
 }

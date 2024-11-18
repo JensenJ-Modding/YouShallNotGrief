@@ -1,28 +1,24 @@
 package net.youshallnotgrief.mixin.blocks;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.StemBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
-import net.youshallnotgrief.database.DatabaseManager;
 import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static org.spongepowered.asm.mixin.injection.callback.LocalCapture.CAPTURE_FAILEXCEPTION;
-
-@Mixin(StemBlock.class)
+@Mixin(value = StemBlock.class, priority = 10100)
 public class StemBlockMixin {
-    @SuppressWarnings("all")
-    @Inject(method = "randomTick", at = @At(value = "INVOKE", target="Lnet/minecraft/server/level/ServerLevel;setBlockAndUpdate(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Z", ordinal=0), locals = CAPTURE_FAILEXCEPTION)
-    public void youshallnotgrief$logStemBlockGrow(BlockState blockState, ServerLevel serverLevel, BlockPos pos, RandomSource randomSource, CallbackInfo ci, float f, int i, Direction direction, BlockPos blockPos2) {
-        StemBlock block = (StemBlock) (Object) this;
-        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos2, serverLevel, null, block.getFruit().defaultBlockState(), BlockSetCauses.GROW, null, ""));
+
+    @WrapOperation(method = "randomTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;setBlockAndUpdate(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Z", ordinal = 0))
+    public boolean youshallnotgrief$logStemBlockGrow(ServerLevel level, BlockPos pos, BlockState state, Operation<Boolean> original) {
+        return BlockUtils.wrapLevelSetBlockAndUpdate(level, pos, state, original, oldState -> {
+            BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.GROW, null, "");
+        });
     }
 }
 

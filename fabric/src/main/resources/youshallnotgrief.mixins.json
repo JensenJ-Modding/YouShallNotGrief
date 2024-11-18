@@ -6,7 +6,6 @@
   "client": [
   ],
   "mixins": [
-    "BlockMixin",
     "AnvilMenuMixin",
     "HoeItemMixin"
   ],

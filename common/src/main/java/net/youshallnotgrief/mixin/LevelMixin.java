@@ -1,10 +1,9 @@
-package net.youshallnotgrief.mixin.fabric;
+package net.youshallnotgrief.mixin;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.youshallnotgrief.database.DatabaseManager;
 import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -15,13 +14,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.HashMap;
 import java.util.HashSet;
 
-@Mixin(value = Level.class)
-public abstract class BlockMixin {
-
+//TODO: Redo this to be more intelligent
+@Mixin(value = Level.class, priority = 10100)
+public abstract class LevelMixin {
     @Unique
     HashSet<String> youshallnotgrief$blacklistedModules = new HashSet<>() {{
         add("minecraft");
         add("fabricmc");
+        add("forge");
+        add("neoforge");
         add("google");
         add("unimi");
     }};
@@ -29,8 +30,13 @@ public abstract class BlockMixin {
     @Unique
     HashMap<String, String> youshallnotgrief$stackPathToModID = new HashMap<>();
 
-    @Inject(at = @At("TAIL"), method="setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z")
-    private void youshallnotgrief$detectModdedSetBlockInteractions(BlockPos blockPos, BlockState blockState, int i, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(at = @At("RETURN"), method="setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;II)Z")
+    private void youshallnotgrief$logModdedSetBlockInteractions(BlockPos blockPos, BlockState blockState, int i, int j, CallbackInfoReturnable<Boolean> cir) {
+        //Only log if the block was actually set
+        if (!cir.getReturnValue()){
+            return;
+        }
+
         Level level = (Level) (Object) this;
         if(level.isClientSide){
             return;
@@ -63,8 +69,9 @@ public abstract class BlockMixin {
         className = className.substring(className.lastIndexOf(".") + 1);
         String fullName = className + ":" + methodName;
 
-        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeModdedBlockSetData(blockPos, level, level.getBlockState(blockPos), blockState, moduleName, fullName));
+        BlockUtils.addToDatabase(blockPos, level, level.getBlockState(blockPos), blockState, moduleName, fullName);
     }
+
 
     @Unique
     private boolean youshallnotgrief$containsAny(String stackTraceModule) {

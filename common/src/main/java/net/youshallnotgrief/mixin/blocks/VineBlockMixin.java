@@ -11,27 +11,28 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.VineBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
-import net.youshallnotgrief.database.DatabaseManager;
 import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(VineBlock.class)
+@Mixin(value = VineBlock.class, priority = 10100)
 public class VineBlockMixin {
     @WrapOperation(method="randomTick", at = @At(value="INVOKE", target="Lnet/minecraft/server/level/ServerLevel;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
-    private boolean youshallnotgrief$logVineGrowth(ServerLevel level, BlockPos blockPos, BlockState blockState, int i, Operation<Boolean> original) {
-        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos, level, null, blockState, BlockSetCauses.GROW, null, ""));
-        return original.call(level, blockPos, blockState, i);
+    private boolean youshallnotgrief$logVineGrowth(ServerLevel level, BlockPos pos, BlockState state, int i, Operation<Boolean> original) {
+        return BlockUtils.wrapLevelSetBlock(level, pos, state, i, original, oldState -> {
+            BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.GROW, null, "");
+        });
     }
 
+    //TODO: Test thoroughly to ensure no duplicate entries are recorded
     @Inject(method="updateShape", at = @At(value="RETURN"))
     private void youshallnotgrief$logVineBreak(BlockState blockState, Direction direction, BlockState blockState2, LevelAccessor levelAccessor, BlockPos blockPos, BlockPos blockPos2, CallbackInfoReturnable<BlockState> cir){
         if(cir.getReturnValue() == Blocks.AIR.defaultBlockState()) {
             if(!levelAccessor.isClientSide()){
                 if(levelAccessor instanceof Level level) {
-                    DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos, level, null, blockState, BlockSetCauses.UNSUPPORTED, null, ""));
+                    BlockUtils.addToDatabase(blockPos, level, Blocks.VINE.defaultBlockState(), Blocks.AIR.defaultBlockState(), BlockSetCauses.UNSUPPORTED, null, "");
                 }
             }
         }

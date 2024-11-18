@@ -1,21 +1,23 @@
 package net.youshallnotgrief.mixin.blocks;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BambooSaplingBlock;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
-import net.youshallnotgrief.database.DatabaseManager;
 import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(BambooSaplingBlock.class)
+@Mixin(value = BambooSaplingBlock.class, priority = 10100)
 public class BambooSaplingBlockMixin {
-    @Inject(method = "growBamboo", at = @At(value = "HEAD"))
-    public void youshallnotgrief$logBambooSaplingGrow(Level level, BlockPos blockPos, CallbackInfo ci) {
-        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos.above(), level, null, Blocks.BAMBOO.defaultBlockState(), BlockSetCauses.GROW, null, ""));
+
+    @WrapOperation(method = "growBamboo", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
+    public boolean youshallnotgrief$logBambooSaplingGrow(Level level, BlockPos pos, BlockState state, int i, Operation<Boolean> original){
+        return BlockUtils.wrapLevelSetBlock(level, pos, state, i, original, oldState -> {
+            BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.GROW, null, "");
+        });
     }
 }

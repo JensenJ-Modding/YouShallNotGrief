@@ -17,6 +17,7 @@ public class BlockSetCauses {
     public static BlockSetCause DECAY = registerCause(new DecayCause());
     public static BlockSetCause GROW = registerCause(new GrowCause());
     public static BlockSetCause PORTAL = registerCause(new PortalCause());
+    public static BlockSetCause LIT = registerCause(new LitCause());
     public static BlockSetCause SCRAPED = registerCause(new ScrapedCause());
     public static BlockSetCause UNSUPPORTED = registerCause(new UnsupportedCause());
     public static BlockSetCause GOLEM_CREATION = registerCause(new GolemCreationCause());

@@ -1,4 +1,4 @@
-package net.youshallnotgrief.mixin.blocks.feature;
+package net.youshallnotgrief.mixin.feature;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(AbstractTreeGrower.class)
+@Mixin(value = AbstractTreeGrower.class, priority = 10100)
 public abstract class AbstractTreeGrowerMixin {
 
     @Inject(method="growTree", at = @At(value = "INVOKE", target="Lnet/minecraft/server/level/ServerLevel;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))

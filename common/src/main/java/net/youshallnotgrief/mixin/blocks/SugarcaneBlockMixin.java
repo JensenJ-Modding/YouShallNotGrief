@@ -1,22 +1,23 @@
 package net.youshallnotgrief.mixin.blocks;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.SugarCaneBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
-import net.youshallnotgrief.database.DatabaseManager;
 import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(SugarCaneBlock.class)
+@Mixin(value = SugarCaneBlock.class, priority = 10100)
 public abstract class SugarcaneBlockMixin {
-    @Inject(method = "randomTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;setBlockAndUpdate(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Z"))
-    public void youshallnotgrief$logSugarcaneGrow(BlockState blockState, ServerLevel level, BlockPos pos, RandomSource randomSource, CallbackInfo ci) {
-        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(pos.above(), level, null, blockState, BlockSetCauses.GROW, null, ""));
+
+    @WrapOperation(method = "randomTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;setBlockAndUpdate(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Z"))
+    public boolean youshallnotgrief$logSugarcaneGrow(ServerLevel level, BlockPos pos, BlockState state, Operation<Boolean> original) {
+        return BlockUtils.wrapLevelSetBlockAndUpdate(level, pos, state, original, oldState -> {
+            BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.GROW, null, "");
+        });
     }
 }

@@ -102,8 +102,8 @@ public class InspectionMode {
 
         try {
             RetrieveResult<BlockSetData> retrieveResult = futureData.get(5, TimeUnit.SECONDS);
-            ArrayList<BlockSetData> data = retrieveResult.getRecords();
-            int count = retrieveResult.getCount();
+            ArrayList<BlockSetData> data = retrieveResult.records();
+            int count = retrieveResult.count();
 
             if(count == 0){
                 player.sendSystemMessage(Component.literal("No data was found for the selected block.").withStyle(ChatFormatting.RED));

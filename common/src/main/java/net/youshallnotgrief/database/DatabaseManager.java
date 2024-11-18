@@ -50,6 +50,10 @@ public class DatabaseManager {
                 YouShallNotGriefMod.LOGGER.error("Thread shutdown was interrupted.");
             }
 
+            if(cachedDatabaseConnection == null){
+                return;
+            }
+
             try {
                 cachedDatabaseConnection.close();
                 cachedDatabaseConnection = null;

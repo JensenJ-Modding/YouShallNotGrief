@@ -1,6 +1,5 @@
 package net.youshallnotgrief.mixin.entity;
 
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.DoorInteractGoal;
 import org.spongepowered.asm.mixin.Mixin;
@@ -11,8 +10,4 @@ public interface DoorInteractGoalAccessor {
 
     @Accessor("mob")
     Mob getMob();
-
-    @Accessor("doorPos")
-    BlockPos getDoorPos();
-
 }

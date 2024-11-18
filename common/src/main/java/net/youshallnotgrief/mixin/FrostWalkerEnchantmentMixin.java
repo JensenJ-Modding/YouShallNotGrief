@@ -1,5 +1,8 @@
 package net.youshallnotgrief.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.enchantment.FrostWalkerEnchantment;
@@ -10,21 +13,14 @@ import net.youshallnotgrief.database.DatabaseManager;
 import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Iterator;
-
-import static org.spongepowered.asm.mixin.injection.callback.LocalCapture.CAPTURE_FAILEXCEPTION;
-
-@Mixin(FrostWalkerEnchantment.class)
+@Mixin(value = FrostWalkerEnchantment.class, priority = 10100)
 public abstract class FrostWalkerEnchantmentMixin {
-    @SuppressWarnings("all")
-    @Inject(method = "onEntityMoved", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/world/level/Level;setBlockAndUpdate(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Z"), locals = CAPTURE_FAILEXCEPTION)
-    private static void youshallnotgrief$logFrostWalkerPlacement(LivingEntity livingEntity, Level level, BlockPos blockPos, int i, CallbackInfo ci,
-                                                                 BlockState blockState, int j, BlockPos.MutableBlockPos mutableBlockPos, Iterator<BlockPos> var7, BlockPos blockPos2) {
 
-        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos2.immutable(), level, null, blockState, BlockSetCauses.FROST_WALKER, livingEntity, ""));
+    @WrapOperation(method = "onEntityMoved", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;setBlockAndUpdate(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Z"))
+    private static boolean youshallnotgrief$logFrostWalkerPlacement(Level level, BlockPos pos, BlockState state, Operation<Boolean> original, @Local(argsOnly = true) LivingEntity entity) {
+        return BlockUtils.wrapLevelSetBlockAndUpdate(level, pos, state, original, oldState -> {
+            BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.FROST_WALKER, entity, "");
+        });
     }
 }

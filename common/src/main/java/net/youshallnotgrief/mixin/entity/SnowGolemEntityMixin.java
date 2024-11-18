@@ -1,24 +1,24 @@
 package net.youshallnotgrief.mixin.entity;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.animal.SnowGolem;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
-import net.youshallnotgrief.database.DatabaseManager;
 import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static org.spongepowered.asm.mixin.injection.callback.LocalCapture.CAPTURE_FAILEXCEPTION;
-
-@Mixin(SnowGolem.class)
+@Mixin(value = SnowGolem.class, priority = 10100)
 public abstract class SnowGolemEntityMixin {
-    @SuppressWarnings("all")
-    @Inject(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;setBlockAndUpdate(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Z", shift = At.Shift.AFTER, by = 1), locals = CAPTURE_FAILEXCEPTION)
-    public void youshallnotgrief$logSnowGolemSnow(CallbackInfo ci, BlockState blockState, int i, int j, int k, int l, BlockPos blockPos) {
+
+    @WrapOperation(method="aiStep", at = @At(value="INVOKE", target="Lnet/minecraft/world/level/Level;setBlockAndUpdate(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Z"))
+    public boolean youshallnotgrief$logSnowGolemSnow(Level level, BlockPos pos, BlockState state, Operation<Boolean> original) {
         SnowGolem golem = ((SnowGolem) (Object) this);
-        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos.immutable(), golem.level(), null, blockState, BlockSetCauses.REMOVED, golem, ""));
+        return BlockUtils.wrapLevelSetBlockAndUpdate(level, pos, state, original, oldState -> {
+            BlockUtils.addToDatabase(pos, golem.level(), oldState, state, BlockSetCauses.PLACED, golem, "");
+        });
     }
 }

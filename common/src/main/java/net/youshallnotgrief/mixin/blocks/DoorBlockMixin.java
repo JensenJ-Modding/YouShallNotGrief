@@ -1,5 +1,8 @@
 package net.youshallnotgrief.mixin.blocks;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -8,25 +11,27 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.youshallnotgrief.data.block.cause.BlockSetCause;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
-import net.youshallnotgrief.database.DatabaseManager;
 import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
 import static net.minecraft.world.level.block.DoorBlock.HALF;
 
-@Mixin(DoorBlock.class)
+@Mixin(value = DoorBlock.class, priority = 10100)
 public class DoorBlockMixin {
 
-    @Inject(method="setOpen", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
-    private void youshallnotgrief$logDoorOpen(Entity entity, Level level, BlockState blockState, BlockPos blockPos, boolean bl, CallbackInfo ci){
-        if(!level.isClientSide()){
-            BlockPos blockPos2 = blockState.getValue(HALF) == DoubleBlockHalf.LOWER ? blockPos.above() : blockPos.below();
+    @WrapOperation(method = "setOpen", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
+    private boolean youshallnotgrief$logDoorSetOpen(Level level, BlockPos pos, BlockState state, int i, Operation<Boolean> original, @Local(argsOnly = true) Entity entity, @Local(argsOnly = true) boolean bl){
+        BlockPos pos2 = state.getValue(HALF) == DoubleBlockHalf.LOWER ? pos.above() : pos.below();
+        BlockState oldState = level.getBlockState(pos);
+        BlockState oldState2 = level.getBlockState(pos2);
+        boolean wasSet = original.call(level, pos, state, i);
+        if(wasSet){
             BlockSetCause cause = bl ? BlockSetCauses.OPENED : BlockSetCauses.CLOSED;
 
-            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos, level, null, null, cause, entity, ""));
-            DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(blockPos2, level, null, null, cause, entity, ""));
+            BlockUtils.addToDatabase(pos, level, oldState, state, cause, entity, "");
+            BlockUtils.addToDatabase(pos2, level, oldState2, state, cause, entity, "");
         }
+        return wasSet;
     }
 }

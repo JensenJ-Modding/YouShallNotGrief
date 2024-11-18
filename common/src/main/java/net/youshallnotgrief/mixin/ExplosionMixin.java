@@ -1,34 +1,24 @@
 package net.youshallnotgrief.mixin;
 
-import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseFireBlock;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
-import net.youshallnotgrief.database.DatabaseManager;
 import net.youshallnotgrief.util.BlockUtils;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-@Mixin(Explosion.class)
+@Mixin(value = Explosion.class, priority = 10100)
 public abstract class ExplosionMixin {
-
-    @Final
-    @Shadow
-    private Level level;
 
     @Shadow
     public Entity source;
@@ -36,24 +26,18 @@ public abstract class ExplosionMixin {
     @Shadow @Nullable
     public abstract LivingEntity getIndirectSourceEntity();
 
-    @SuppressWarnings("all")
-    @Inject(method="finalizeExplosion", at = @At(value="INVOKE", target="Lnet/minecraft/world/level/block/Block;wasExploded(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/Explosion;)V"), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
-    private void youshallnotgrief$logBlockExplosion(boolean bl, CallbackInfo ci, @Local BlockPos pos, @Local BlockState state){
-        if(level.isClientSide()){
-            return;
-        }
-
-        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(pos, level, null, Blocks.AIR.defaultBlockState(), BlockSetCauses.EXPLOSION, source, youshallnotgrief$getSourceDescription()));
+    @WrapOperation(method="finalizeExplosion", at = @At(value="INVOKE", target="Lnet/minecraft/world/level/Level;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
+    private boolean youshallnotgrief$logBlockExplosion(Level level, BlockPos pos, BlockState state, int i, Operation<Boolean> original){
+        return BlockUtils.wrapLevelSetBlock(level, pos, state, i, original, oldState -> {
+            BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.EXPLOSION, source, youshallnotgrief$getSourceDescription());
+        });
     }
 
-    @SuppressWarnings("all")
-    @Inject(method="finalizeExplosion", at = @At(value="INVOKE", target="Lnet/minecraft/world/level/Level;setBlockAndUpdate(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Z"), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
-    private void youshallnotgrief$logBlockFireExplosion(boolean bl, CallbackInfo ci, @Local BlockPos pos){
-        if(level.isClientSide()){
-            return;
-        }
-        BlockState state = BaseFireBlock.getState(this.level, pos);
-        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(BlockUtils.makeBlockSetData(pos, level, null, state, BlockSetCauses.PLACED, source, youshallnotgrief$getSourceDescription()));
+    @WrapOperation(method="finalizeExplosion", at = @At(value="INVOKE", target="Lnet/minecraft/world/level/Level;setBlockAndUpdate(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Z"))
+    private boolean youshallnotgrief$logBlockFireExplosion(Level level, BlockPos pos, BlockState state, Operation<Boolean> original){
+        return BlockUtils.wrapLevelSetBlockAndUpdate(level, pos, state, original, oldState -> {
+            BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.PLACED, source, youshallnotgrief$getSourceDescription());
+        });
     }
 
     //TODO: Redo this formatting
