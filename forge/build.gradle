@@ -46,6 +46,7 @@ dependencies {
     modImplementation "dev.architectury:architectury-forge:$rootProject.architectury_api_version"
 
     // SQLite Driver
+    modImplementation "maven.modrinth:sqlite-jdbc:${sqlite_version}"
     include "maven.modrinth:sqlite-jdbc:${sqlite_version}"
 
     //Dependencies for testing
