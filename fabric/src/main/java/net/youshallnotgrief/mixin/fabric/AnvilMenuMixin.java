@@ -14,7 +14,6 @@ import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-//TODO: Unify into main mod if possible
 @Mixin(value = AnvilMenu.class, priority = 10100)
 public abstract class AnvilMenuMixin {
 

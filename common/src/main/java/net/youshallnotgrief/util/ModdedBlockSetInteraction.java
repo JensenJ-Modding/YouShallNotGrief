@@ -1,24 +1,17 @@
-package net.youshallnotgrief.mixin;
+package net.youshallnotgrief.util;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.youshallnotgrief.util.BlockUtils;
-import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.HashMap;
 import java.util.HashSet;
 
-//TODO: Redo this to be more intelligent
-@Mixin(value = Level.class, priority = 10100)
-public abstract class LevelMixin {
-    @Unique
-    HashSet<String> youshallnotgrief$blacklistedModules = new HashSet<>() {{
+public class ModdedBlockSetInteraction {
+    static HashSet<String> blacklistedModules = new HashSet<>() {{
         add("minecraft");
         add("fabricmc");
         add("forge");
@@ -27,24 +20,17 @@ public abstract class LevelMixin {
         add("unimi");
     }};
 
-    @Unique
-    HashMap<String, String> youshallnotgrief$stackPathToModID = new HashMap<>();
+    static HashMap<String, String> stackPathToModID = new HashMap<>();
 
-    @Inject(at = @At("RETURN"), method="setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;II)Z")
-    private void youshallnotgrief$logModdedSetBlockInteractions(BlockPos blockPos, BlockState blockState, int i, int j, CallbackInfoReturnable<Boolean> cir) {
-        //Only log if the block was actually set
-        if (!cir.getReturnValue()){
-            return;
-        }
-
-        Level level = (Level) (Object) this;
+    //TODO: Redo this to be more intelligent
+    public static void logModdedSetBlockInteractions(BlockPos blockPos, BlockState blockState, Level level) {
         if(level.isClientSide){
             return;
         }
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
         int causeTraceIndex;
         for (causeTraceIndex = 2; causeTraceIndex < stackTraceElements.length - 1; causeTraceIndex++) {
-            if(youshallnotgrief$containsAny(stackTraceElements[causeTraceIndex].toString())){
+            if(containsAny(stackTraceElements[causeTraceIndex].toString())){
                 causeTraceIndex++;
             }else {
                 break;
@@ -60,7 +46,7 @@ public abstract class LevelMixin {
         String methodName = causeElement.getMethodName();
         String className = causeElement.getClassName();
 
-        String moduleName = "@" + youshallnotgrief$getModIDFromClassName(className);
+        String moduleName = "@" + getModIDFromClassName(className);
         if(moduleName.contains("java")){
             return;
         }
@@ -74,8 +60,8 @@ public abstract class LevelMixin {
 
 
     @Unique
-    private boolean youshallnotgrief$containsAny(String stackTraceModule) {
-        for (String blacklistedModule : youshallnotgrief$blacklistedModules) {
+    private static boolean containsAny(String stackTraceModule) {
+        for (String blacklistedModule : blacklistedModules) {
             if (stackTraceModule.contains(blacklistedModule)) {
                 return true;
             }
@@ -84,23 +70,23 @@ public abstract class LevelMixin {
     }
 
     @Unique
-    private String youshallnotgrief$getModIDFromClassName(String className){
+    private static String getModIDFromClassName(String className){
         String[] elementParts = className.split("\\.");
         String moduleName = elementParts[0] + "." + elementParts[1] + "." + elementParts[2];
 
-        if(youshallnotgrief$stackPathToModID.containsKey(moduleName)){
-            return youshallnotgrief$stackPathToModID.get(moduleName);
+        if(stackPathToModID.containsKey(moduleName)){
+            return stackPathToModID.get(moduleName);
         }
 
         FabricLoader.getInstance().getAllMods().forEach(modContainer -> {
             String modID = modContainer.getMetadata().getId();
             if(moduleName.contains(modID)){
-                youshallnotgrief$stackPathToModID.put(moduleName, modID);
+                stackPathToModID.put(moduleName, modID);
             }
         });
 
-        if(youshallnotgrief$stackPathToModID.containsKey(moduleName)){
-            return youshallnotgrief$stackPathToModID.get(moduleName);
+        if(stackPathToModID.containsKey(moduleName)){
+            return stackPathToModID.get(moduleName);
         }
 
         return moduleName;

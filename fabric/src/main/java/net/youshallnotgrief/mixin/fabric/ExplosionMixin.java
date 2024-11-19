@@ -1,20 +1,19 @@
-package net.youshallnotgrief.mixin;
+package net.youshallnotgrief.mixin.fabric;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
+import net.youshallnotgrief.util.ExplosionUtils;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(value = Explosion.class, priority = 10100)
@@ -29,32 +28,14 @@ public abstract class ExplosionMixin {
     @WrapOperation(method="finalizeExplosion", at = @At(value="INVOKE", target="Lnet/minecraft/world/level/Level;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
     private boolean youshallnotgrief$logBlockExplosion(Level level, BlockPos pos, BlockState state, int i, Operation<Boolean> original){
         return BlockUtils.wrapLevelSetBlock(level, pos, state, i, original, oldState -> {
-            BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.EXPLOSION, source, youshallnotgrief$getSourceDescription());
+            BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.EXPLOSION, source, ExplosionUtils.getSourceDescription(getIndirectSourceEntity()));
         });
     }
 
     @WrapOperation(method="finalizeExplosion", at = @At(value="INVOKE", target="Lnet/minecraft/world/level/Level;setBlockAndUpdate(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Z"))
     private boolean youshallnotgrief$logBlockFireExplosion(Level level, BlockPos pos, BlockState state, Operation<Boolean> original){
         return BlockUtils.wrapLevelSetBlockAndUpdate(level, pos, state, original, oldState -> {
-            BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.PLACED, source, youshallnotgrief$getSourceDescription());
+            BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.PLACED, source, ExplosionUtils.getSourceDescription(getIndirectSourceEntity()));
         });
-    }
-
-    //TODO: Redo this formatting
-    @Unique
-    private String youshallnotgrief$getSourceDescription(){
-        LivingEntity sourceEntity = getIndirectSourceEntity();
-        String sourceDesc = "";
-        if(sourceEntity != null){
-            sourceDesc = "Caused by " + sourceEntity.getName().getString();
-        }
-        if (sourceEntity instanceof Mob mob){
-            LivingEntity target = mob.getTarget();
-            //TODO: Log all previous targets of the mob, not just the current one
-            if(target != null){
-                sourceDesc += "\n" + mob.getName().getString() + " was targeting " + target.getName().getString();
-            }
-        }
-        return sourceDesc;
     }
 }

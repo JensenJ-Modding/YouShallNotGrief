@@ -7,11 +7,9 @@
   "server": [],
   "mixins": [
     "AxeItemMixin",
-    "ExplosionMixin",
     "FlintAndSteelItemMixin",
     "FrostWalkerEnchantmentMixin",
     "HoneycombItemMixin",
-    "LevelMixin",
     "PortalForcerMixin",
     "PortalShapeMixin",
     "ShovelItemMixin",
