@@ -8,7 +8,7 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
-import net.youshallnotgrief.util.FeatureMixinHolder;
+import net.youshallnotgrief.util.MixinDataHolder;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -18,7 +18,7 @@ public class TreeFeatureFoliageSetterMixin {
     @WrapOperation(method = "set", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/WorldGenLevel;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
     private boolean youshallnotgrief$logTreeGrowthFoliage(WorldGenLevel worldGenLevel, BlockPos pos, BlockState state, int i, Operation<Boolean> original){
         return BlockUtils.wrapLevelSetBlock(worldGenLevel, pos, state, i, original, oldState -> {
-            if(FeatureMixinHolder.wasWorldgen){
+            if(MixinDataHolder.wasFeatureWorldgen){
                 return;
             }
             if(worldGenLevel instanceof Level level){

@@ -11,7 +11,7 @@ import net.minecraft.world.level.levelgen.feature.TreeFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
-import net.youshallnotgrief.util.FeatureMixinHolder;
+import net.youshallnotgrief.util.MixinDataHolder;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -22,13 +22,13 @@ public class TreeFeatureMixin {
 
     @Inject(method="place", at = @At(value="RETURN"))
     private void youshallnotgrief$resetFeatureFlag(FeaturePlaceContext<TreeConfiguration> featurePlaceContext, CallbackInfoReturnable<Boolean> cir) {
-        FeatureMixinHolder.wasWorldgen = true;
+        MixinDataHolder.wasFeatureWorldgen = true;
     }
 
     @WrapOperation(method = "method_35364", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/WorldGenLevel;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
     private static boolean youshallnotgrief$logTreeGrowthRoots(WorldGenLevel worldGenLevel, BlockPos pos, BlockState state, int i, Operation<Boolean> original){
         return BlockUtils.wrapLevelSetBlock(worldGenLevel, pos, state, i, original, oldState -> {
-            if(FeatureMixinHolder.wasWorldgen){
+            if(MixinDataHolder.wasFeatureWorldgen){
                 return;
             }
             if(worldGenLevel instanceof Level level){
@@ -40,7 +40,7 @@ public class TreeFeatureMixin {
     @WrapOperation(method = "method_43162", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/WorldGenLevel;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
     private static boolean youshallnotgrief$logTreeGrowthTrunks(WorldGenLevel worldGenLevel, BlockPos pos, BlockState state, int i, Operation<Boolean> original){
         return BlockUtils.wrapLevelSetBlock(worldGenLevel, pos, state, i, original, oldState -> {
-            if(FeatureMixinHolder.wasWorldgen){
+            if(MixinDataHolder.wasFeatureWorldgen){
                 return;
             }
             if(worldGenLevel instanceof Level level){
@@ -52,7 +52,7 @@ public class TreeFeatureMixin {
     @WrapOperation(method = "method_49238", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/WorldGenLevel;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
     private static boolean youshallnotgrief$logTreeGrowthDecorators(WorldGenLevel worldGenLevel, BlockPos pos, BlockState state, int i, Operation<Boolean> original){
         return BlockUtils.wrapLevelSetBlock(worldGenLevel, pos, state, i, original, oldState -> {
-            if(FeatureMixinHolder.wasWorldgen){
+            if(MixinDataHolder.wasFeatureWorldgen){
                 return;
             }
             if(worldGenLevel instanceof Level level){

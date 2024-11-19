@@ -18,7 +18,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.HitResult;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
-import net.youshallnotgrief.database.DatabaseManager;
 import net.youshallnotgrief.util.BlockUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -58,6 +57,7 @@ public class BlockEvents {
             return EventResult.pass();
         });
 
+        //TODO: FIX
         PlayerEvent.FILL_BUCKET.register((Player player, Level level, ItemStack stack, @Nullable HitResult target) -> {
             if(level.isClientSide()){
                 return CompoundEventResult.pass();
