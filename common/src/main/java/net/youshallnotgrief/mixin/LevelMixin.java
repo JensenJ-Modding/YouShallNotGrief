@@ -93,8 +93,7 @@ public class LevelMixin {
             return youshallnotgrief$stackPathToModID.get(moduleName);
         }
 
-        Platform.getMods().forEach(mod -> {
-            String modID = mod.getModId();
+        Platform.getModIds().forEach(modID -> {
             if(moduleName.contains(modID)){
                 youshallnotgrief$stackPathToModID.put(moduleName, modID);
             }

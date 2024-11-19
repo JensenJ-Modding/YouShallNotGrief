@@ -38,11 +38,8 @@
     "entity.RavagerEntityMixin",
     "entity.SnowGolemEntityMixin",
     "feature.AbstractTreeGrowerMixin",
-    "feature.FoliagePlacerMixin",
-    "feature.RootPlacerMixin",
-    "feature.TreeDecoratorMixin",
-    "feature.TreeFeatureMixin",
-    "feature.TrunkPlacerMixin"
+    "feature.TreeFeatureFoliageSetterMixin",
+    "feature.TreeFeatureMixin"
   ],
   "injectors": {
     "defaultRequire": 1
