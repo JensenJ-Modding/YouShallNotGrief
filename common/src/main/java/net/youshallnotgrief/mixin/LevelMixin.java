@@ -1,17 +1,24 @@
-package net.youshallnotgrief.util;
+package net.youshallnotgrief.mixin;
 
-import net.fabricmc.loader.api.FabricLoader;
+import dev.architectury.platform.Platform;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.youshallnotgrief.util.BlockUtils;
+import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class ModdedBlockSetInteraction {
-    static HashSet<String> blacklistedModules = new HashSet<>() {{
+@Mixin(value = Level.class, priority = 10100)
+public class LevelMixin {
+
+    @Unique
+    HashSet<String> youshallnotgrief$blacklistedModules = new HashSet<>() {{
         add("minecraft");
         add("fabricmc");
         add("forge");
@@ -20,17 +27,26 @@ public class ModdedBlockSetInteraction {
         add("unimi");
     }};
 
-    static HashMap<String, String> stackPathToModID = new HashMap<>();
+    @Unique
+    HashMap<String, String> youshallnotgrief$stackPathToModID = new HashMap<>();
+
 
     //TODO: Redo this to be more intelligent
-    public static void logModdedSetBlockInteractions(BlockPos blockPos, BlockState blockState, Level level) {
+    @Inject(at = @At("RETURN"), method="setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;II)Z")
+    private void youshallnotgrief$logModdedSetBlockInteractions(BlockPos blockPos, BlockState blockState, int i, int j, CallbackInfoReturnable<Boolean> cir) {
+        //Only log if the block was actually set
+        if (!cir.getReturnValue()){
+            return;
+        }
+
+        Level level = (Level) (Object) this;
         if(level.isClientSide){
             return;
         }
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
         int causeTraceIndex;
         for (causeTraceIndex = 2; causeTraceIndex < stackTraceElements.length - 1; causeTraceIndex++) {
-            if(containsAny(stackTraceElements[causeTraceIndex].toString())){
+            if(youshallnotgrief$containsAny(stackTraceElements[causeTraceIndex].toString())){
                 causeTraceIndex++;
             }else {
                 break;
@@ -46,7 +62,7 @@ public class ModdedBlockSetInteraction {
         String methodName = causeElement.getMethodName();
         String className = causeElement.getClassName();
 
-        String moduleName = "@" + getModIDFromClassName(className);
+        String moduleName = "@" + youshallnotgrief$getModIDFromClassName(className);
         if(moduleName.contains("java")){
             return;
         }
@@ -58,10 +74,9 @@ public class ModdedBlockSetInteraction {
         BlockUtils.addToDatabase(blockPos, level, level.getBlockState(blockPos), blockState, moduleName, fullName);
     }
 
-
     @Unique
-    private static boolean containsAny(String stackTraceModule) {
-        for (String blacklistedModule : blacklistedModules) {
+    private boolean youshallnotgrief$containsAny(String stackTraceModule) {
+        for (String blacklistedModule : youshallnotgrief$blacklistedModules) {
             if (stackTraceModule.contains(blacklistedModule)) {
                 return true;
             }
@@ -70,23 +85,23 @@ public class ModdedBlockSetInteraction {
     }
 
     @Unique
-    private static String getModIDFromClassName(String className){
+    private String youshallnotgrief$getModIDFromClassName(String className){
         String[] elementParts = className.split("\\.");
         String moduleName = elementParts[0] + "." + elementParts[1] + "." + elementParts[2];
 
-        if(stackPathToModID.containsKey(moduleName)){
-            return stackPathToModID.get(moduleName);
+        if(youshallnotgrief$stackPathToModID.containsKey(moduleName)){
+            return youshallnotgrief$stackPathToModID.get(moduleName);
         }
 
-        FabricLoader.getInstance().getAllMods().forEach(modContainer -> {
-            String modID = modContainer.getMetadata().getId();
+        Platform.getMods().forEach(mod -> {
+            String modID = mod.getModId();
             if(moduleName.contains(modID)){
-                stackPathToModID.put(moduleName, modID);
+                youshallnotgrief$stackPathToModID.put(moduleName, modID);
             }
         });
 
-        if(stackPathToModID.containsKey(moduleName)){
-            return stackPathToModID.get(moduleName);
+        if(youshallnotgrief$stackPathToModID.containsKey(moduleName)){
+            return youshallnotgrief$stackPathToModID.get(moduleName);
         }
 
         return moduleName;

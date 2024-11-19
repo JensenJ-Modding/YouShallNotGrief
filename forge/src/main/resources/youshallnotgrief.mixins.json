@@ -6,7 +6,6 @@
   "client": [
   ],
   "mixins": [
-    "LevelMixin",
     "ExplosionMixin",
     "FireBlockMixin",
     "AnvilMenuMixin",
