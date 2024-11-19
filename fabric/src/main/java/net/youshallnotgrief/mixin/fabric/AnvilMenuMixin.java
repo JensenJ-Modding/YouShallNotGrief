@@ -13,6 +13,8 @@ import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = AnvilMenu.class, priority = 10100)
 public abstract class AnvilMenuMixin {
@@ -29,5 +31,14 @@ public abstract class AnvilMenuMixin {
         return BlockUtils.wrapLevelSetBlock(level, pos, state, i, original, oldState -> {
             BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.DAMAGED, player, "");
         });
+    }
+
+    @Inject(method = "method_24922", at = @At(value = "HEAD"))
+    private static void youshallnotgrief$logAnvilUse(Player player, Level level, BlockPos pos, CallbackInfo ci) {
+        if(level.isClientSide()){
+            return;
+        }
+        BlockState state = level.getBlockState(pos);
+        BlockUtils.addToDatabase(pos, level, state, state, BlockSetCauses.USED, player, "");
     }
 }

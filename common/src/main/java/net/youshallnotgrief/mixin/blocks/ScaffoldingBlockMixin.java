@@ -15,9 +15,9 @@ import org.spongepowered.asm.mixin.injection.At;
 public abstract class ScaffoldingBlockMixin {
 
     @WrapOperation(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;destroyBlock(Lnet/minecraft/core/BlockPos;Z)Z"))
-    public boolean youshallnotgrief$logScaffoldGravityFall(ServerLevel level, BlockPos pos, boolean b, Operation<Boolean> original) {
+    public boolean youshallnotgrief$logScaffoldUnsupportedBreak(ServerLevel level, BlockPos pos, boolean b, Operation<Boolean> original) {
         return BlockUtils.wrapLevelRemoveBlock(level, pos, b, original, oldState -> {
-            BlockUtils.addToDatabase(pos, level, oldState, Blocks.AIR.defaultBlockState(), BlockSetCauses.GRAVITY, null, "");
+            BlockUtils.addToDatabase(pos, level, oldState, Blocks.AIR.defaultBlockState(), BlockSetCauses.UNSUPPORTED, null, "");
         });
     }
 

@@ -7,6 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
@@ -19,7 +20,11 @@ public abstract class ShovelItemMixin {
     @WrapOperation(method = "useOn", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
     public boolean youshallnotgrief$logPathFlattening(Level level, BlockPos pos, BlockState state, int i, Operation<Boolean> original, @Local(argsOnly = true) UseOnContext context) {
         return BlockUtils.wrapLevelSetBlock(level, pos, state, i, original, oldState -> {
-            BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.PAVED, context.getPlayer(), "");
+            if(oldState.getBlock() == Blocks.CAMPFIRE){
+                BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.EXTINGUISH, context.getPlayer(), "");
+            }else{
+                BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.PAVED, context.getPlayer(), "");
+            }
         });
     }
 }

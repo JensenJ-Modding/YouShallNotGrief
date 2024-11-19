@@ -7,7 +7,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
-import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.data.block.*;
 import net.youshallnotgrief.data.block.cause.BlockSetCause;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
@@ -70,8 +69,6 @@ public class BlockUtils {
         if(wasSet){
             if(!level.isClientSide()) {
                 callback.accept(oldState);
-            }else{
-                YouShallNotGriefMod.LOGGER.error(new RuntimeException("wrapLevelSetBlock called from client side.").getStackTrace());
             }
         }
         return wasSet;
@@ -85,8 +82,6 @@ public class BlockUtils {
         if(wasSet){
             if(!level.isClientSide()) {
                 callback.accept(oldState);
-            }else{
-                YouShallNotGriefMod.LOGGER.error(new RuntimeException("wrapLevelSetBlockAndUpdate called from client side.").getStackTrace());
             }
         }
         return wasSet;
@@ -100,8 +95,18 @@ public class BlockUtils {
         if(wasSet){
             if(!level.isClientSide()) {
                 callback.accept(oldState);
-            }else{
-                YouShallNotGriefMod.LOGGER.error(new RuntimeException("wrapLevelRemoveBlock called from client side.").getStackTrace());
+            }
+        }
+        return wasSet;
+    }
+
+    public static boolean wrapLevelDestroyBlock(Level level, BlockPos pos, boolean b, Entity entity, Operation<Boolean> originalRemove, Consumer<BlockState> callback)
+    {
+        BlockState oldState = level.getBlockState(pos);
+        boolean wasSet = originalRemove.call(level, pos, b, entity);
+        if(wasSet){
+            if(!level.isClientSide()) {
+                callback.accept(oldState);
             }
         }
         return wasSet;

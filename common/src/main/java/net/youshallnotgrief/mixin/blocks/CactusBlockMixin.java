@@ -14,9 +14,9 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(value = CactusBlock.class, priority = 10100)
 public abstract class CactusBlockMixin {
 
-    @WrapOperation(method = "randomTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z", ordinal = 0))
-    public boolean youshallnotgrief$logCactusGrow(ServerLevel level, BlockPos pos, BlockState state, int i, Operation<Boolean> original) {
-        return BlockUtils.wrapLevelSetBlock(level, pos, state, i, original, oldState -> {
+    @WrapOperation(method = "randomTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;setBlockAndUpdate(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Z"))
+    public boolean youshallnotgrief$logCactusGrow(ServerLevel level, BlockPos pos, BlockState state, Operation<Boolean> original) {
+        return BlockUtils.wrapLevelSetBlockAndUpdate(level, pos, state, original, oldState -> {
             BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.GROW, null, "");
         });
     }

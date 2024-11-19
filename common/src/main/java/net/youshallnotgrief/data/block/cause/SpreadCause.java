@@ -3,15 +3,16 @@ package net.youshallnotgrief.data.block.cause;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
-public class GravityCause implements BlockSetCause {
+public class SpreadCause implements BlockSetCause {
+
     @Override
     public String getDatabaseTag() {
-        return "#gravity";
+        return "#spread";
     }
 
     @Override
     public MutableComponent getInspectMessage(MutableComponent oldBlockComponent, MutableComponent newBlockComponent, MutableComponent sourceComponent) {
         MutableComponent comp = Component.empty();
-        return comp.append("Gravity caused ").append(oldBlockComponent).append(" to fall");
+        return comp.append(newBlockComponent).append(" spread");
     }
 }

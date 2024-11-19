@@ -4,6 +4,7 @@ import dev.architectury.platform.Platform;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -25,6 +26,8 @@ public class LevelMixin {
         add("neoforge");
         add("google");
         add("unimi");
+        add("mojang");
+        add(YouShallNotGriefMod.MOD_ID);
     }};
 
     @Unique

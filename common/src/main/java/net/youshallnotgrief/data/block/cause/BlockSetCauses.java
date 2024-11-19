@@ -11,13 +11,14 @@ public class BlockSetCauses {
     public static BlockSetCause GRAVITY = registerCause(new GravityCause());
     public static BlockSetCause LAND = registerCause(new LandCause());
     public static BlockSetCause FIRE = registerCause(new FireCause());
-    public static BlockSetCause FIRE_SPREAD = registerCause(new FireSpreadCause());
-    public static BlockSetCause FIRE_EXTINGUISH = registerCause(new FireExtinguishCause());
+    public static BlockSetCause SPREAD = registerCause(new SpreadCause());
     public static BlockSetCause MELT = registerCause(new MeltCause());
     public static BlockSetCause DECAY = registerCause(new DecayCause());
     public static BlockSetCause GROW = registerCause(new GrowCause());
+    public static BlockSetCause EXTINGUISH = registerCause(new ExtinguishCause());
     public static BlockSetCause PORTAL = registerCause(new PortalCause());
     public static BlockSetCause LIT = registerCause(new LitCause());
+    public static BlockSetCause USED = registerCause(new UsedCause());
     public static BlockSetCause SCRAPED = registerCause(new ScrapedCause());
     public static BlockSetCause UNSUPPORTED = registerCause(new UnsupportedCause());
     public static BlockSetCause GOLEM_CREATION = registerCause(new GolemCreationCause());

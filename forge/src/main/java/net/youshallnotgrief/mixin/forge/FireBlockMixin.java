@@ -21,11 +21,4 @@ public abstract class FireBlockMixin {
             BlockUtils.addToDatabase(pos, level, oldState, Blocks.AIR.defaultBlockState(), BlockSetCauses.FIRE, null, "");
         });
     }
-
-    @WrapOperation(method = "tryCatchFire", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
-    public boolean youshallnotgrief$logFireSpreadFire(Level level, BlockPos pos, BlockState state, int i, Operation<Boolean> original) {
-        return BlockUtils.wrapLevelSetBlock(level, pos, state, i, original, oldState -> {
-            BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.FIRE_SPREAD, null, "");
-        });
-    }
 }

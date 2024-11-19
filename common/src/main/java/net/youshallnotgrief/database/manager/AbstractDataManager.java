@@ -26,9 +26,7 @@ public abstract class AbstractDataManager<InsertData, QueryData> implements Data
     @Override
     public void addToDatabase(InsertData data){
         if(isClientSide()){
-            YouShallNotGriefMod.LOGGER.error("Failed to add data to Database Queue. addToDatabase called from clientside.");
-            YouShallNotGriefMod.LOGGER.error(data);
-            return;
+            throw new IllegalStateException("Failed to add data to Database Queue. addToDatabase called from clientside." + data);
         }
         QUEUED_DATA.add(data);
         if(QUEUED_DATA.size() >= MAX_QUEUE_SIZE && isCommitting.compareAndSet(false, true)) {

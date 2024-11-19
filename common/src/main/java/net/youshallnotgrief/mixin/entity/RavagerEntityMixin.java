@@ -17,7 +17,7 @@ public abstract class RavagerEntityMixin {
 
     @WrapOperation(method="aiStep", at = @At(value="INVOKE", target="Lnet/minecraft/world/level/Level;destroyBlock(Lnet/minecraft/core/BlockPos;ZLnet/minecraft/world/entity/Entity;)Z"))
     public boolean youshallnotgrief$logRavagerBreakingLeaves(Level level, BlockPos pos, boolean b, Entity entity, Operation<Boolean> original) {
-        return BlockUtils.wrapLevelRemoveBlock(level, pos, b, original, oldState -> {
+        return BlockUtils.wrapLevelDestroyBlock(level, pos, b, entity, original, oldState -> {
             BlockUtils.addToDatabase(pos, level, oldState, Blocks.AIR.defaultBlockState(), BlockSetCauses.REMOVED, entity, "");
         });
     }

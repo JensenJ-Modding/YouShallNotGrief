@@ -19,7 +19,7 @@ public abstract class HoneycombItemMixin {
     @WrapOperation(method = "method_34719", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
     private static boolean youshallnotgrief$logWaxing(Level level, BlockPos pos, BlockState state, int i, Operation<Boolean> original, @Local(argsOnly = true) UseOnContext context) {
         return BlockUtils.wrapLevelSetBlock(level, pos, state, i, original, oldState -> {
-            BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.SCRAPED, context.getPlayer(), "");
+            BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.WAXED, context.getPlayer(), "");
         });
     }
 }

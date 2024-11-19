@@ -25,13 +25,11 @@ public class DoorBlockMixin {
         BlockPos pos2 = state.getValue(HALF) == DoubleBlockHalf.LOWER ? pos.above() : pos.below();
         BlockState oldState = level.getBlockState(pos);
         BlockState oldState2 = level.getBlockState(pos2);
-        boolean wasSet = original.call(level, pos, state, i);
-        if(wasSet){
+        return BlockUtils.wrapLevelSetBlock(level, pos, state, i, original, s -> {
             BlockSetCause cause = bl ? BlockSetCauses.OPENED : BlockSetCauses.CLOSED;
 
             BlockUtils.addToDatabase(pos, level, oldState, state, cause, entity, "");
             BlockUtils.addToDatabase(pos2, level, oldState2, state, cause, entity, "");
-        }
-        return wasSet;
+        });
     }
 }

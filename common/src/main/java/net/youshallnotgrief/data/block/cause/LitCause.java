@@ -12,6 +12,9 @@ public class LitCause implements BlockSetCause {
     @Override
     public MutableComponent getInspectMessage(MutableComponent oldBlockComponent, MutableComponent newBlockComponent, MutableComponent sourceComponent) {
         MutableComponent comp = Component.empty();
+        if(sourceComponent.getString().isEmpty()){
+            return comp.append(oldBlockComponent).append(" was lit");
+        }
         return comp.append(sourceComponent).append(" lit ").append(newBlockComponent);
     }
 }
