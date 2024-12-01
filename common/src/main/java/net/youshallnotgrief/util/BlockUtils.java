@@ -50,6 +50,7 @@ public class BlockUtils {
     //Used by mixins to ensure that setBlock was actually successful before recording changes.
     public static boolean wrapLevelSetBlock(LevelAccessor level, BlockPos pos, BlockState state, int i, Operation<Boolean> originalSet, Consumer<BlockState> callback)
     {
+        MixinDataHolder.wasLevelSetTracked = true;
         BlockState oldState = level.getBlockState(pos);
         boolean wasSet = originalSet.call(level, pos, state, i);
         if(wasSet){
@@ -63,6 +64,7 @@ public class BlockUtils {
     //Used by mixins to ensure that setBlockAndUpdate was actually successful before recording changes.
     public static boolean wrapLevelSetBlockAndUpdate(LevelAccessor level, BlockPos pos, BlockState state, Operation<Boolean> originalSet, Consumer<BlockState> callback)
     {
+        MixinDataHolder.wasLevelSetTracked = true;
         BlockState oldState = level.getBlockState(pos);
         boolean wasSet = originalSet.call(level, pos, state);
         if(wasSet){
@@ -76,6 +78,7 @@ public class BlockUtils {
     //Used by mixins to ensure that removeBlock was actually successful before recording changes.
     public static boolean wrapLevelRemoveBlock(Level level, BlockPos pos, boolean b, Operation<Boolean> originalRemove, Consumer<BlockState> callback)
     {
+        MixinDataHolder.wasLevelSetTracked = true;
         BlockState oldState = level.getBlockState(pos);
         boolean wasSet = originalRemove.call(level, pos, b);
         if(wasSet){
@@ -88,6 +91,7 @@ public class BlockUtils {
 
     public static boolean wrapLevelDestroyBlock(Level level, BlockPos pos, boolean b, Entity entity, Operation<Boolean> originalRemove, Consumer<BlockState> callback)
     {
+        MixinDataHolder.wasLevelSetTracked = true;
         BlockState oldState = level.getBlockState(pos);
         boolean wasSet = originalRemove.call(level, pos, b, entity);
         if(wasSet){

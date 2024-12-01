@@ -13,6 +13,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
+import net.youshallnotgrief.util.MixinDataHolder;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -28,6 +29,7 @@ public class BlockBehaviourMixin {
             if (!originalResult) {
                 if(levelReader instanceof ServerLevel level) {
                     if(youshallnotgrief$shouldRecordNoSupport(level, blockPos)){
+                        MixinDataHolder.wasLevelSetTracked = true;
                         BlockUtils.addToDatabase(blockPos, level, blockState, Blocks.AIR.defaultBlockState(), BlockSetCauses.UNSUPPORTED, null, "");
                     }
                 }
