@@ -35,7 +35,7 @@ public class BlockSetCauses {
     public static BlockSetCause PAVED = registerCause(new PavedCause());
     public static BlockSetCause PLOUGHED = registerCause(new PloughedCause());
     public static BlockSetCause DAMAGED = registerCause(new DamagedCause());
-
+    public static BlockSetCause CHANGED = registerCause(new ChangedCause());
     public static BlockSetCause MODDED = registerCause(new ModdedCause());
 
     private static BlockSetCause registerCause(BlockSetCause cause){

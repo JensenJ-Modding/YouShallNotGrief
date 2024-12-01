@@ -27,6 +27,7 @@
     "blocks.LeavesBlockMixin",
     "blocks.RootedDirtBlockMixin",
     "blocks.ScaffoldingBlockMixin",
+    "blocks.SpreadingSnowyDirtBlockMixin",
     "blocks.StemBlockMixin",
     "blocks.SugarcaneBlockMixin",
     "blocks.VineBlockMixin",
