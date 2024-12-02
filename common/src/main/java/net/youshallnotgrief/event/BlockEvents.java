@@ -47,12 +47,6 @@ public class BlockEvents {
             return EventResult.pass();
         });
 
-        BlockEvent.FALLING_LAND.register((Level level, BlockPos pos, BlockState fallState, BlockState landOn, FallingBlockEntity entity) -> {
-            BlockState newState = level.getBlockState(pos);
-            MixinDataHolder.wasLevelSetTracked = true;
-            BlockUtils.addToDatabase(pos, level, Blocks.AIR.defaultBlockState(), newState, BlockSetCauses.LAND, entity, "");
-        });
-
         InteractionEvent.FARMLAND_TRAMPLE.register((Level level, BlockPos pos, BlockState state, float distance, Entity entity) -> {
             BlockState newState = level.getBlockState(pos);
             MixinDataHolder.wasLevelSetTracked = true;

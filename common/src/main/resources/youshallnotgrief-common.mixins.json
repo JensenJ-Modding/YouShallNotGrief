@@ -18,6 +18,7 @@
     "blocks.BambooSaplingBlockMixin",
     "blocks.BambooStalkBlockMixin",
     "blocks.BlockBehaviourMixin",
+    "blocks.BuddingAmethystBlockMixin",
     "blocks.CactusBlockMixin",
     "blocks.CampfireBlockMixin",
     "blocks.CarvedPumpkinBlockMixin",
