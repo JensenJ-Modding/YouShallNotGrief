@@ -35,6 +35,12 @@ public class LevelMixin {
     @Unique
     HashMap<String, String> youshallnotgrief$stackPathToModID = new HashMap<>();
 
+    //This variable is used to determine how deep in the callstack we are
+    //this is used when level.setBlock is called recursively for neighbour updates
+    //so that we know whether to log them or not
+    @Unique
+    int youshallnotgrief$callDepth = 0;
+
     @Unique
     BlockState youshallnotgrief$oldBlockState = null;
 
@@ -44,7 +50,11 @@ public class LevelMixin {
         if(level.isClientSide){
             return;
         }
-        youshallnotgrief$oldBlockState = level.getBlockState(blockPos);
+
+        youshallnotgrief$callDepth++;
+        if(youshallnotgrief$callDepth == 1) {
+            youshallnotgrief$oldBlockState = level.getBlockState(blockPos);
+        }
     }
 
     @Inject(at = @At("RETURN"), method="setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;II)Z")
@@ -54,9 +64,17 @@ public class LevelMixin {
             return;
         }
 
+        //TODO: Fix if this becomes an issue
+        //Only level sets with a depth of 1 will be logged, this is because wasLevelSetTracked is true in this case
+        //this means that some things which rely on chained block updates may not be logged
         youshallnotgrief$handleLoggingBlock(blockPos, blockState, cir);
-        MixinDataHolder.wasLevelSetTracked = false;
-        youshallnotgrief$oldBlockState = null;
+
+        if(youshallnotgrief$callDepth == 1) {
+            MixinDataHolder.wasLevelSetTracked = false;
+            youshallnotgrief$oldBlockState = null;
+        }
+
+        youshallnotgrief$callDepth--;
     }
 
     @Unique
@@ -64,6 +82,10 @@ public class LevelMixin {
         //Only log if the block was actually set
         if (!cir.getReturnValue()){
             return;
+        }
+
+        if(youshallnotgrief$shouldLogDebugInfo()){
+            YouShallNotGriefMod.LOGGER.warn("Skipping block logging from {} {} at {} due to chained block update call depth: {}", youshallnotgrief$oldBlockState, blockState, blockPos, youshallnotgrief$callDepth);
         }
 
         Level level = (Level) (Object) this;
@@ -94,9 +116,7 @@ public class LevelMixin {
 
         //This means that we all the functions in the stacktrace were vanilla as causeTraceIndex was never set
         if(causeTraceIndex == 0){
-
-            //TODO: Make a config which can override this for non dev environments
-            if(Platform.isDevelopmentEnvironment()) {
+            if(youshallnotgrief$shouldLogDebugInfo()) {
                 YouShallNotGriefMod.LOGGER.warn("Uncategorized level set occurred from {} to {}:", youshallnotgrief$oldBlockState, blockState);
                 for (int i = 3; i < stackTraceElements.length - 1; i++) {
                     YouShallNotGriefMod.LOGGER.warn("  {}", stackTraceElements[i]);
@@ -112,7 +132,7 @@ public class LevelMixin {
             }
         }
 
-        //Get the cause, modid, function name etc from the stack trace elements
+        //Get the cause, modid, function name etc. from the stack trace elements
         StackTraceElement causeElement = stackTraceElements[causeTraceIndex];
         String methodName = causeElement.getMethodName();
         String className = causeElement.getClassName();
@@ -124,6 +144,12 @@ public class LevelMixin {
         String fullName = className + ":" + methodName;
 
         BlockUtils.addToDatabase(blockPos, level, youshallnotgrief$oldBlockState, blockState, moduleName, fullName);
+    }
+
+    @Unique
+    private boolean youshallnotgrief$shouldLogDebugInfo(){
+        //TODO: Make a config which can override this for non dev environments
+        return Platform.isDevelopmentEnvironment();
     }
 
     @Unique
