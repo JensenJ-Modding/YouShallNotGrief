@@ -23,6 +23,7 @@ public class LevelMixin {
     @Unique
     HashSet<String> youshallnotgrief$vanillaModules = new HashSet<>() {{
         add("minecraft");
+        add("java");
         add("fabricmc");
         add("forge");
         add("neoforge");
@@ -84,8 +85,8 @@ public class LevelMixin {
             return;
         }
 
-        if(youshallnotgrief$shouldLogDebugInfo()){
-            YouShallNotGriefMod.LOGGER.warn("Skipping block logging from {} {} at {} due to chained block update call depth: {}", youshallnotgrief$oldBlockState, blockState, blockPos, youshallnotgrief$callDepth);
+        if(youshallnotgrief$shouldLogDebugInfo() && youshallnotgrief$callDepth > 1){
+            YouShallNotGriefMod.LOGGER.warn("Skipping block logging from {} to {} at {} due to chained block update call depth: {}", youshallnotgrief$oldBlockState, blockState, blockPos, youshallnotgrief$callDepth);
         }
 
         Level level = (Level) (Object) this;
@@ -114,8 +115,9 @@ public class LevelMixin {
             }
         }
 
-        //This means that we all the functions in the stacktrace were vanilla as causeTraceIndex was never set
-        if(causeTraceIndex == 0){
+        //This means that all the functions in the stacktrace were vanilla as causeTraceIndex was never set
+        boolean isVanillaInteraction = causeTraceIndex == 0;
+        if(isVanillaInteraction){
             if(youshallnotgrief$shouldLogDebugInfo()) {
                 YouShallNotGriefMod.LOGGER.warn("Uncategorized level set occurred from {} to {}:", youshallnotgrief$oldBlockState, blockState);
                 for (int i = 3; i < stackTraceElements.length - 1; i++) {
@@ -137,7 +139,12 @@ public class LevelMixin {
         String methodName = causeElement.getMethodName();
         String className = causeElement.getClassName();
 
-        String moduleName = "@" + youshallnotgrief$getModIDFromClassName(className);
+        String moduleName;
+        if(isVanillaInteraction) {
+            moduleName = "@minecraft";
+        }else{
+            moduleName = "@" + youshallnotgrief$getModIDFromClassName(className);
+        }
 
         methodName = methodName.substring(methodName.lastIndexOf(".") + 1);
         className = className.substring(className.lastIndexOf(".") + 1);
