@@ -13,6 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.data.block.BlockSetData;
 import net.youshallnotgrief.data.block.BlockSetQueryData;
@@ -137,7 +138,7 @@ public class InspectionMode {
     }
 
     private static Component getHeader(Level level, BlockPos pos, String dimensionName){
-        MutableComponent blockComp = Component.literal(BlockUtils.getBlockIDFromBlockState(level.getBlockState(pos)))
+        MutableComponent blockComp = Component.literal(BlockUtils.getBlockNameFromBlockState(level.getBlockState(pos)))
                 .withStyle(style -> style
                         .withColor(TextColor.fromLegacyFormat(ChatFormatting.GRAY))
                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal((BlockUtils.getBlockIDFromBlockState(level.getBlockState(pos))))))
@@ -164,39 +165,19 @@ public class InspectionMode {
                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(formatTime(data.time()))))
                 );
 
-        //TODO: Use localised name of blocks
-        MutableComponent oldBlockComp = Component.literal(data.oldBlock())
-                .withStyle(style -> style
-                        .withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_AQUA))
-                        //.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(data.blockSetBlockData().blockInternalName())))
-                );
-
-        MutableComponent newBlockComp = Component.literal(data.newBlock())
-                .withStyle(style -> style
-                                .withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_AQUA))
-                        //.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(data.blockSetBlockData().blockInternalName())))
-                );
+        MutableComponent oldBlockComp = getBlockComponentFromString(data.oldBlock());
+        MutableComponent newBlockComp = getBlockComponentFromString(data.newBlock());
 
         String source = data.source();
         BlockSetCause cause = BlockSetCauses.getCauseFromTag(data.cause());
         if(cause == null){
+            YouShallNotGriefMod.LOGGER.warn("Tried to show logs for a block cause which does not exist: {}.", data.cause());
             return null;
         }
 
-        MutableComponent sourceComp;
+        MutableComponent sourceComp = getSourceComponentFromString(source, data.sourceDesc());
         MutableComponent comp = Component.empty().append(timeComp).append(" - ");
-        if(data.sourceDesc().isEmpty()){
-            sourceComp = Component.literal(source)
-                    .withStyle(style -> style
-                            .withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_AQUA))
-                    );
-        }else{
-            sourceComp = Component.literal(source)
-                    .withStyle(style -> style
-                            .withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_AQUA))
-                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(data.sourceDesc())))
-                    );
-        }
+
         return comp.append(cause.getInspectMessage(oldBlockComp, newBlockComp, sourceComp));
 
     }
@@ -257,7 +238,7 @@ public class InspectionMode {
         return now.format(formatter);
     }
 
-    public static String formatTimeAgo(Timestamp timestamp) {
+    private static String formatTimeAgo(Timestamp timestamp) {
         LocalDateTime now = LocalDateTime.now();
         Duration duration = Duration.between(timestamp.toLocalDateTime(), now);
 
@@ -272,6 +253,37 @@ public class InspectionMode {
             return String.format("%.2fh ago", hours);
         } else {
             return String.format("%.2fm ago", minutes);
+        }
+    }
+
+    private static MutableComponent getBlockComponentFromString(String blockName){
+        Block block = BlockUtils.getBlockFromString(blockName);
+        if(block == null){
+            return Component.literal(blockName)
+                    .withStyle(style -> style
+                            .withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_AQUA))
+                    );
+        }else{
+            return Component.literal(BlockUtils.getBlockNameFromBlockState(block.defaultBlockState()))
+                    .withStyle(style -> style
+                            .withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_AQUA))
+                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(blockName)))
+                    );
+        }
+    }
+
+    private static MutableComponent getSourceComponentFromString(String source, String sourceDesc){
+        if(sourceDesc.isEmpty()){
+            return Component.literal(source)
+                    .withStyle(style -> style
+                            .withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_AQUA))
+                    );
+        }else{
+            return Component.literal(source)
+                    .withStyle(style -> style
+                            .withColor(TextColor.fromLegacyFormat(ChatFormatting.DARK_AQUA))
+                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(sourceDesc)))
+                    );
         }
     }
 }

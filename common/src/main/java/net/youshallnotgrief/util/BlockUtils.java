@@ -1,12 +1,16 @@
 package net.youshallnotgrief.util;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import dev.architectury.registry.registries.Registrar;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.data.block.*;
 import net.youshallnotgrief.data.block.cause.BlockSetCause;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
@@ -20,6 +24,8 @@ import java.util.function.Consumer;
 
 public class BlockUtils {
 
+    private static final Registrar<Block> BLOCKS_REGISTRY = YouShallNotGriefMod.REGISTRY_MANAGER.get().get(Registries.BLOCK);
+
     public static String getDimensionNameFromLevel(Level level){
         return level.dimension().location().toString();
     }
@@ -27,6 +33,14 @@ public class BlockUtils {
     public static String getBlockIDFromBlockState(BlockState state){
         ResourceLocation location = state.getBlock().arch$registryName();
         return location != null ? location.toString() : "";
+    }
+
+    public static String getBlockNameFromBlockState(BlockState state){
+        return state.getBlock().getName().getString();
+    }
+
+    public static Block getBlockFromString(String resourceLocation){
+        return BLOCKS_REGISTRY.get(new ResourceLocation(resourceLocation));
     }
 
     //Should be called after a call to level.setBlock has been made.

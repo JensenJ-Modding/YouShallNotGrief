@@ -1,8 +1,10 @@
 package net.youshallnotgrief;
 
+import com.google.common.base.Suppliers;
 import dev.architectury.event.CompoundEventResult;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.*;
+import dev.architectury.registry.registries.RegistrarManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -18,9 +20,12 @@ import net.youshallnotgrief.util.InspectionMode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.function.Supplier;
+
 public class YouShallNotGriefMod {
     public static final String MOD_ID = "youshallnotgrief";
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
+    public static final Supplier<RegistrarManager> REGISTRY_MANAGER = Suppliers.memoize(() -> RegistrarManager.get(YouShallNotGriefMod.MOD_ID));
 
     public static void init() {
         registerEvents();
