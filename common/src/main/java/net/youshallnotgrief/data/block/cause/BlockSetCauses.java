@@ -37,6 +37,7 @@ public class BlockSetCauses {
     public static BlockSetCause DAMAGED = registerCause(new DamagedCause());
     public static BlockSetCause CHANGED = registerCause(new ChangedCause());
     public static BlockSetCause HATCHED = registerCause(new HatchedCause());
+    public static BlockSetCause INFESTED = registerCause(new InfestedCause());
     public static BlockSetCause MODDED = registerCause(new ModdedCause());
 
     private static BlockSetCause registerCause(BlockSetCause cause){
