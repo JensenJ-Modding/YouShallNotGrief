@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -35,6 +36,9 @@ public class LevelMixin {
 
     @Unique
     HashMap<String, String> youshallnotgrief$stackPathToModID = new HashMap<>();
+
+    @Unique
+    HashSet<String> youshallnotgrief$debugLoggedInteractions = new HashSet<>();
 
     //This variable is used to determine how deep in the callstack we are
     //this is used when level.setBlock is called recursively for neighbour updates
@@ -93,8 +97,9 @@ public class LevelMixin {
             return;
         }
 
-        if(youshallnotgrief$shouldLogDebugInfo() && youshallnotgrief$callDepth > 1){
-            YouShallNotGriefMod.LOGGER.warn("Skipping block logging from {} to {} at {} due to chained block update call depth: {}", youshallnotgrief$oldBlockState, blockState, blockPos, youshallnotgrief$callDepth);
+        String skippedBlockLog = MessageFormat.format("Skipping block logging from {0} to {1} due to chained block update call depth", youshallnotgrief$oldBlockState, blockState);
+        if(youshallnotgrief$shouldLogDebugInfo(skippedBlockLog) && youshallnotgrief$callDepth > 1){
+            YouShallNotGriefMod.LOGGER.warn("{} {} at {}", skippedBlockLog, youshallnotgrief$callDepth, blockPos);
         }
 
         Level level = (Level) (Object) this;
@@ -118,11 +123,13 @@ public class LevelMixin {
         //This means that all the functions in the stacktrace were vanilla as causeTraceIndex was never set
         boolean isVanillaInteraction = causeTraceIndex == 0;
         if(isVanillaInteraction){
-            if(youshallnotgrief$shouldLogDebugInfo()) {
-                YouShallNotGriefMod.LOGGER.warn("Uncategorized level set occurred from {} to {}:", youshallnotgrief$oldBlockState, blockState);
-                for (int i = 3; i < stackTraceElements.length - 1; i++) {
-                    YouShallNotGriefMod.LOGGER.warn("  {}", stackTraceElements[i]);
-                }
+            StringBuilder uncategorizedBlockLog = new StringBuilder(MessageFormat.format("Uncategorized level set occurred from {0} to {1}:", youshallnotgrief$oldBlockState, blockState));
+            for (int i = 3; i < stackTraceElements.length - 1; i++) {
+                uncategorizedBlockLog.append("\n  ").append(stackTraceElements[i]);
+            }
+
+            if(youshallnotgrief$shouldLogDebugInfo(uncategorizedBlockLog.toString())) {
+                YouShallNotGriefMod.LOGGER.warn(uncategorizedBlockLog.toString());
             }
 
             for (int i = 3; i < stackTraceElements.length - 1; i++) {
@@ -154,9 +161,24 @@ public class LevelMixin {
     }
 
     @Unique
-    private boolean youshallnotgrief$shouldLogDebugInfo(){
-        //TODO: Make a config which can override this for non dev environments
-        return Platform.isDevelopmentEnvironment();
+    private boolean youshallnotgrief$shouldLogDebugInfo(String log){
+        //TODO: Implement config
+        boolean allowDevLogsInProduction = true; //placeholder for config value
+        boolean allowLogsToBePrintedMultipleTimes = false; //placeholder for config value
+
+        if(Platform.isDevelopmentEnvironment() || allowDevLogsInProduction){
+            if(allowLogsToBePrintedMultipleTimes){
+                return true;
+            }
+
+            if(youshallnotgrief$debugLoggedInteractions.contains(log)){
+                return false;
+            }
+
+            youshallnotgrief$debugLoggedInteractions.add(log);
+            return true;
+        }
+        return false;
     }
 
     @Unique
