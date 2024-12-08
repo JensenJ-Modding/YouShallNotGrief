@@ -85,20 +85,20 @@ public class LevelMixin {
             return;
         }
 
+        if(youshallnotgrief$oldBlockState == null){
+            youshallnotgrief$oldBlockState = Blocks.AIR.defaultBlockState();
+        }
+
+        if(youshallnotgrief$oldBlockState.getBlock() == blockState.getBlock()){
+            return;
+        }
+
         if(youshallnotgrief$shouldLogDebugInfo() && youshallnotgrief$callDepth > 1){
             YouShallNotGriefMod.LOGGER.warn("Skipping block logging from {} to {} at {} due to chained block update call depth: {}", youshallnotgrief$oldBlockState, blockState, blockPos, youshallnotgrief$callDepth);
         }
 
         Level level = (Level) (Object) this;
         if(MixinDataHolder.wasLevelSetTracked){
-            return;
-        }
-
-        if(youshallnotgrief$oldBlockState == null){
-            youshallnotgrief$oldBlockState = Blocks.AIR.defaultBlockState();
-        }
-
-        if(youshallnotgrief$oldBlockState.getBlock() == blockState.getBlock()){
             return;
         }
 
