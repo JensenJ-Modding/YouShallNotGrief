@@ -5,7 +5,7 @@ import net.minecraft.world.entity.Mob;
 
 public class ExplosionUtils {
 
-    //TODO: Redo this formatting
+    //TODO: Redo this formatting so that translations are resolved at inspect time, rather than written to database
     public static String getSourceDescription(LivingEntity sourceEntity){
         String sourceDesc = "";
         if(sourceEntity != null){

@@ -103,7 +103,7 @@ public class LevelMixin {
             return;
         }
 
-        String skippedBlockLog = MessageFormat.format("Skipping block logging from {0} to {1} due to chained block update call depth", youshallnotgrief$oldBlockState, blockState);
+        String skippedBlockLog = MessageFormat.format("Skipping block logging from {0} to {1} due to chained block update call depth", youshallnotgrief$oldBlockState.getBlock(), blockState.getBlock());
         if(youshallnotgrief$shouldLogDebugInfo(skippedBlockLog) && youshallnotgrief$callDepth > 1){
             YouShallNotGriefMod.LOGGER.warn("{} {} at {}", skippedBlockLog, youshallnotgrief$callDepth, blockPos);
         }

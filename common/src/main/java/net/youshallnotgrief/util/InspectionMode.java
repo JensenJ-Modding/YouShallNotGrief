@@ -79,24 +79,24 @@ public class InspectionMode {
     public static void toggleInspectMode(Player player){
         if(INSPECTING_PLAYERS.contains(player)){
             INSPECTING_PLAYERS.remove(player);
-            player.sendSystemMessage(Component.literal("Exited inspection mode").withStyle(style -> style
+            player.sendSystemMessage(Component.translatable("msg.youshallnotgrief.inspection.exit").withStyle(style -> style
                     .withColor(getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))));
         }else{
             INSPECTING_PLAYERS.add(player);
-            player.sendSystemMessage(Component.literal("Entered inspection mode").withStyle(style -> style
+            player.sendSystemMessage(Component.translatable("msg.youshallnotgrief.inspection.enter").withStyle(style -> style
                     .withColor(getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))));
         }
     }
 
     public static void showDetails(Player player, int pageNumber){
         if(!InspectionMode.INSPECTING_PLAYERS.contains(player)){
-            player.sendSystemMessage(Component.literal("You must be in inspect mode to do this.").withStyle(style -> style
+            player.sendSystemMessage(Component.translatable("error.youshallnotgrief.inspection.outofinspection").withStyle(style -> style
                     .withColor(getTextColourFromConfig(ServerConfig.inspectionErrorColour.get()))));
             return;
         }
 
         if(!CURRENTLY_SELECTED_BLOCK.containsKey(player)){
-            player.sendSystemMessage(Component.literal("You must inspect something first.").withStyle(style -> style
+            player.sendSystemMessage(Component.translatable("error.youshallnotgrief.inspection.inspectfirst").withStyle(style -> style
                     .withColor(getTextColourFromConfig(ServerConfig.inspectionErrorColour.get()))));
             return;
         }
@@ -112,14 +112,14 @@ public class InspectionMode {
             int count = retrieveResult.count();
 
             if(count == 0){
-                player.sendSystemMessage(Component.literal("No data was found for the selected block.").withStyle(style -> style
+                player.sendSystemMessage(Component.translatable("error.youshallnotgrief.inspection.nodata").withStyle(style -> style
                         .withColor(getTextColourFromConfig(ServerConfig.inspectionErrorColour.get()))));
                 return;
             }
 
             int maxPageCount = (int) Math.ceil((double) count / ACTIONS_PER_PAGE);
             if(pageNumber >= maxPageCount){
-                player.sendSystemMessage(Component.literal("This block does not have that many entries. It currently has a maximum of " + maxPageCount + ".").withStyle(style -> style
+                player.sendSystemMessage(Component.translatable("error.youshallnotgrief.inspection.invalidpage", Component.literal(String.valueOf(maxPageCount))).withStyle(style -> style
                         .withColor(getTextColourFromConfig(ServerConfig.inspectionErrorColour.get()))));
                 return;
             }
@@ -135,7 +135,7 @@ public class InspectionMode {
             player.sendSystemMessage(getFooter(pageNumber, maxPageCount));
 
         } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            YouShallNotGriefMod.LOGGER.info("{} failed to inspect page {} of block at coordinates {} {} {} in {}. The database failed to retrieve data for this location.",
+            YouShallNotGriefMod.LOGGER.error("{} failed to inspect page {} of block at coordinates {} {} {} in {}. The database failed to retrieve data for this location.",
                     player.getName().getString(), pageNumber + 1, pos.getX(), pos.getY(), pos.getZ(), dimensionID);
             return;
         }
@@ -161,13 +161,12 @@ public class InspectionMode {
                         .withColor(getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))
                 );
 
-        MutableComponent comp = Component.empty().withStyle(style -> style
+        return Component.translatable("msg.youshallnotgrief.inspection.header", blockComp, position, dimension).withStyle(style -> style
                 .withColor(getTextColourFromConfig(ServerConfig.inspectionBackgroundColour.get())));
-        return comp.append(blockComp).append(" at ").append(position).append(" in ").append(dimension);
     }
 
     private static Component getData(BlockSetData data){
-        MutableComponent timeComp = Component.literal(formatTimeAgo(data.time()))
+        MutableComponent timeComp = formatTimeAgo(data.time())
                 .withStyle(style -> style
                         .withColor(getTextColourFromConfig(ServerConfig.inspectionSecondaryColour.get()))
                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(formatTime(data.time()))))
@@ -188,7 +187,6 @@ public class InspectionMode {
                 .withColor(getTextColourFromConfig(ServerConfig.inspectionBackgroundColour.get())));
 
         return comp.append(cause.getInspectMessage(oldBlockComp, newBlockComp, sourceComp));
-
     }
 
     private static Component getFooter(int currentPage, int maxPageCount) {
@@ -244,14 +242,13 @@ public class InspectionMode {
         return comp;
     }
 
-
     private static String formatTime(Timestamp timestamp){
         LocalDateTime now = timestamp.toLocalDateTime();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(ServerConfig.inspectionFullTimeFormat.get());
         return now.format(formatter);
     }
 
-    private static String formatTimeAgo(Timestamp timestamp) {
+    private static MutableComponent formatTimeAgo(Timestamp timestamp) {
         LocalDateTime now = LocalDateTime.now();
         Duration duration = Duration.between(timestamp.toLocalDateTime(), now);
 
@@ -260,12 +257,13 @@ public class InspectionMode {
         double hours = totalSeconds / 3600.0;
         double minutes = totalSeconds / 60.0;
 
+        String timeFormat = "%." + ServerConfig.inspectionTimePrecision.get().toString() + "f";
         if (days >= 1) {
-            return String.format("%.2fd ago", days);
+            return Component.literal(String.format(timeFormat, days)).append(Component.translatable("msg.youshallnotgrief.inspection.time.days"));
         } else if (hours >= 1) {
-            return String.format("%.2fh ago", hours);
+            return Component.literal(String.format(timeFormat, hours)).append(Component.translatable("msg.youshallnotgrief.inspection.time.hours"));
         } else {
-            return String.format("%.2fm ago", minutes);
+            return Component.literal(String.format(timeFormat, minutes)).append(Component.translatable("msg.youshallnotgrief.inspection.time.minutes"));
         }
     }
 

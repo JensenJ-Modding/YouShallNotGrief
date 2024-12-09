@@ -6,7 +6,7 @@ public class ServerConfig {
 
     public static ForgeConfigSpec SERVER_CONFIG;
 
-    private static final String CATEGORY_COLOURS = "colours";
+    private static final String CATEGORY_INSPECTION = "inspection";
     private static final String CATEGORY_DEBUG = "debug";
     private static final String CATEGORY_LOGGING = "logging";
     private static final String CATEGORY_BLOCK = "block";
@@ -14,11 +14,13 @@ public class ServerConfig {
     private static final String CATEGORY_MOB = "mobs";
     private static final String CATEGORY_INTERACTION = "interaction";
 
-    //Colour settings
+    //Inspection settings
     public static ForgeConfigSpec.ConfigValue<String> inspectionPrimaryColour;
     public static ForgeConfigSpec.ConfigValue<String> inspectionSecondaryColour;
     public static ForgeConfigSpec.ConfigValue<String> inspectionBackgroundColour;
     public static ForgeConfigSpec.ConfigValue<String> inspectionErrorColour;
+    public static ForgeConfigSpec.ConfigValue<Integer> inspectionTimePrecision;
+    public static ForgeConfigSpec.ConfigValue<String> inspectionFullTimeFormat;
 
     //Debug settings
     public static ForgeConfigSpec.ConfigValue<Boolean> debugLogUnhandledBlockSets;
@@ -73,7 +75,11 @@ public class ServerConfig {
     static {
         ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
-        BUILDER.comment("Colours used for the inspection mode").push(CATEGORY_COLOURS);
+        BUILDER.comment("Colours used for the inspection mode").push(CATEGORY_INSPECTION);
+        inspectionTimePrecision = BUILDER.comment("Number of decimal points to use when displaying time information [Default: 2]")
+                .define("inspectionTimePrecision", 2);
+        inspectionFullTimeFormat = BUILDER.comment("Full format of time to use when hovering over time value [Default: dd/MM/yyyy - HH:mm:ss]")
+                .define("inspectionFullTimeFormat", "dd/MM/yyyy - HH:mm:ss");
         inspectionPrimaryColour = BUILDER.comment("Primary text colour used when in inspection mode [Default: #FFAA00]")
                 .define("inspectionPrimaryColour", "#FFAA00");
         inspectionSecondaryColour = BUILDER.comment("Secondary text colour used when in inspection mode [Default: #BA9B5D]")
@@ -107,7 +113,6 @@ public class ServerConfig {
         logMobHatching = BUILDER.define("logMobHatching", true);
         logMobInfestingBlock = BUILDER.define("logMobInfestingBlock", true);
         logMobDoorBreak = BUILDER.define("logMobDoorBreak", true);
-        logMobOpenDoor = BUILDER.define("logMobOpenDoor", true);
         logMobEatBlock = BUILDER.define("logMobEatBlock", true);
         logEndermanGriefing = BUILDER.define("logEndermanGriefing", true);
         logEnderDragonGriefing = BUILDER.define("logEnderDragonGriefing", true);
@@ -145,6 +150,7 @@ public class ServerConfig {
         logPloughing = BUILDER.define("logPloughing", true);
         logAnvilUse = BUILDER.define("logAnvilUse", true);
         BUILDER.pop();
+        logMobOpenDoor = BUILDER.define("logMobOpenDoor", true);
         logProjectileLightBlock = BUILDER.define("logProjectileLightBlock", true);
         BUILDER.pop();
 
