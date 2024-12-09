@@ -55,6 +55,8 @@ public class ServerConfig {
     public static ForgeConfigSpec.ConfigValue<Boolean> logGrassSpread;
     public static ForgeConfigSpec.ConfigValue<Boolean> logPortals;
     public static ForgeConfigSpec.ConfigValue<Boolean> logExplosions;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logFallbackLevelSets;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logModdedLevelSets;
 
     //Player interaction logging
     public static ForgeConfigSpec.ConfigValue<Boolean> logFlintAndSteel;
@@ -129,6 +131,8 @@ public class ServerConfig {
         logGrassSpread = BUILDER.define("logGrassSpread", true);
         logPortals = BUILDER.define("logPortals", true);
         logExplosions = BUILDER.define("logExplosions", true);
+        logFallbackLevelSets = BUILDER.define("logFallbackLevelSets", true);
+        logModdedLevelSets = BUILDER.define("logModdedLevelSets", true);
         BUILDER.pop();
 
         BUILDER.comment("Interaction logging settings, by default everything is logged.").push(CATEGORY_INTERACTION);

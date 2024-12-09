@@ -25,7 +25,7 @@ public class LevelMixin {
     @Unique
     HashSet<String> youshallnotgrief$vanillaModules = new HashSet<>() {{
         add("minecraft");
-        add("java");
+        add("java.");
         add("fabricmc");
         add("forge");
         add("neoforge");
@@ -90,6 +90,11 @@ public class LevelMixin {
             return;
         }
 
+        //If we are not logging fallback or modded blocks, we can skip this entire method
+        if(!ServerConfig.logFallbackLevelSets.get() && !ServerConfig.logModdedLevelSets.get()){
+            return;
+        }
+
         if(youshallnotgrief$oldBlockState == null){
             youshallnotgrief$oldBlockState = Blocks.AIR.defaultBlockState();
         }
@@ -149,8 +154,15 @@ public class LevelMixin {
 
         String moduleName;
         if(isVanillaInteraction) {
+            if(!ServerConfig.logFallbackLevelSets.get()){
+                return;
+            }
             moduleName = "@minecraft";
+
         }else{
+            if(!ServerConfig.logModdedLevelSets.get()){
+                return;
+            }
             moduleName = "@" + youshallnotgrief$getModIDFromClassName(className);
         }
 
