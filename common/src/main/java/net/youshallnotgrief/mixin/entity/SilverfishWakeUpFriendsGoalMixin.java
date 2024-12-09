@@ -7,6 +7,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.monster.Silverfish;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Final;
@@ -24,7 +25,9 @@ public class SilverfishWakeUpFriendsGoalMixin {
     @WrapOperation(method="tick", at = @At(value="INVOKE", target="Lnet/minecraft/world/level/Level;destroyBlock(Lnet/minecraft/core/BlockPos;ZLnet/minecraft/world/entity/Entity;)Z"))
     private boolean youshallnotgrief$logSilverfishHatchBlock(Level level, BlockPos pos, boolean b, Entity entity, Operation<Boolean> original) {
         return BlockUtils.wrapLevelDestroyBlock(level, pos, b, entity, original, oldState -> {
-            BlockUtils.addToDatabase(pos, level, oldState, Blocks.AIR.defaultBlockState(), BlockSetCauses.HATCHED, silverfish, "");
+            if(ServerConfig.logMobHatching.get()) {
+                BlockUtils.addToDatabase(pos, level, oldState, Blocks.AIR.defaultBlockState(), BlockSetCauses.HATCHED, silverfish, "");
+            }
         });
     }
 }

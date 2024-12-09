@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.portal.PortalForcer;
+import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,7 +19,9 @@ public abstract class PortalForcerMixin {
             target = "Lnet/minecraft/server/level/ServerLevel;setBlockAndUpdate(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Z"))
     public boolean youshallnotgrief$logPortalPlacement1(ServerLevel level, BlockPos pos, BlockState state, Operation<Boolean> original) {
         return BlockUtils.wrapLevelSetBlockAndUpdate(level, pos, state, original, oldState -> {
-            BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.PORTAL, null,"");
+            if(ServerConfig.logPortals.get()) {
+                BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.PORTAL, null, "");
+            }
         });
     }
 
@@ -26,7 +29,9 @@ public abstract class PortalForcerMixin {
             target = "Lnet/minecraft/server/level/ServerLevel;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
     public boolean youshallnotgrief$logPortalPlacement2(ServerLevel level, BlockPos pos, BlockState state, int i, Operation<Boolean> original){
         return BlockUtils.wrapLevelSetBlock(level, pos, state, i, original, oldState -> {
-            BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.PORTAL, null,"");
+            if(ServerConfig.logPortals.get()) {
+                BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.PORTAL, null, "");
+            }
         });
     }
 }

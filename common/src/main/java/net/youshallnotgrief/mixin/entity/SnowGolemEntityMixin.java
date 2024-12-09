@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.animal.SnowGolem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,7 +19,9 @@ public abstract class SnowGolemEntityMixin {
     public boolean youshallnotgrief$logSnowGolemSnow(Level level, BlockPos pos, BlockState state, Operation<Boolean> original) {
         SnowGolem golem = ((SnowGolem) (Object) this);
         return BlockUtils.wrapLevelSetBlockAndUpdate(level, pos, state, original, oldState -> {
-            BlockUtils.addToDatabase(pos, golem.level(), oldState, state, BlockSetCauses.PLACED, golem, "");
+            if(ServerConfig.logSnowGolemWalking.get()) {
+                BlockUtils.addToDatabase(pos, golem.level(), oldState, state, BlockSetCauses.PLACED, golem, "");
+            }
         });
     }
 }

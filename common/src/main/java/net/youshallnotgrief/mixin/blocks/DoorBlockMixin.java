@@ -9,6 +9,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.data.block.cause.BlockSetCause;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
@@ -26,10 +27,12 @@ public class DoorBlockMixin {
         BlockState oldState = level.getBlockState(pos);
         BlockState oldState2 = level.getBlockState(pos2);
         return BlockUtils.wrapLevelSetBlock(level, pos, state, i, original, s -> {
-            BlockSetCause cause = bl ? BlockSetCauses.OPENED : BlockSetCauses.CLOSED;
+            if(ServerConfig.logMobOpenDoor.get()) {
+                BlockSetCause cause = bl ? BlockSetCauses.OPENED : BlockSetCauses.CLOSED;
 
-            BlockUtils.addToDatabase(pos, level, oldState, state, cause, entity, "");
-            BlockUtils.addToDatabase(pos2, level, oldState2, state, cause, entity, "");
+                BlockUtils.addToDatabase(pos, level, oldState, state, cause, entity, "");
+                BlockUtils.addToDatabase(pos2, level, oldState2, state, cause, entity, "");
+            }
         });
     }
 }

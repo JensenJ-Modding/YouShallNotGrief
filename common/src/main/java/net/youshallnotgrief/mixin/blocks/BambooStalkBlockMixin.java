@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BambooStalkBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.database.DatabaseManager;
 import net.youshallnotgrief.util.BlockUtils;
@@ -18,7 +19,9 @@ public abstract class BambooStalkBlockMixin {
     @WrapOperation(method = "growBamboo", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z", ordinal = 2))
     public boolean youshallnotgrief$logBambooGrow(Level level, BlockPos pos, BlockState state, int i, Operation<Boolean> original) {
         return BlockUtils.wrapLevelSetBlock(level, pos, state, i, original, oldState -> {
-            BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.GROW, null, "");
+            if(ServerConfig.logPlantGrowth.get()) {
+                BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.GROW, null, "");
+            }
         });
     }
 }

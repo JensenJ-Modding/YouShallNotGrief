@@ -26,10 +26,6 @@ public class BlockUtils {
 
     private static final Registrar<Block> BLOCKS_REGISTRY = YouShallNotGriefMod.REGISTRY_MANAGER.get().get(Registries.BLOCK);
 
-    public static String getDimensionNameFromLevel(Level level){
-        return level.dimension().location().toString();
-    }
-
     public static String getBlockIDFromBlockState(BlockState state){
         ResourceLocation location = state.getBlock().arch$registryName();
         return location != null ? location.toString() : "";
@@ -49,7 +45,7 @@ public class BlockUtils {
         if(source != null){
             sourceText = source.getName().getString();
         }
-        BlockSetData data = new BlockSetData(pos.immutable(), getDimensionNameFromLevel(level), Timestamp.valueOf(LocalDateTime.now()),
+        BlockSetData data = new BlockSetData(pos.immutable(), MiscUtils.getDimensionIDFromLevel(level), Timestamp.valueOf(LocalDateTime.now()),
                 getBlockIDFromBlockState(oldState), getBlockIDFromBlockState(newState), cause.getDatabaseTag(), sourceText, sourceDesc);
         DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(data);
     }
@@ -57,7 +53,7 @@ public class BlockUtils {
     //Should be called after a call to level.setBlock has been made
     public static void addToDatabase(@NotNull BlockPos pos, @NotNull Level level, @NotNull BlockState oldState, @NotNull BlockState newState, @NotNull String modName, @NotNull String functionName){
         BlockSetCause cause = BlockSetCauses.MODDED;
-        BlockSetData data =  new BlockSetData(pos.immutable(), getDimensionNameFromLevel(level), Timestamp.valueOf(LocalDateTime.now()), getBlockIDFromBlockState(oldState), getBlockIDFromBlockState(newState), cause.getDatabaseTag(), modName, functionName);
+        BlockSetData data =  new BlockSetData(pos.immutable(), MiscUtils.getDimensionIDFromLevel(level), Timestamp.valueOf(LocalDateTime.now()), getBlockIDFromBlockState(oldState), getBlockIDFromBlockState(newState), cause.getDatabaseTag(), modName, functionName);
         DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(data);
     }
 

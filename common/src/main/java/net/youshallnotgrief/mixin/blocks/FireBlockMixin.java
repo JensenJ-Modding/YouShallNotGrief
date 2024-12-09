@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FireBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,14 +19,18 @@ public abstract class FireBlockMixin {
     @WrapOperation(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;removeBlock(Lnet/minecraft/core/BlockPos;Z)Z"))
     public boolean youshallnotgrief$logFireExtinguish(ServerLevel level, BlockPos pos, boolean b, Operation<Boolean> original) {
         return BlockUtils.wrapLevelRemoveBlock(level, pos, b, original, oldState -> {
-            BlockUtils.addToDatabase(pos, level, oldState, Blocks.AIR.defaultBlockState(), BlockSetCauses.EXTINGUISH, null, "");
+            if(ServerConfig.logFire.get()) {
+                BlockUtils.addToDatabase(pos, level, oldState, Blocks.AIR.defaultBlockState(), BlockSetCauses.EXTINGUISH, null, "");
+            }
         });
     }
 
     @WrapOperation(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z", ordinal = 1))
     public boolean youshallnotgrief$logFireSpreadFire(ServerLevel level, BlockPos pos, BlockState state, int i, Operation<Boolean> original) {
         return BlockUtils.wrapLevelSetBlock(level, pos, state, i, original, oldState -> {
-            BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.SPREAD, null, "");
+            if(ServerConfig.logFire.get()) {
+                BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.SPREAD, null, "");
+            }
         });
     }
 }

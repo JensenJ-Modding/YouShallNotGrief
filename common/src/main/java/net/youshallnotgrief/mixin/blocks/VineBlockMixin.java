@@ -10,6 +10,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.VineBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,17 +23,20 @@ public class VineBlockMixin {
     @WrapOperation(method="randomTick", at = @At(value="INVOKE", target="Lnet/minecraft/server/level/ServerLevel;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
     private boolean youshallnotgrief$logVineGrowth(ServerLevel level, BlockPos pos, BlockState state, int i, Operation<Boolean> original) {
         return BlockUtils.wrapLevelSetBlock(level, pos, state, i, original, oldState -> {
-            BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.GROW, null, "");
+            if(ServerConfig.logPlantGrowth.get()) {
+                BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.GROW, null, "");
+            }
         });
     }
 
-    //TODO: Test thoroughly to ensure no duplicate entries are recorded
     @Inject(method="updateShape", at = @At(value="RETURN"))
     private void youshallnotgrief$logVineBreak(BlockState blockState, Direction direction, BlockState blockState2, LevelAccessor levelAccessor, BlockPos blockPos, BlockPos blockPos2, CallbackInfoReturnable<BlockState> cir){
         if(cir.getReturnValue() == Blocks.AIR.defaultBlockState()) {
             if(!levelAccessor.isClientSide()){
                 if(levelAccessor instanceof Level level) {
-                    BlockUtils.addToDatabase(blockPos, level, Blocks.VINE.defaultBlockState(), Blocks.AIR.defaultBlockState(), BlockSetCauses.UNSUPPORTED, null, "");
+                    if(ServerConfig.logUnsupportedBlocks.get()) {
+                        BlockUtils.addToDatabase(blockPos, level, Blocks.VINE.defaultBlockState(), Blocks.AIR.defaultBlockState(), BlockSetCauses.UNSUPPORTED, null, "");
+                    }
                 }
             }
         }

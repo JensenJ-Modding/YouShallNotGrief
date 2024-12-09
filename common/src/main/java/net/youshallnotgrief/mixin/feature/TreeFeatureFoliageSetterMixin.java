@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.state.BlockState;
+import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
 import net.youshallnotgrief.util.MixinDataHolder;
@@ -22,7 +23,9 @@ public class TreeFeatureFoliageSetterMixin {
                 return;
             }
             if(worldGenLevel instanceof Level level){
-                BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.GROW, null, "");
+                if(ServerConfig.logPlantGrowth.get()) {
+                    BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.GROW, null, "");
+                }
             }
         });
     }

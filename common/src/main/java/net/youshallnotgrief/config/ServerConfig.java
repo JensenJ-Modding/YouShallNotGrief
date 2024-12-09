@@ -1,0 +1,151 @@
+package net.youshallnotgrief.config;
+
+import net.minecraftforge.common.ForgeConfigSpec;
+
+public class ServerConfig {
+
+    public static ForgeConfigSpec SERVER_CONFIG;
+
+    private static final String CATEGORY_COLOURS = "colours";
+    private static final String CATEGORY_DEBUG = "debug";
+    private static final String CATEGORY_LOGGING = "logging";
+    private static final String CATEGORY_BLOCK = "block";
+    private static final String CATEGORY_PLAYER = "player";
+    private static final String CATEGORY_MOB = "mobs";
+    private static final String CATEGORY_INTERACTION = "interaction";
+
+    //Colour settings
+    public static ForgeConfigSpec.ConfigValue<String> inspectionPrimaryColour;
+    public static ForgeConfigSpec.ConfigValue<String> inspectionSecondaryColour;
+    public static ForgeConfigSpec.ConfigValue<String> inspectionBackgroundColour;
+    public static ForgeConfigSpec.ConfigValue<String> inspectionErrorColour;
+
+    //Debug settings
+    public static ForgeConfigSpec.ConfigValue<Boolean> debugLogUnhandledBlockSets;
+    public static ForgeConfigSpec.ConfigValue<Boolean> debugLogMultipleTimes;
+
+    //Player block logging
+    public static ForgeConfigSpec.ConfigValue<Boolean> logBlockPlacement;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logBlockBreaking;
+
+    //Mob block logging
+    public static ForgeConfigSpec.ConfigValue<Boolean> logBlockTrampling;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logMobHatching;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logMobInfestingBlock;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logMobDoorBreak;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logMobOpenDoor;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logMobEatBlock;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logEndermanGriefing;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logEnderDragonGriefing;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logRavagerGriefing;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logVillagerHarvesting;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logSnowGolemWalking;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logBlazeFireball;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logFrostWalker;
+
+    //Non mob block logging
+    public static ForgeConfigSpec.ConfigValue<Boolean> logPlantGrowth;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logUnsupportedBlocks;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logAmethystGrowth;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logGolemCreation;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logFire;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logMelting;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logLeafDecay;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logGravity;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logGrassSpread;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logPortals;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logExplosions;
+
+    //Player interaction logging
+    public static ForgeConfigSpec.ConfigValue<Boolean> logFlintAndSteel;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logWaxing;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logScraping;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logPaving;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logExtinguish;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logPloughing;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logAnvilUse;
+
+    //Interaction logging
+    public static ForgeConfigSpec.ConfigValue<Boolean> logProjectileLightBlock;
+
+    static {
+        ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+
+        BUILDER.comment("Colours used for the inspection mode").push(CATEGORY_COLOURS);
+        inspectionPrimaryColour = BUILDER.comment("Primary text colour used when in inspection mode [Default: #FFAA00]")
+                .define("inspectionPrimaryColour", "#FFAA00");
+        inspectionSecondaryColour = BUILDER.comment("Secondary text colour used when in inspection mode [Default: #BA9B5D]")
+                .define("inspectionSecondaryColour", "#BA9B5D");
+        inspectionBackgroundColour = BUILDER.comment("Background text colour used when in inspection mode [Default: #FFFFFF]")
+                .define("inspectionBackgroundColour", "#FFFFFF");
+        inspectionErrorColour = BUILDER.comment("Error text colour used when in inspection mode [Default: #ff5555]")
+                .define("inspectionErrorColour", "#ff5555");
+        BUILDER.pop();
+
+        BUILDER.comment("Dev/debug settings").push(CATEGORY_DEBUG);
+        debugLogUnhandledBlockSets = BUILDER.comment("Should calls to Level.setBlock not wrapped by the mod be logged to console? [Default: false]")
+                .define("debugLogUnhandledBlockSets", false);
+        debugLogMultipleTimes = BUILDER.comment("Should console logs of the same type be logged beyond the first occurrence? [Default: false]")
+                .define("debugLogMultipleTimes", false);
+        BUILDER.pop();
+
+        BUILDER.push(CATEGORY_LOGGING);
+        BUILDER.comment("Block logging settings, by default everything is logged").push(CATEGORY_BLOCK);
+
+        //Player block logging
+        BUILDER.push(CATEGORY_PLAYER);
+        logBlockPlacement = BUILDER.define("logBlockPlacement", true);
+        logBlockBreaking = BUILDER.define("logBlockBreaking", true);
+
+        BUILDER.pop();
+
+        //Mob block logging
+        BUILDER.push(CATEGORY_MOB);
+        logBlockTrampling = BUILDER.define("logBlockTrampling", true);
+        logMobHatching = BUILDER.define("logMobHatching", true);
+        logMobInfestingBlock = BUILDER.define("logMobInfestingBlock", true);
+        logMobDoorBreak = BUILDER.define("logMobDoorBreak", true);
+        logMobOpenDoor = BUILDER.define("logMobOpenDoor", true);
+        logMobEatBlock = BUILDER.define("logMobEatBlock", true);
+        logEndermanGriefing = BUILDER.define("logEndermanGriefing", true);
+        logEnderDragonGriefing = BUILDER.define("logEnderDragonGriefing", true);
+        logRavagerGriefing = BUILDER.define("logRavagerGriefing", true);
+        logVillagerHarvesting = BUILDER.define("logVillagerHarvesting", true);
+        logSnowGolemWalking = BUILDER.define("logSnowGolemWalking", true);
+        logBlazeFireball = BUILDER.define("logBlazeFireball", true);
+        logFrostWalker = BUILDER.define("logFrostWalker", true);
+
+        BUILDER.pop();
+
+        //Non mob block logging
+        logPlantGrowth = BUILDER.define("logPlantGrowth", true);
+        logUnsupportedBlocks = BUILDER.define("logUnsupportedBlocks", true);
+        logAmethystGrowth = BUILDER.define("logAmethystGrowth", true);
+        logGolemCreation = BUILDER.define("logGolemCreation", true);
+        logFire = BUILDER.define("logFire", true);
+        logMelting = BUILDER.define("logMelting", true);
+        logLeafDecay = BUILDER.define("logLeafDecay", true);
+        logGravity = BUILDER.define("logGravity", true);
+        logGrassSpread = BUILDER.define("logGrassSpread", true);
+        logPortals = BUILDER.define("logPortals", true);
+        logExplosions = BUILDER.define("logExplosions", true);
+        BUILDER.pop();
+
+        BUILDER.comment("Interaction logging settings, by default everything is logged.").push(CATEGORY_INTERACTION);
+        BUILDER.push(CATEGORY_PLAYER);
+        logFlintAndSteel = BUILDER.define("logFlintAndSteel", true);
+        logWaxing = BUILDER.define("logWaxing", true);
+        logScraping = BUILDER.define("logScraping", true);
+        logPaving = BUILDER.define("logPaving", true);
+        logExtinguish = BUILDER.define("logExtinguish", true);
+        logPloughing = BUILDER.define("logPloughing", true);
+        logAnvilUse = BUILDER.define("logAnvilUse", true);
+        BUILDER.pop();
+        logProjectileLightBlock = BUILDER.define("logProjectileLightBlock", true);
+        BUILDER.pop();
+
+        BUILDER.pop();
+
+        SERVER_CONFIG = BUILDER.build();
+    }
+}

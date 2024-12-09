@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,7 +19,9 @@ public class EnderDragonMixin {
     private boolean youshallnotgrief$logEnderDragonBreakBlock(Level level, BlockPos pos, boolean b, Operation<Boolean> original){
         EnderDragon dragon = (EnderDragon) (Object) this;
         return BlockUtils.wrapLevelRemoveBlock(level, pos, b, original, oldState -> {
-            BlockUtils.addToDatabase(pos, level, oldState, Blocks.AIR.defaultBlockState(), BlockSetCauses.REMOVED, dragon, "");
+            if(ServerConfig.logEnderDragonGriefing.get()) {
+                BlockUtils.addToDatabase(pos, level, oldState, Blocks.AIR.defaultBlockState(), BlockSetCauses.REMOVED, dragon, "");
+            }
         });
     }
 }

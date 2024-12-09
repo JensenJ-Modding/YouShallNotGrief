@@ -9,6 +9,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.TreeFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
+import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
 import net.youshallnotgrief.util.MixinDataHolder;
@@ -32,7 +33,9 @@ public class TreeFeatureMixin {
                 return;
             }
             if(worldGenLevel instanceof Level level){
-                BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.GROW, null, "");
+                if(ServerConfig.logPlantGrowth.get()) {
+                    BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.GROW, null, "");
+                }
             }
         });
     }
@@ -44,7 +47,9 @@ public class TreeFeatureMixin {
                 return;
             }
             if(worldGenLevel instanceof Level level){
-                BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.GROW, null, "");
+                if(ServerConfig.logPlantGrowth.get()) {
+                    BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.GROW, null, "");
+                }
             }
         });
     }
@@ -56,7 +61,9 @@ public class TreeFeatureMixin {
                 return;
             }
             if(worldGenLevel instanceof Level level){
-                BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.GROW, null, "");
+                if(ServerConfig.logPlantGrowth.get()) {
+                    BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.GROW, null, "");
+                }
             }
         });
     }

@@ -11,9 +11,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.AbstractCandleBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.data.block.cause.BlockSetCause;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
+import net.youshallnotgrief.util.MixinDataHolder;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -24,16 +26,22 @@ public class AbstractCandleBlockMixin {
     @WrapOperation(method = "onProjectileHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/AbstractCandleBlock;setLit(Lnet/minecraft/world/level/LevelAccessor;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Z)V"))
     private void youshallnotgrief$logCandleLit(LevelAccessor levelAccessor, BlockState state, BlockPos pos, boolean bl, Operation<Void> original, @Local(argsOnly = true) Projectile projectile) {
         if(levelAccessor instanceof Level level) {
-            youshallnotgrief$logCandleLighting(level, state, pos, bl, projectile.getOwner());
+            if(ServerConfig.logProjectileLightBlock.get()) {
+                youshallnotgrief$logCandleLighting(level, state, pos, bl, projectile.getOwner());
+            }
         }
+        MixinDataHolder.wasLevelSetTracked = true;
         original.call(levelAccessor, state, pos, bl);
     }
 
     @WrapOperation(method = "extinguish", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/AbstractCandleBlock;setLit(Lnet/minecraft/world/level/LevelAccessor;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Z)V"))
     private static void youshallnotgrief$logCandleExtinguish(LevelAccessor levelAccessor, BlockState state, BlockPos pos, boolean bl, Operation<Void> original, @Local(argsOnly = true) Player player) {
         if(levelAccessor instanceof Level level) {
-            youshallnotgrief$logCandleLighting(level, state, pos, bl, player);
+            if(ServerConfig.logExtinguish.get()) {
+                youshallnotgrief$logCandleLighting(level, state, pos, bl, player);
+            }
         }
+        MixinDataHolder.wasLevelSetTracked = true;
         original.call(levelAccessor, state, pos, bl);
     }
 

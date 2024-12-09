@@ -6,6 +6,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.youshallnotgrief.YouShallNotGriefMod;
+import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.util.BlockUtils;
 import net.youshallnotgrief.util.MixinDataHolder;
 import org.spongepowered.asm.mixin.Mixin;
@@ -162,12 +163,8 @@ public class LevelMixin {
 
     @Unique
     private boolean youshallnotgrief$shouldLogDebugInfo(String log){
-        //TODO: Implement config
-        boolean allowDevLogsInProduction = true; //placeholder for config value
-        boolean allowLogsToBePrintedMultipleTimes = false; //placeholder for config value
-
-        if(Platform.isDevelopmentEnvironment() || allowDevLogsInProduction){
-            if(allowLogsToBePrintedMultipleTimes){
+        if(Platform.isDevelopmentEnvironment() || ServerConfig.debugLogUnhandledBlockSets.get()){
+            if(ServerConfig.debugLogMultipleTimes.get()){
                 return true;
             }
 

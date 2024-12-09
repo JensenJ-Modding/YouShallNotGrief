@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LeavesBlock;
+import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,7 +18,9 @@ public abstract class LeavesBlockMixin {
     @WrapOperation(method = "randomTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;removeBlock(Lnet/minecraft/core/BlockPos;Z)Z"))
     public boolean youshallnotgrief$logLeafDecay(ServerLevel level, BlockPos pos, boolean b, Operation<Boolean> original) {
         return BlockUtils.wrapLevelRemoveBlock(level, pos, b, original, oldState -> {
-            BlockUtils.addToDatabase(pos, level, oldState, Blocks.AIR.defaultBlockState(), BlockSetCauses.DECAY, null, "");
+            if(ServerConfig.logLeafDecay.get()) {
+                BlockUtils.addToDatabase(pos, level, oldState, Blocks.AIR.defaultBlockState(), BlockSetCauses.DECAY, null, "");
+            }
         });
     }
 }

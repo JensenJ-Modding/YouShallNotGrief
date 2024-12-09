@@ -7,6 +7,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.portal.PortalShape;
+import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,7 +21,9 @@ public class PortalShapeMixin {
     public boolean youshallnotgrief$logPortalBlockPlacement(LevelAccessor levelAccessor, BlockPos pos, BlockState state, int i, Operation<Boolean> original) {
         return BlockUtils.wrapLevelSetBlock(levelAccessor, pos, state, i, original, oldState -> {
             if(levelAccessor instanceof Level level) {
-                BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.PORTAL, null, "");
+                if(ServerConfig.logPortals.get()) {
+                    BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.PORTAL, null, "");
+                }
             }
         });
     }
