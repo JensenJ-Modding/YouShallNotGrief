@@ -26,9 +26,7 @@ import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 import java.util.concurrent.*;
 
 public class InspectionMode {
@@ -290,10 +288,18 @@ public class InspectionMode {
                             .withColor(getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))
                     );
         }else{
+            //If the source description starts with mob, then we need to format it
+            MutableComponent hoverComponent;
+            if(sourceDesc.startsWith("mob;")){
+                hoverComponent = formatMobSourceDesc(sourceDesc);
+            } else {
+                hoverComponent = Component.literal(sourceDesc);
+            }
+
             return Component.literal(source)
                     .withStyle(style -> style
                             .withColor(getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))
-                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(sourceDesc)))
+                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverComponent))
                     );
         }
     }
@@ -305,5 +311,18 @@ public class InspectionMode {
             return TextColor.fromLegacyFormat(ChatFormatting.WHITE);
         }
         return colour;
+    }
+
+    private static MutableComponent formatMobSourceDesc(String sourceDesc){
+        if (sourceDesc == null || sourceDesc.isEmpty()) {
+            return Component.literal(sourceDesc);
+        }
+
+        List<String> elements = Arrays.asList(sourceDesc.split(";"));
+        MutableComponent comp = Component.translatable("msg.youshallnotgrief.inspection.block.cause.mob.source", elements.get(1));
+        for(int i = 2; i < elements.size(); i++){
+            comp.append("\n").append(Component.translatable("msg.youshallnotgrief.inspection.block.cause.mob.target", elements.get(1), elements.get(i)));
+        }
+        return comp;
     }
 }

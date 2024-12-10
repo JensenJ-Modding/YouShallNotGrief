@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
+import net.youshallnotgrief.util.EntityUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -20,11 +21,12 @@ public class BreakDoorGoalMixin {
     private boolean youshallnotgrief$logDoorBreak(Level level, BlockPos pos, boolean b, Operation<Boolean> original){
         DoorInteractGoalAccessor accessor = (DoorInteractGoalAccessor) this;
         Mob mob = accessor.getMob();
+        String sourceDesc = EntityUtils.getSourceAndTargets(mob);
 
         return BlockUtils.wrapLevelRemoveBlock(level, pos, b, original, oldState -> {
             if(ServerConfig.logMobDoorBreak.get()) {
-                BlockUtils.addToDatabase(pos, level, oldState, Blocks.AIR.defaultBlockState(), BlockSetCauses.REMOVED, mob, "");
-                BlockUtils.addToDatabase(pos.below(), level, oldState, Blocks.AIR.defaultBlockState(), BlockSetCauses.REMOVED, mob, "");
+                BlockUtils.addToDatabase(pos, level, oldState, Blocks.AIR.defaultBlockState(), BlockSetCauses.REMOVED, mob, sourceDesc);
+                BlockUtils.addToDatabase(pos.below(), level, oldState, Blocks.AIR.defaultBlockState(), BlockSetCauses.REMOVED, mob, sourceDesc);
             }
         });
     }

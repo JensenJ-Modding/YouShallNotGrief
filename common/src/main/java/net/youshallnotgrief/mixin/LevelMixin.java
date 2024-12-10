@@ -129,7 +129,7 @@ public class LevelMixin {
         //This means that all the functions in the stacktrace were vanilla as causeTraceIndex was never set
         boolean isVanillaInteraction = causeTraceIndex == 0;
         if(isVanillaInteraction){
-            StringBuilder uncategorizedBlockLog = new StringBuilder(MessageFormat.format("Uncategorized level set occurred from {0} to {1}:", youshallnotgrief$oldBlockState, blockState));
+            StringBuilder uncategorizedBlockLog = new StringBuilder(MessageFormat.format("Uncategorized level set occurred from {0} to {1}:", youshallnotgrief$oldBlockState.getBlock(), blockState.getBlock()));
             for (int i = 3; i < stackTraceElements.length - 1; i++) {
                 uncategorizedBlockLog.append("\n  ").append(stackTraceElements[i]);
             }

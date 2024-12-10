@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
+import net.youshallnotgrief.util.EntityUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -18,9 +19,11 @@ public abstract class RavagerEntityMixin {
 
     @WrapOperation(method="aiStep", at = @At(value="INVOKE", target="Lnet/minecraft/world/level/Level;destroyBlock(Lnet/minecraft/core/BlockPos;ZLnet/minecraft/world/entity/Entity;)Z"))
     public boolean youshallnotgrief$logRavagerBreakingLeaves(Level level, BlockPos pos, boolean b, Entity entity, Operation<Boolean> original) {
+        Ravager ravager = (Ravager) entity;
+        String sourceDesc = EntityUtils.getSourceAndTargets(ravager);
         return BlockUtils.wrapLevelDestroyBlock(level, pos, b, entity, original, oldState -> {
             if(ServerConfig.logRavagerGriefing.get()) {
-                BlockUtils.addToDatabase(pos, level, oldState, Blocks.AIR.defaultBlockState(), BlockSetCauses.REMOVED, entity, "");
+                BlockUtils.addToDatabase(pos, level, oldState, Blocks.AIR.defaultBlockState(), BlockSetCauses.REMOVED, ravager, sourceDesc);
             }
         });
     }

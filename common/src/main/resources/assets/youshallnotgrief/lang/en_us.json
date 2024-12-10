@@ -4,7 +4,7 @@
   "error.youshallnotgrief.inspection.outofinspection": "You must be in inspect mode to do this.",
   "error.youshallnotgrief.inspection.inspectfirst": "You must inspect something first.",
 
-  "comment.msg.youshallnotgrief.inspection.header": "%1$s is block. %2$s is position. $3$s is dimension",
+  "comment.msg.youshallnotgrief.inspection.header": "%1$s is block. %2$s is position. %3$s is dimension",
   "msg.youshallnotgrief.inspection.header": "%1$s at %2$s in %3$s",
   "msg.youshallnotgrief.inspection.enter": "Entered inspection mode.",
   "msg.youshallnotgrief.inspection.exit": "Exited inspection mode.",
@@ -12,7 +12,7 @@
   "msg.youshallnotgrief.inspection.time.hours": "h ago",
   "msg.youshallnotgrief.inspection.time.days": "d ago",
 
-  "comment.msg.youshallnotgrief.inspection.block.cause": "%1$s is oldBlock. %2$s is newBlock. $3$s is source",
+  "comment.msg.youshallnotgrief.inspection.block.cause": "%1$s is oldBlock. %2$s is newBlock. %3$s is source",
   "msg.youshallnotgrief.inspection.block.cause.gravity": "Gravity caused %1$s to fall",
   "msg.youshallnotgrief.inspection.block.cause.land": "Gravity caused %2$s to land",
   "msg.youshallnotgrief.inspection.block.cause.fire": "%1$s burned",
@@ -45,5 +45,10 @@
   "msg.youshallnotgrief.inspection.block.cause.changed": "%1$s changed to %2$s",
   "msg.youshallnotgrief.inspection.block.cause.hatched": "%1$s hatched",
   "msg.youshallnotgrief.inspection.block.cause.infested": "%3$s infested %1$s",
-  "msg.youshallnotgrief.inspection.block.cause.modded": "%3$s set %1$s to %2$s"
+  "msg.youshallnotgrief.inspection.block.cause.modded": "%3$s set %1$s to %2$s",
+
+  "comment.msg.youshallnotgrief.inspection.block.cause.mob.source": "%1$s is the source entity.",
+  "msg.youshallnotgrief.inspection.block.cause.mob.source": "Caused by %1$s",
+  "comment.msg.youshallnotgrief.inspection.block.cause.mob.target": "%1$s is the source entity. %2$s is the targeted entity",
+  "msg.youshallnotgrief.inspection.block.cause.mob.target": "%1$s targeted %2$s"
 }

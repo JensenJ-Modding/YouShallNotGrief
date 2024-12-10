@@ -11,8 +11,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
-import net.youshallnotgrief.util.ExplosionUtils;
 import net.youshallnotgrief.util.MixinDataHolder;
+import net.youshallnotgrief.util.EntityUtils;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -39,7 +39,7 @@ public abstract class ExplosionMixin {
         original.call(state, level, pos, explosion);
 
         if(ServerConfig.logExplosions.get()) {
-            BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.EXPLOSION, source, ExplosionUtils.getSourceDescription(getIndirectSourceEntity()));
+            BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.EXPLOSION, source, EntityUtils.getSourceAndTargets(getIndirectSourceEntity()));
         }
     }
 
@@ -47,7 +47,7 @@ public abstract class ExplosionMixin {
     private boolean youshallnotgrief$logBlockFireExplosion(Level level, BlockPos pos, BlockState state, Operation<Boolean> original){
         return BlockUtils.wrapLevelSetBlockAndUpdate(level, pos, state, original, oldState -> {
             if(ServerConfig.logExplosions.get()) {
-                BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.PLACED, source, ExplosionUtils.getSourceDescription(getIndirectSourceEntity()));
+                BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.PLACED, source, EntityUtils.getSourceAndTargets(getIndirectSourceEntity()));
             }
         });
     }

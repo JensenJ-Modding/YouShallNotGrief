@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
-import net.youshallnotgrief.util.ExplosionUtils;
+import net.youshallnotgrief.util.EntityUtils;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -30,7 +30,7 @@ public abstract class ExplosionMixin {
     private boolean youshallnotgrief$logBlockExplosion(Level level, BlockPos pos, BlockState state, int i, Operation<Boolean> original){
         return BlockUtils.wrapLevelSetBlock(level, pos, state, i, original, oldState -> {
             if(ServerConfig.logExplosions.get()) {
-                BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.EXPLOSION, source, ExplosionUtils.getSourceDescription(getIndirectSourceEntity()));
+                BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.EXPLOSION, source, EntityUtils.getSourceAndTargets(getIndirectSourceEntity()));
             }
         });
     }
@@ -39,7 +39,7 @@ public abstract class ExplosionMixin {
     private boolean youshallnotgrief$logBlockFireExplosion(Level level, BlockPos pos, BlockState state, Operation<Boolean> original){
         return BlockUtils.wrapLevelSetBlockAndUpdate(level, pos, state, original, oldState -> {
             if(ServerConfig.logExplosions.get()) {
-                BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.PLACED, source, ExplosionUtils.getSourceDescription(getIndirectSourceEntity()));
+                BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.PLACED, source, EntityUtils.getSourceAndTargets(getIndirectSourceEntity()));
             }
         });
     }
