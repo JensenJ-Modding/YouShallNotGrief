@@ -52,12 +52,12 @@ public class BlockUtils {
         if(source != null){
             sourceText = source.getName().getString();
         }
-        addToDatabaseRaw(pos, level, oldState, newState, cause, sourceText, sourceDesc);
+        addToDatabaseRaw(pos.immutable(), level, oldState, newState, cause, sourceText, sourceDesc);
     }
 
     //Should be called after a call to level.setBlock has been made
     public static void addToDatabaseRaw(@NotNull BlockPos pos, @NotNull Level level, @NotNull BlockState oldState, @NotNull BlockState newState, @NotNull BlockSetCause cause, @NotNull String source, @NotNull String sourceDesc){
-        propagateDatabaseInteraction(pos, level, oldState, newState, cause, source, sourceDesc);
+        propagateDatabaseInteraction(pos.immutable(), level, oldState, newState, cause, source, sourceDesc);
         BlockSetData data = new BlockSetData(pos.immutable(), MiscUtils.getDimensionIDFromLevel(level), Timestamp.valueOf(LocalDateTime.now()), getBlockIDFromBlockState(oldState), getBlockIDFromBlockState(newState), cause.getDatabaseTag(), source, sourceDesc);
         DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(data);
     }
