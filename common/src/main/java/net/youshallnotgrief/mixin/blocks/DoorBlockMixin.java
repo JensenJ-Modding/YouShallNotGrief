@@ -8,7 +8,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.data.block.cause.BlockSetCause;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
@@ -16,22 +15,16 @@ import net.youshallnotgrief.util.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-import static net.minecraft.world.level.block.DoorBlock.HALF;
-
 @Mixin(value = DoorBlock.class, priority = 10100)
 public class DoorBlockMixin {
 
     @WrapOperation(method = "setOpen", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
     private boolean youshallnotgrief$logDoorSetOpen(Level level, BlockPos pos, BlockState state, int i, Operation<Boolean> original, @Local(argsOnly = true) Entity entity, @Local(argsOnly = true) boolean bl){
-        BlockPos pos2 = state.getValue(HALF) == DoubleBlockHalf.LOWER ? pos.above() : pos.below();
         BlockState oldState = level.getBlockState(pos);
-        BlockState oldState2 = level.getBlockState(pos2);
         return BlockUtils.wrapLevelSetBlock(level, pos, state, i, original, s -> {
             if(ServerConfig.logMobOpenDoor.get()) {
                 BlockSetCause cause = bl ? BlockSetCauses.OPENED : BlockSetCauses.CLOSED;
-
                 BlockUtils.addToDatabase(pos, level, oldState, state, cause, entity, "");
-                BlockUtils.addToDatabase(pos2, level, oldState2, state, cause, entity, "");
             }
         });
     }

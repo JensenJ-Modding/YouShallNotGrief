@@ -45,7 +45,7 @@
   "msg.youshallnotgrief.inspection.block.cause.changed": "%1$s changed to %2$s",
   "msg.youshallnotgrief.inspection.block.cause.hatched": "%1$s hatched",
   "msg.youshallnotgrief.inspection.block.cause.infested": "%3$s infested %1$s",
-  "msg.youshallnotgrief.inspection.block.cause.modded": "%3$s set %1$s to %2$s",
+  "msg.youshallnotgrief.inspection.block.cause.fallback": "%3$s set %1$s to %2$s",
 
   "comment.msg.youshallnotgrief.inspection.block.cause.mob.source": "%1$s is the source entity.",
   "msg.youshallnotgrief.inspection.block.cause.mob.source": "Caused by %1$s",

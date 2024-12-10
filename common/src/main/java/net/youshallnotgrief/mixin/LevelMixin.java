@@ -7,6 +7,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.config.ServerConfig;
+import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
 import net.youshallnotgrief.util.MixinDataHolder;
 import org.spongepowered.asm.mixin.Mixin;
@@ -170,7 +171,8 @@ public class LevelMixin {
         className = className.substring(className.lastIndexOf(".") + 1);
         String fullName = className + ":" + methodName;
 
-        BlockUtils.addToDatabase(blockPos, level, youshallnotgrief$oldBlockState, blockState, moduleName, fullName);
+        BlockUtils.addToDatabaseRaw(blockPos, level, youshallnotgrief$oldBlockState, blockState, BlockSetCauses.FALLBACK, moduleName, fullName);
+
     }
 
     @Unique

@@ -38,7 +38,7 @@ public class BlockSetCauses {
     public static BlockSetCause CHANGED = registerCause(new BlockSetCause("changed"));
     public static BlockSetCause HATCHED = registerCause(new BlockSetCause("hatched"));
     public static BlockSetCause INFESTED = registerCause(new BlockSetCause("infested"));
-    public static BlockSetCause MODDED = registerCause(new BlockSetCause("modded"));
+    public static BlockSetCause FALLBACK = registerCause(new BlockSetCause("fallback"));
 
     private static BlockSetCause registerCause(BlockSetCause cause){
         if(CAUSES.containsKey(cause.getDatabaseTag())){

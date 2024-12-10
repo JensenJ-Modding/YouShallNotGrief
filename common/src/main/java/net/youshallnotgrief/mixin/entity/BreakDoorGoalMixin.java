@@ -26,7 +26,6 @@ public class BreakDoorGoalMixin {
         return BlockUtils.wrapLevelRemoveBlock(level, pos, b, original, oldState -> {
             if(ServerConfig.logMobDoorBreak.get()) {
                 BlockUtils.addToDatabase(pos, level, oldState, Blocks.AIR.defaultBlockState(), BlockSetCauses.REMOVED, mob, sourceDesc);
-                BlockUtils.addToDatabase(pos.below(), level, oldState, Blocks.AIR.defaultBlockState(), BlockSetCauses.REMOVED, mob, sourceDesc);
             }
         });
     }

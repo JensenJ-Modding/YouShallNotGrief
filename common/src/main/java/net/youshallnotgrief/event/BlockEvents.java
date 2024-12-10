@@ -18,19 +18,6 @@ import org.jetbrains.annotations.Nullable;
 public class BlockEvents {
 
     public static void registerEvents(){
-        BlockEvent.PLACE.register((Level level, BlockPos pos, BlockState state, @Nullable Entity placer) -> {
-            if(level.isClientSide()){
-                return EventResult.pass();
-            }
-
-            BlockState oldState = level.getBlockState(pos);
-            MixinDataHolder.wasLevelSetTracked = true;
-            if(ServerConfig.logBlockPlacement.get()) {
-                BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.PLACED, placer, "");
-            }
-            return EventResult.pass();
-        });
-
         BlockEvent.BREAK.register((Level level, BlockPos pos, BlockState state, ServerPlayer player, @Nullable IntValue xp) -> {
             if(level.isClientSide()){
                 return EventResult.pass();

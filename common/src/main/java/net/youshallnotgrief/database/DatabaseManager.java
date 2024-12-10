@@ -87,7 +87,7 @@ public class DatabaseManager {
         }
         String DatabaseWorldPath = minecraftServer.getWorldPath(LevelResource.ROOT).toAbsolutePath() + "/";
         try {
-            String databasePath = "jdbc:sqlite:" + DatabaseWorldPath + "youshallnotsteal.db";
+            String databasePath = "jdbc:sqlite:" + DatabaseWorldPath + "youshallnotgrief.db";
             connection = DriverManager.getConnection(databasePath);
             connection.setAutoCommit(false);
         } catch (SQLException e) {
