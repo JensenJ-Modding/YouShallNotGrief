@@ -6,6 +6,7 @@ public class ServerConfig {
 
     public static ForgeConfigSpec SERVER_CONFIG;
 
+    private static final String CATEGORY_DATABASE = "database";
     private static final String CATEGORY_INSPECTION = "inspection";
     private static final String CATEGORY_DEBUG = "debug";
     private static final String CATEGORY_LOGGING = "logging";
@@ -13,6 +14,10 @@ public class ServerConfig {
     private static final String CATEGORY_PLAYER = "player";
     private static final String CATEGORY_MOB = "mobs";
     private static final String CATEGORY_INTERACTION = "interaction";
+
+    //Database settings
+    public static ForgeConfigSpec.ConfigValue<Integer> databaseThreadCount;
+    public static ForgeConfigSpec.ConfigValue<Integer> databaseQueueSize;
 
     //Inspection settings
     public static ForgeConfigSpec.ConfigValue<String> inspectionPrimaryColour;
@@ -75,9 +80,16 @@ public class ServerConfig {
     static {
         ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
+        BUILDER.comment("Colours used for the inspection mode").push(CATEGORY_DATABASE);
+        databaseThreadCount = BUILDER.comment("Number of threads the mod should use at any one time. [Default: 2]")
+                .defineInRange("databaseThreadCount", 2, 1, 8);
+        databaseQueueSize = BUILDER.comment("Number of interactions the mod should queue before committing it into the database. [Default: 50]")
+                .defineInRange("databaseQueueSize", 50, 1, Integer.MAX_VALUE);
+        BUILDER.pop();
+
         BUILDER.comment("Colours used for the inspection mode").push(CATEGORY_INSPECTION);
         inspectionTimePrecision = BUILDER.comment("Number of decimal points to use when displaying time information [Default: 2]")
-                .define("inspectionTimePrecision", 2);
+                .defineInRange("inspectionTimePrecision", 2, 1, 4);
         inspectionFullTimeFormat = BUILDER.comment("Full format of time to use when hovering over time value [Default: dd/MM/yyyy - HH:mm:ss]")
                 .define("inspectionFullTimeFormat", "dd/MM/yyyy - HH:mm:ss");
         inspectionPrimaryColour = BUILDER.comment("Primary text colour used when in inspection mode [Default: #FFAA00]")

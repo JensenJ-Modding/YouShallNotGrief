@@ -4,6 +4,7 @@ import dev.architectury.event.events.common.LifecycleEvent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
 import net.youshallnotgrief.YouShallNotGriefMod;
+import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.database.manager.AbstractDataManager;
 import net.youshallnotgrief.database.manager.block.BlockSetDataManager;
 import net.youshallnotgrief.database.manager.block.TableManager;
@@ -22,15 +23,14 @@ public class DatabaseManager {
     private static final ArrayList<AbstractDataManager<?, ?>> DATA_MANAGERS = new ArrayList<>();
     public static final BlockSetDataManager BLOCK_SET_MANAGER = registerDataManager(new BlockSetDataManager());
 
-    private static final int databaseThreadCount = 4;
-    public static ExecutorService executorService = Executors.newFixedThreadPool(databaseThreadCount);
+    public static ExecutorService executorService = null;
 
     public static void registerLifecycleEvents(){
         LifecycleEvent.SERVER_STARTED.register((MinecraftServer server) -> {
             minecraftServer = server;
+            executorService = Executors.newFixedThreadPool(ServerConfig.databaseThreadCount.get());
             cachedDatabaseConnection = getDatabaseConnection();
             clearAllCaches();
-            executorService = Executors.newFixedThreadPool(databaseThreadCount);
         });
 
         LifecycleEvent.SERVER_STOPPED.register((MinecraftServer server) -> {

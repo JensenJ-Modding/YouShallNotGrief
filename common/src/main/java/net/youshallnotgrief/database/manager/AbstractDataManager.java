@@ -42,6 +42,9 @@ public abstract class AbstractDataManager<InsertData, QueryData> implements Data
     @Override
     public void commitQueuedToDatabase(){
         try {
+            if(DatabaseManager.executorService == null){
+                return;
+            }
             DatabaseManager.executorService.submit(() -> {
                 if (QUEUED_DATA.isEmpty()) {
                     return;
@@ -90,6 +93,10 @@ public abstract class AbstractDataManager<InsertData, QueryData> implements Data
 
     @Override
     public Future<RetrieveResult<InsertData>> retrieveFromDatabase(QueryData data, int limit, int offset) {
+        if(DatabaseManager.executorService == null){
+            return null;
+        }
+
         return DatabaseManager.executorService.submit(() -> {
             ArrayList<InsertData> dataToReturn = new ArrayList<>();
             Connection database = DatabaseManager.getDatabaseConnection();
