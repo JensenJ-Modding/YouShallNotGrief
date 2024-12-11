@@ -16,8 +16,7 @@ public class NetworkRegistry {
     public static void registerClientToServerPackets() {
         NetworkManager.registerReceiver(NetworkManager.Side.C2S, INSPECT_PACKET_ID, (buf, context) -> {
             Player player = context.getPlayer();
-            //TODO: replace hardcoded level 2 with something better
-            if(player.hasPermissions(2)) {
+            if(player.hasPermissions(ServerConfig.inspectionOpNeeded.get() ? 1 : 0)) {
                 InspectionMode.toggleInspectMode(context.getPlayer());
             }else{
                 player.sendSystemMessage(Component.translatable("error.youshallnotgrief.inspection.nopermission").withStyle(style -> style

@@ -26,6 +26,7 @@ public class ServerConfig {
     public static ForgeConfigSpec.ConfigValue<String> inspectionErrorColour;
     public static ForgeConfigSpec.ConfigValue<Integer> inspectionTimePrecision;
     public static ForgeConfigSpec.ConfigValue<String> inspectionFullTimeFormat;
+    public static ForgeConfigSpec.ConfigValue<Boolean> inspectionOpNeeded;
 
     //Debug settings
     public static ForgeConfigSpec.ConfigValue<Boolean> debugLogUnhandledBlockSets;
@@ -80,14 +81,14 @@ public class ServerConfig {
     static {
         ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
-        BUILDER.comment("Colours used for the inspection mode").push(CATEGORY_DATABASE);
+        BUILDER.comment("Database Settings").push(CATEGORY_DATABASE);
         databaseThreadCount = BUILDER.comment("Number of threads the mod should use at any one time. [Default: 2]")
                 .defineInRange("databaseThreadCount", 2, 1, 8);
         databaseQueueSize = BUILDER.comment("Number of interactions the mod should queue before committing it into the database. [Default: 50]")
                 .defineInRange("databaseQueueSize", 50, 1, Integer.MAX_VALUE);
         BUILDER.pop();
 
-        BUILDER.comment("Colours used for the inspection mode").push(CATEGORY_INSPECTION);
+        BUILDER.comment("Inspection mode settings").push(CATEGORY_INSPECTION);
         inspectionTimePrecision = BUILDER.comment("Number of decimal points to use when displaying time information [Default: 2]")
                 .defineInRange("inspectionTimePrecision", 2, 1, 4);
         inspectionFullTimeFormat = BUILDER.comment("Full format of time to use when hovering over time value [Default: dd/MM/yyyy - HH:mm:ss]")
@@ -100,6 +101,8 @@ public class ServerConfig {
                 .define("inspectionBackgroundColour", "#FFFFFF");
         inspectionErrorColour = BUILDER.comment("Error text colour used when in inspection mode [Default: #ff5555]")
                 .define("inspectionErrorColour", "#ff5555");
+        inspectionOpNeeded = BUILDER.comment("Whether only server operators can use inspection mode and it's commands. [Default: true]")
+                .define("inspectionOpNeeded", true);
         BUILDER.pop();
 
         BUILDER.comment("Dev/debug settings").push(CATEGORY_DEBUG);
