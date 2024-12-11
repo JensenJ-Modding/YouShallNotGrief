@@ -17,6 +17,9 @@
   "entrypoints": {
     "main": [
       "net.youshallnotgrief.fabric.YouShallNotGriefModFabric"
+    ],
+    "client": [
+      "net.youshallnotgrief.fabric.YouShallNotGriefModFabricClient"
     ]
   },
   "mixins": [

@@ -15,6 +15,8 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.youshallnotgrief.database.DatabaseManager;
 import net.youshallnotgrief.event.BlockEvents;
+import net.youshallnotgrief.event.KeyEvents;
+import net.youshallnotgrief.network.NetworkRegistry;
 import net.youshallnotgrief.util.CommandManager;
 import net.youshallnotgrief.util.InspectionMode;
 import org.apache.logging.log4j.LogManager;
@@ -28,14 +30,11 @@ public class YouShallNotGriefMod {
     public static final Supplier<RegistrarManager> REGISTRY_MANAGER = Suppliers.memoize(() -> RegistrarManager.get(YouShallNotGriefMod.MOD_ID));
 
     public static void init() {
-        registerEvents();
-    }
-
-    public static void registerEvents(){
         DatabaseManager.registerLifecycleEvents();
         CommandManager.registerCommands();
         InspectionMode.registerEvents();
         BlockEvents.registerEvents();
+        NetworkRegistry.registerClientToServerPackets();
 
         InteractionEvent.RIGHT_CLICK_BLOCK.register((Player var1, InteractionHand var2, BlockPos var3, Direction var4) ->{
             return EventResult.pass();
@@ -82,5 +81,9 @@ public class YouShallNotGriefMod {
         //  InteractEntity
         //    Item Frame
 
+    }
+
+    public static void initClient() {
+        KeyEvents.registerEvents();
     }
 }

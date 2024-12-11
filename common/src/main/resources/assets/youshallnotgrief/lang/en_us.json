@@ -1,8 +1,12 @@
 {
+  "key.youshallnotgrief.inspect": "Toggle Inspect",
+  "category.youshallnotgrief": "You Shall Not Grief",
+
   "error.youshallnotgrief.inspection.nodata": "No data was found for the selected block.",
   "error.youshallnotgrief.inspection.invalidpage": "This block does not have that many pages. It currently has a maximum of %1$s pages.",
   "error.youshallnotgrief.inspection.outofinspection": "You must be in inspect mode to do this.",
   "error.youshallnotgrief.inspection.inspectfirst": "You must inspect something first.",
+  "error.youshallnotgrief.inspection.nopermission": "You do not have permission to enter inspect mode.",
 
   "comment.msg.youshallnotgrief.inspection.header": "%1$s is block. %2$s is position. %3$s is dimension",
   "msg.youshallnotgrief.inspection.header": "%1$s at %2$s in %3$s",

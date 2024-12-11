@@ -304,7 +304,7 @@ public class InspectionMode {
         }
     }
 
-    private static TextColor getTextColourFromConfig(String configColour){
+    public static TextColor getTextColourFromConfig(String configColour){
         TextColor colour = TextColor.parseColor(configColour);
         if(colour == null){
             YouShallNotGriefMod.LOGGER.error("Failed to load config value for colour: {}", configColour);

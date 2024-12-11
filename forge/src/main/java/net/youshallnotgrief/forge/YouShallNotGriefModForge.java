@@ -1,6 +1,8 @@
 package net.youshallnotgrief.forge;
 
 import dev.architectury.platform.forge.EventBuses;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -14,5 +16,7 @@ public class YouShallNotGriefModForge {
         EventBuses.registerModEventBus(YouShallNotGriefMod.MOD_ID, FMLJavaModLoadingContext.get().getModEventBus());
         YouShallNotGriefMod.init();
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ServerConfig.SERVER_CONFIG);
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> YouShallNotGriefModForgeClient::clientSetup);
+
     }
 }

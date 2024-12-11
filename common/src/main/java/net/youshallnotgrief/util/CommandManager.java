@@ -12,24 +12,24 @@ public class CommandManager {
     public static void registerCommands() {
         CommandRegistrationEvent.EVENT.register((commandDispatcher, commandBuildContext, commandSelection) -> {
             commandDispatcher.register(Commands.literal("inspect")
-                    .requires((commandSourceStack) -> commandSourceStack.hasPermission(2))
+                    .requires((commandSourceStack) -> commandSourceStack.hasPermission(2)) //TODO: replace hardcoded level 2 with something better
                     .executes(CommandManager::toggleInspectMode));
 
             commandDispatcher.register(Commands.literal("i")
-                    .requires((commandSourceStack) -> commandSourceStack.hasPermission(2))
+                    .requires((commandSourceStack) -> commandSourceStack.hasPermission(2)) //TODO: replace hardcoded level 2 with something better
                     .executes(CommandManager::toggleInspectMode));
         });
 
         CommandRegistrationEvent.EVENT.register((commandDispatcher, commandBuildContext, commandSelection) -> {
             commandDispatcher.register(Commands.literal("page")
-                    .requires(commandSourceStack -> commandSourceStack.hasPermission(2))
+                    .requires(commandSourceStack -> commandSourceStack.hasPermission(2)) //TODO: replace hardcoded level 2 with something better
                     .then(Commands.argument("page", IntegerArgumentType.integer(1))
                             .executes(context -> showPage(context, IntegerArgumentType.getInteger(context, "page")))
                     )
             );
 
             commandDispatcher.register(Commands.literal("p")
-                    .requires(commandSourceStack -> commandSourceStack.hasPermission(2))
+                    .requires(commandSourceStack -> commandSourceStack.hasPermission(2)) //TODO: replace hardcoded level 2 with something better
                     .then(Commands.argument("page", IntegerArgumentType.integer(1))
                             .executes(context -> showPage(context, IntegerArgumentType.getInteger(context, "page")))
                     )
