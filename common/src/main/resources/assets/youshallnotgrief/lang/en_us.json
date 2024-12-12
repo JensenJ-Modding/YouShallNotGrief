@@ -10,8 +10,10 @@
 
   "comment.msg.youshallnotgrief.inspection.header": "%1$s is block. %2$s is position. %3$s is dimension",
   "msg.youshallnotgrief.inspection.header": "%1$s at %2$s in %3$s",
-  "msg.youshallnotgrief.inspection.enter": "Entered inspection mode.",
-  "msg.youshallnotgrief.inspection.exit": "Exited inspection mode.",
+  "msg.youshallnotgrief.inspection.enable": "You are now in Inspection mode.",
+  "msg.youshallnotgrief.inspection.enable.other": "Enabled inspection mode for %1$s.",
+  "msg.youshallnotgrief.inspection.disable": "You are no longer in Inspection mode.",
+  "msg.youshallnotgrief.inspection.disable.other": "Disabled inspection mode for %1$s.",
   "msg.youshallnotgrief.inspection.time.minutes": "m ago",
   "msg.youshallnotgrief.inspection.time.hours": "h ago",
   "msg.youshallnotgrief.inspection.time.days": "d ago",

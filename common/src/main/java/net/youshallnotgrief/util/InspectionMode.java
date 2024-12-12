@@ -3,7 +3,6 @@ package net.youshallnotgrief.util;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.InteractionEvent;
 import dev.architectury.event.events.common.PlayerEvent;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.*;
@@ -76,26 +75,38 @@ public class InspectionMode {
 
     public static void toggleInspectMode(Player player){
         if(INSPECTING_PLAYERS.contains(player)){
-            INSPECTING_PLAYERS.remove(player);
-            player.sendSystemMessage(Component.translatable("msg.youshallnotgrief.inspection.exit").withStyle(style -> style
-                    .withColor(getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))));
+            disableInspectMode(player);
         }else{
-            INSPECTING_PLAYERS.add(player);
-            player.sendSystemMessage(Component.translatable("msg.youshallnotgrief.inspection.enter").withStyle(style -> style
-                    .withColor(getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))));
+            enableInspectMode(player);
         }
+    }
+
+    public static boolean isPlayerInspecting(Player player){
+        return INSPECTING_PLAYERS.contains(player);
+    }
+
+    public static void enableInspectMode(Player player){
+        INSPECTING_PLAYERS.add(player);
+        player.sendSystemMessage(Component.translatable("msg.youshallnotgrief.inspection.enable").withStyle(style -> style
+                .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))));
+    }
+
+    public static void disableInspectMode(Player player){
+        INSPECTING_PLAYERS.remove(player);
+        player.sendSystemMessage(Component.translatable("msg.youshallnotgrief.inspection.disable").withStyle(style -> style
+                .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))));
     }
 
     public static void showDetails(Player player, int pageNumber){
         if(!InspectionMode.INSPECTING_PLAYERS.contains(player)){
             player.sendSystemMessage(Component.translatable("error.youshallnotgrief.inspection.outofinspection").withStyle(style -> style
-                    .withColor(getTextColourFromConfig(ServerConfig.inspectionErrorColour.get()))));
+                    .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionErrorColour.get()))));
             return;
         }
 
         if(!CURRENTLY_SELECTED_BLOCK.containsKey(player)){
             player.sendSystemMessage(Component.translatable("error.youshallnotgrief.inspection.inspectfirst").withStyle(style -> style
-                    .withColor(getTextColourFromConfig(ServerConfig.inspectionErrorColour.get()))));
+                    .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionErrorColour.get()))));
             return;
         }
 
@@ -111,14 +122,14 @@ public class InspectionMode {
 
             if(count == 0){
                 player.sendSystemMessage(Component.translatable("error.youshallnotgrief.inspection.nodata").withStyle(style -> style
-                        .withColor(getTextColourFromConfig(ServerConfig.inspectionErrorColour.get()))));
+                        .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionErrorColour.get()))));
                 return;
             }
 
             int maxPageCount = (int) Math.ceil((double) count / ACTIONS_PER_PAGE);
             if(pageNumber >= maxPageCount){
                 player.sendSystemMessage(Component.translatable("error.youshallnotgrief.inspection.invalidpage", Component.literal(String.valueOf(maxPageCount))).withStyle(style -> style
-                        .withColor(getTextColourFromConfig(ServerConfig.inspectionErrorColour.get()))));
+                        .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionErrorColour.get()))));
                 return;
             }
 
@@ -145,28 +156,28 @@ public class InspectionMode {
     private static Component getHeader(Level level, BlockPos pos, String dimensionID){
         MutableComponent blockComp = Component.literal(BlockUtils.getBlockNameFromBlockState(level.getBlockState(pos)))
                 .withStyle(style -> style
-                        .withColor(getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))
+                        .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))
                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(BlockUtils.getBlockIDFromBlockState(level.getBlockState(pos)))))
                 );
 
         MutableComponent position = Component.literal("(" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")")
                 .withStyle(style -> style
-                        .withColor(getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))
+                        .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))
                 );
 
         MutableComponent dimension = Component.literal(dimensionID)
                 .withStyle(style -> style
-                        .withColor(getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))
+                        .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))
                 );
 
         return Component.translatable("msg.youshallnotgrief.inspection.header", blockComp, position, dimension).withStyle(style -> style
-                .withColor(getTextColourFromConfig(ServerConfig.inspectionBackgroundColour.get())));
+                .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionBackgroundColour.get())));
     }
 
     private static Component getData(BlockSetData data){
         MutableComponent timeComp = formatTimeAgo(data.time())
                 .withStyle(style -> style
-                        .withColor(getTextColourFromConfig(ServerConfig.inspectionSecondaryColour.get()))
+                        .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionSecondaryColour.get()))
                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(formatTime(data.time()))))
                 );
 
@@ -182,7 +193,7 @@ public class InspectionMode {
 
         MutableComponent sourceComp = getSourceComponentFromString(source, data.sourceDesc());
         MutableComponent comp = Component.empty().append(timeComp).append(" - ").withStyle(style -> style
-                .withColor(getTextColourFromConfig(ServerConfig.inspectionBackgroundColour.get())));
+                .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionBackgroundColour.get())));
 
         return comp.append(cause.getInspectMessage(oldBlockComp, newBlockComp, sourceComp));
     }
@@ -193,18 +204,18 @@ public class InspectionMode {
         String nextPage = "---->";
 
         MutableComponent footerComp = Component.literal(footerPageCount)
-                .withStyle(style -> style.withColor(getTextColourFromConfig(ServerConfig.inspectionSecondaryColour.get())));
+                .withStyle(style -> style.withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionSecondaryColour.get())));
 
         MutableComponent previousComp = Component.literal(previousPage)
                 .withStyle(style -> style
-                        .withColor(getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))
+                        .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))
                         .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/page " + currentPage))
                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Previous Page")))
                 );
 
         MutableComponent nextComp = Component.literal(nextPage)
                 .withStyle(style -> style
-                        .withColor(getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))
+                        .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))
                         .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/page " + (currentPage + 2)))
                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Next Page")))
                 );
@@ -222,19 +233,19 @@ public class InspectionMode {
             comp = comp.append(previousComp);
         } else {
             comp = comp.append(Component.literal("-".repeat(previousButtonLength)).withStyle(style ->
-                    style.withColor(getTextColourFromConfig(ServerConfig.inspectionBackgroundColour.get()))));
+                    style.withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionBackgroundColour.get()))));
         }
 
         comp = comp.append(Component.literal("-".repeat(Math.max(leftHyphens, 0))).withStyle(style ->
-                style.withColor(getTextColourFromConfig(ServerConfig.inspectionBackgroundColour.get()))));
+                style.withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionBackgroundColour.get()))));
         comp = comp.append(footerComp);
         comp = comp.append(Component.literal("-".repeat(Math.max(rightHyphens, 0))).withStyle(style ->
-                style.withColor(getTextColourFromConfig(ServerConfig.inspectionBackgroundColour.get()))));
+                style.withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionBackgroundColour.get()))));
         if (currentPage < maxPageCount - 1) {
             comp = comp.append(nextComp);
         } else {
             comp = comp.append(Component.literal("-".repeat(nextButtonLength))).withStyle(style ->
-                    style.withColor(getTextColourFromConfig(ServerConfig.inspectionBackgroundColour.get())));
+                    style.withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionBackgroundColour.get())));
         }
 
         return comp;
@@ -270,12 +281,12 @@ public class InspectionMode {
         if(block == null){
             return Component.literal(blockName)
                     .withStyle(style -> style
-                            .withColor(getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))
+                            .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))
                     );
         }else{
             return Component.literal(BlockUtils.getBlockNameFromBlockState(block.defaultBlockState()))
                     .withStyle(style -> style
-                            .withColor(getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))
+                            .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))
                             .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(blockName)))
                     );
         }
@@ -285,7 +296,7 @@ public class InspectionMode {
         if(sourceDesc.isEmpty()){
             return Component.literal(source)
                     .withStyle(style -> style
-                            .withColor(getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))
+                            .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))
                     );
         }else{
             //If the source description starts with mob, then we need to format it
@@ -298,19 +309,10 @@ public class InspectionMode {
 
             return Component.literal(source)
                     .withStyle(style -> style
-                            .withColor(getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))
+                            .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))
                             .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hoverComponent))
                     );
         }
-    }
-
-    public static TextColor getTextColourFromConfig(String configColour){
-        TextColor colour = TextColor.parseColor(configColour);
-        if(colour == null){
-            YouShallNotGriefMod.LOGGER.error("Failed to load config value for colour: {}", configColour);
-            return TextColor.fromLegacyFormat(ChatFormatting.WHITE);
-        }
-        return colour;
     }
 
     private static MutableComponent formatMobSourceDesc(String sourceDesc){

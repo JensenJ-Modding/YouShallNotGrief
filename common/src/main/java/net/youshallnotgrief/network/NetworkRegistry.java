@@ -7,8 +7,7 @@ import net.minecraft.world.entity.player.Player;
 import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.util.InspectionMode;
-
-import static net.youshallnotgrief.util.InspectionMode.getTextColourFromConfig;
+import net.youshallnotgrief.util.MiscUtils;
 
 public class NetworkRegistry {
     public static final ResourceLocation INSPECT_PACKET_ID = new ResourceLocation(YouShallNotGriefMod.MOD_ID, "inspect_packet");
@@ -20,7 +19,7 @@ public class NetworkRegistry {
                 InspectionMode.toggleInspectMode(context.getPlayer());
             }else{
                 player.sendSystemMessage(Component.translatable("error.youshallnotgrief.inspection.nopermission").withStyle(style -> style
-                        .withColor(getTextColourFromConfig(ServerConfig.inspectionErrorColour.get()))));
+                        .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionErrorColour.get()))));
             }
         });
     }
