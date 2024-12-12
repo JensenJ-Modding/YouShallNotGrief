@@ -35,9 +35,8 @@ public class CommandManager {
 
     private static void registerPageCommand(String[] aliases, CommandDispatcher<CommandSourceStack> dispatcher){
         for(String alias : aliases){
-            dispatcher.register(Commands.literal(alias)
-                    .requires(commandSourceStack -> commandSourceStack.hasPermission(ServerConfig.inspectionOpNeeded.get() ? 1 : 0))
-                    .executes(context -> showPage(context, IntegerArgumentType.getInteger(context, "page")))
+            dispatcher.register(Commands.literal(alias).then(Commands.argument("page", IntegerArgumentType.integer(1))
+                    .executes(context -> showPage(context, IntegerArgumentType.getInteger(context, "page"))))
             );
         }
     }
