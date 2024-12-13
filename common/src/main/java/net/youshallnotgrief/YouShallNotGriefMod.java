@@ -36,13 +36,11 @@ public class YouShallNotGriefMod {
         BlockEvents.registerEvents();
         NetworkRegistry.registerClientToServerPackets();
 
-        InteractionEvent.RIGHT_CLICK_BLOCK.register((Player var1, InteractionHand var2, BlockPos var3, Direction var4) ->{
-            return EventResult.pass();
-        });
-
+        //Used for inspecting entities
         InteractionEvent.INTERACT_ENTITY.register((Player player, Entity entity, InteractionHand hand) -> {
             return EventResult.pass();
         });
+
 
         InteractionEvent.RIGHT_CLICK_ITEM.register((Player player, InteractionHand hand) -> {
             return CompoundEventResult.pass();

@@ -52,6 +52,7 @@ public class ServerConfig {
     public static ForgeConfigSpec.ConfigValue<Boolean> logFrostWalker;
 
     //Non mob block logging
+    public static ForgeConfigSpec.ConfigValue<Boolean> logEndFight;
     public static ForgeConfigSpec.ConfigValue<Boolean> logPlantGrowth;
     public static ForgeConfigSpec.ConfigValue<Boolean> logUnsupportedBlocks;
     public static ForgeConfigSpec.ConfigValue<Boolean> logAmethystGrowth;
@@ -74,6 +75,7 @@ public class ServerConfig {
     public static ForgeConfigSpec.ConfigValue<Boolean> logExtinguish;
     public static ForgeConfigSpec.ConfigValue<Boolean> logPloughing;
     public static ForgeConfigSpec.ConfigValue<Boolean> logAnvilUse;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logDragonEggTeleportation;
 
     //Interaction logging
     public static ForgeConfigSpec.ConfigValue<Boolean> logProjectileLightBlock;
@@ -124,6 +126,7 @@ public class ServerConfig {
 
         //Mob block logging
         BUILDER.push(CATEGORY_MOB);
+        logEndFight = BUILDER.define("logEndFight", true);
         logBlockTrampling = BUILDER.define("logBlockTrampling", true);
         logMobHatching = BUILDER.define("logMobHatching", true);
         logMobInfestingBlock = BUILDER.define("logMobInfestingBlock", true);
@@ -164,6 +167,7 @@ public class ServerConfig {
         logExtinguish = BUILDER.define("logExtinguish", true);
         logPloughing = BUILDER.define("logPloughing", true);
         logAnvilUse = BUILDER.define("logAnvilUse", true);
+        logDragonEggTeleportation = BUILDER.define("logDragonEggTeleportation", true);
         BUILDER.pop();
         logMobOpenDoor = BUILDER.define("logMobOpenDoor", true);
         logProjectileLightBlock = BUILDER.define("logProjectileLightBlock", true);
