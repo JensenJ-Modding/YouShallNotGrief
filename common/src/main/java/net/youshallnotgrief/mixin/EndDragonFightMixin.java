@@ -30,7 +30,7 @@ public class EndDragonFightMixin {
     public boolean youshallnotgrief$logDragonRespawn(ServerLevel level, BlockPos pos, BlockState state, Operation<Boolean> original) {
         return BlockUtils.wrapLevelSetBlockAndUpdate(level, pos, state, original, oldState -> {
             if(ServerConfig.logEndFight.get()) {
-                BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.CHANGED, null, "");
+                BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.FALLBACK, null, "");
             }
         });
     }

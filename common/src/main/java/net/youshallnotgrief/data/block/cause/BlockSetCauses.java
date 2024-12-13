@@ -35,10 +35,9 @@ public class BlockSetCauses {
     public static BlockSetCause PAVED = registerCause(new BlockSetCause("paved"));
     public static BlockSetCause PLOUGHED = registerCause(new BlockSetCause("ploughed"));
     public static BlockSetCause DAMAGED = registerCause(new BlockSetCause("damaged"));
-    public static BlockSetCause CHANGED = registerCause(new BlockSetCause("changed"));
     public static BlockSetCause HATCHED = registerCause(new BlockSetCause("hatched"));
     public static BlockSetCause INFESTED = registerCause(new BlockSetCause("infested"));
-    public static BlockSetCause FALLBACK = registerCause(new BlockSetCause("fallback"));
+    public static BlockSetCause FALLBACK = registerCause(new BlockSetCauseWithSourceFallback("fallback"));
 
     private static BlockSetCause registerCause(BlockSetCause cause){
         if(CAUSES.containsKey(cause.getDatabaseTag())){

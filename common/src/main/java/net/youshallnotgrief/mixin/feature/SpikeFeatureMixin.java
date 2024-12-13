@@ -24,7 +24,7 @@ public class SpikeFeatureMixin {
             BlockState oldState = level.getBlockState(pos);
             if(!level.isClientSide()){
                 if(ServerConfig.logEndFight.get()){
-                    BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.CHANGED, null, "");
+                    BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.FALLBACK, null, "");
                 }
             }
         }

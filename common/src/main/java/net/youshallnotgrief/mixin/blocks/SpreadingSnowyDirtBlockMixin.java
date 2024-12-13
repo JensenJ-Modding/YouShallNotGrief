@@ -19,7 +19,7 @@ public class SpreadingSnowyDirtBlockMixin {
     public boolean youshallnotgrief$logGrassSpreading(ServerLevel level, BlockPos pos, BlockState state, Operation<Boolean> original) {
         return BlockUtils.wrapLevelSetBlockAndUpdate(level, pos, state, original, oldState -> {
             if(ServerConfig.logGrassSpread.get()) {
-                BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.CHANGED, null, "");
+                BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.FALLBACK, null, "");
             }
         });
     }

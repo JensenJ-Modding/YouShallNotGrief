@@ -18,7 +18,7 @@ public abstract class LeavesBlockMixin {
     @WrapOperation(method = "randomTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;removeBlock(Lnet/minecraft/core/BlockPos;Z)Z"))
     public boolean youshallnotgrief$logLeafDecay(ServerLevel level, BlockPos pos, boolean b, Operation<Boolean> original) {
         return BlockUtils.wrapLevelRemoveBlock(level, pos, b, original, oldState -> {
-            if(ServerConfig.logLeafDecay.get()) {
+            if(ServerConfig.logDecay.get()) {
                 BlockUtils.addToDatabase(pos, level, oldState, Blocks.AIR.defaultBlockState(), BlockSetCauses.DECAY, null, "");
             }
         });

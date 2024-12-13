@@ -18,7 +18,7 @@ public class DragonRespawnAnimationMixin {
     public boolean youshallnotgrief$logDragonRespawn(ServerLevel level, BlockPos pos, boolean b, Operation<Boolean> original) {
         return BlockUtils.wrapLevelRemoveBlock(level, pos, b, original, oldState -> {
             if(ServerConfig.logPortals.get()) {
-                BlockUtils.addToDatabase(pos, level, oldState, Blocks.AIR.defaultBlockState(), BlockSetCauses.CHANGED, null, "");
+                BlockUtils.addToDatabase(pos, level, oldState, Blocks.AIR.defaultBlockState(), BlockSetCauses.FALLBACK, null, "");
             }
         });
     }

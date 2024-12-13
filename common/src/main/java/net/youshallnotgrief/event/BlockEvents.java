@@ -2,11 +2,9 @@ package net.youshallnotgrief.event;
 
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.BlockEvent;
-import dev.architectury.event.events.common.InteractionEvent;
 import dev.architectury.utils.value.IntValue;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.youshallnotgrief.config.ServerConfig;
@@ -27,15 +25,6 @@ public class BlockEvents {
             MixinDataHolder.wasLevelSetTracked = true;
             if(ServerConfig.logBlockBreaking.get()) {
                 BlockUtils.addToDatabase(pos, level, state, newState, BlockSetCauses.REMOVED, player, "");
-            }
-            return EventResult.pass();
-        });
-
-        InteractionEvent.FARMLAND_TRAMPLE.register((Level level, BlockPos pos, BlockState state, float distance, Entity entity) -> {
-            BlockState newState = level.getBlockState(pos);
-            MixinDataHolder.wasLevelSetTracked = true;
-            if(ServerConfig.logBlockTrampling.get()) {
-                BlockUtils.addToDatabase(pos, level, state, newState, BlockSetCauses.TRAMPLED, entity, "");
             }
             return EventResult.pass();
         });

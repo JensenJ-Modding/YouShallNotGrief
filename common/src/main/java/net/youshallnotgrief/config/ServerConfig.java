@@ -59,7 +59,8 @@ public class ServerConfig {
     public static ForgeConfigSpec.ConfigValue<Boolean> logGolemCreation;
     public static ForgeConfigSpec.ConfigValue<Boolean> logFire;
     public static ForgeConfigSpec.ConfigValue<Boolean> logMelting;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logLeafDecay;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logDecay;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logLightning;
     public static ForgeConfigSpec.ConfigValue<Boolean> logGravity;
     public static ForgeConfigSpec.ConfigValue<Boolean> logGrassSpread;
     public static ForgeConfigSpec.ConfigValue<Boolean> logPortals;
@@ -149,7 +150,8 @@ public class ServerConfig {
         logGolemCreation = BUILDER.define("logGolemCreation", true);
         logFire = BUILDER.define("logFire", true);
         logMelting = BUILDER.define("logMelting", true);
-        logLeafDecay = BUILDER.define("logLeafDecay", true);
+        logLightning = BUILDER.define("logLightning", true);
+        logDecay = BUILDER.define("logDecay", true);
         logGravity = BUILDER.define("logGravity", true);
         logGrassSpread = BUILDER.define("logGrassSpread", true);
         logPortals = BUILDER.define("logPortals", true);
