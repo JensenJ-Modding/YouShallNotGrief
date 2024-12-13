@@ -2,7 +2,6 @@ package net.youshallnotgrief.mixin.entity;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -16,7 +15,8 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(value = LivingEntity.class, priority = 10100)
 public class LivingEntityMixin {
     @WrapOperation(method = "createWitherRose", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
-    public boolean youshallnotgrief$logWitherRosePlacement(Level level, BlockPos pos, BlockState state, int i, Operation<Boolean> original, @Local(name = "livingEntity") LivingEntity entity) {
+    public boolean youshallnotgrief$logWitherRosePlacement(Level level, BlockPos pos, BlockState state, int i, Operation<Boolean> original) {
+        LivingEntity entity = (LivingEntity) (Object) this;
         return BlockUtils.wrapLevelSetBlock(level, pos, state, i, original, oldState -> {
             if(ServerConfig.logPlantGrowth.get()) {
                 BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.PLACED, entity, "");
