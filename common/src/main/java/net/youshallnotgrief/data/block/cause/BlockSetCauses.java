@@ -13,6 +13,7 @@ public class BlockSetCauses {
     public static BlockSetCause FIRE = registerCause(new BlockSetCause("fire"));
     public static BlockSetCause SPREAD = registerCause(new BlockSetCause("spread"));
     public static BlockSetCause MELT = registerCause(new BlockSetCause("melt"));
+    public static BlockSetCause OXIDIZATION = registerCause(new BlockSetCause("oxidization"));
     public static BlockSetCause DECAY = registerCause(new BlockSetCause("decay"));
     public static BlockSetCause GROW = registerCause(new BlockSetCause("grow"));
     public static BlockSetCause EXTINGUISH = registerCause(new BlockSetCauseWithSourceFallback("extinguish"));

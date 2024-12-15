@@ -41,6 +41,7 @@
   "msg.youshallnotgrief.inspection.block.cause.opened": "%3$s opened %1$s",
   "msg.youshallnotgrief.inspection.block.cause.closed": "%3$s closed %1$s",
   "msg.youshallnotgrief.inspection.block.cause.evaporation": "%1$s evaporated",
+  "msg.youshallnotgrief.inspection.block.cause.oxidization": "%1$s oxidized",
   "msg.youshallnotgrief.inspection.block.cause.explosion": "%3$s exploded %1$s",
   "msg.youshallnotgrief.inspection.block.cause.ate": "%3$s ate %1$s",
   "msg.youshallnotgrief.inspection.block.cause.frostwalker": "%3$s froze %1$s",

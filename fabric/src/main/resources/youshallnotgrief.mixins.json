@@ -9,7 +9,8 @@
     "ExplosionMixin",
     "FireBlockMixin",
     "AnvilMenuMixin",
-    "HoeItemMixin"
+    "HoeItemMixin",
+    "ChangeOverTimeBlockMixin"
   ],
   "injectors": {
     "defaultRequire": 1

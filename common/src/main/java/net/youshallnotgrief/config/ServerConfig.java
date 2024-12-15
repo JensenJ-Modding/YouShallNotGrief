@@ -60,6 +60,7 @@ public class ServerConfig {
     public static ForgeConfigSpec.ConfigValue<Boolean> logFire;
     public static ForgeConfigSpec.ConfigValue<Boolean> logMelting;
     public static ForgeConfigSpec.ConfigValue<Boolean> logDecay;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logOxidization;
     public static ForgeConfigSpec.ConfigValue<Boolean> logLightning;
     public static ForgeConfigSpec.ConfigValue<Boolean> logGravity;
     public static ForgeConfigSpec.ConfigValue<Boolean> logGrassSpread;
@@ -152,6 +153,7 @@ public class ServerConfig {
         logMelting = BUILDER.define("logMelting", true);
         logLightning = BUILDER.define("logLightning", true);
         logDecay = BUILDER.define("logDecay", true);
+        logOxidization = BUILDER.define("logOxidization", true);
         logGravity = BUILDER.define("logGravity", true);
         logGrassSpread = BUILDER.define("logGrassSpread", true);
         logPortals = BUILDER.define("logPortals", true);

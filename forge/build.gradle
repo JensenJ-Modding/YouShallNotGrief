@@ -47,8 +47,8 @@ dependencies {
     include "maven.modrinth:sqlite-jdbc:${sqlite_version}"
 
     // Mixin Extras
-    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1"))
-    implementation(include("io.github.llamalad7:mixinextras-forge:0.4.1"))
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixin_extras_version}"))
+    implementation(include("io.github.llamalad7:mixinextras-forge:${mixin_extras_version}"))
 
 
     //Dependencies for testing
