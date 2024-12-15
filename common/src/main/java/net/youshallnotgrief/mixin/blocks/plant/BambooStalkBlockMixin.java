@@ -1,4 +1,4 @@
-package net.youshallnotgrief.mixin.blocks;
+package net.youshallnotgrief.mixin.blocks.plant;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -29,7 +29,6 @@ public abstract class BambooStalkBlockMixin {
         });
     }
 
-    //Skip bamboo break as it will be handled by unsupported blocks
     @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;destroyBlock(Lnet/minecraft/core/BlockPos;Z)Z"))
     public void youshallnotgrief$skipBambooBreak(BlockState blockState, ServerLevel serverLevel, BlockPos blockPos, RandomSource randomSource, CallbackInfo ci){
         MixinDataHolder.wasLevelSetTracked = true;
