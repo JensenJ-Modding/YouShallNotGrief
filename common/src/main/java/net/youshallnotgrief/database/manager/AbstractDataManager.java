@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.database.DatabaseManager;
 import net.youshallnotgrief.database.manager.block.TableManager;
+import net.youshallnotgrief.util.InspectionMode;
 import net.youshallnotgrief.util.RetrieveResult;
 
 import java.sql.PreparedStatement;
@@ -19,8 +20,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class AbstractDataManager<InsertData, QueryData> implements DataManager<InsertData, QueryData>, TableManager<InsertData> {
     protected Set<InsertData> QUEUED_DATA = ConcurrentHashMap.newKeySet();
+    protected ArrayList<InsertData> COMMITTING_QUEUED_DATA = new ArrayList<>();
     protected ArrayList<TableManager<InsertData>> TABLE_MANAGERS = new ArrayList<>();
-    private static final int MAX_QUEUE_SIZE = 1000;
     private static final AtomicBoolean isCommitting = new AtomicBoolean(false);
 
     @Override
@@ -29,7 +30,7 @@ public abstract class AbstractDataManager<InsertData, QueryData> implements Data
             throw new IllegalStateException("Failed to add data to Database Queue. addToDatabase called from clientside." + data);
         }
         QUEUED_DATA.add(data);
-        if(QUEUED_DATA.size() >= MAX_QUEUE_SIZE && isCommitting.compareAndSet(false, true)) {
+        if((QUEUED_DATA.size() >= DatabaseManager.MAX_QUEUE_SIZE || !InspectionMode.INSPECTING_PLAYERS.isEmpty())) {
             commitQueuedToDatabase();
         }
     }
@@ -42,26 +43,32 @@ public abstract class AbstractDataManager<InsertData, QueryData> implements Data
     @Override
     public void commitQueuedToDatabase(){
         try {
-            if(DatabaseManager.executorService == null){
-                return;
-            }
-            DatabaseManager.executorService.submit(() -> {
-                if (QUEUED_DATA.isEmpty()) {
+            if(isCommitting.compareAndSet(false, true)) {
+                if (DatabaseManager.executorService == null) {
                     return;
                 }
-
-                Connection database = DatabaseManager.getDatabaseConnection();
-                if (database == null) {
-                    return;
-                }
-
-                for (TableManager<InsertData> tableManager : TABLE_MANAGERS) {
-                    commitTable(database, tableManager);
-                }
-                commitTable(database, this);
+                COMMITTING_QUEUED_DATA = new ArrayList<>(QUEUED_DATA);
                 QUEUED_DATA.clear();
-                isCommitting.set(false);
-            });
+                DatabaseManager.executorService.submit(() -> {
+                    if (COMMITTING_QUEUED_DATA.isEmpty()) {
+                        isCommitting.set(false);
+                        return;
+                    }
+
+                    Connection database = DatabaseManager.getDatabaseConnection();
+                    if (database == null) {
+                        isCommitting.set(false);
+                        return;
+                    }
+
+                    for (TableManager<InsertData> tableManager : TABLE_MANAGERS) {
+                        commitTable(database, tableManager);
+                    }
+                    commitTable(database, this);
+                    COMMITTING_QUEUED_DATA.clear();
+                    isCommitting.set(false);
+                });
+            }
         } catch (RejectedExecutionException e){
             YouShallNotGriefMod.LOGGER.error("Failed to commit queued data to database. Task could not be scheduled.");
             YouShallNotGriefMod.LOGGER.error(e.toString());
@@ -70,7 +77,7 @@ public abstract class AbstractDataManager<InsertData, QueryData> implements Data
 
     private void commitTable(Connection database, TableManager<InsertData> tableManager){
         try (PreparedStatement preparedStatement = database.prepareStatement(tableManager.getInsertSQL())) {
-            for (InsertData data : QUEUED_DATA) {
+            for (InsertData data : COMMITTING_QUEUED_DATA) {
                 tableManager.setInsertPreparedStatementValues(preparedStatement, data);
                 preparedStatement.addBatch();
             }

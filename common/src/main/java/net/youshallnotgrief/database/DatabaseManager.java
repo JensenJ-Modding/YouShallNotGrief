@@ -24,11 +24,13 @@ public class DatabaseManager {
     public static final BlockSetDataManager BLOCK_SET_MANAGER = registerDataManager(new BlockSetDataManager());
 
     public static ExecutorService executorService = null;
+    public static int MAX_QUEUE_SIZE = 50;
 
     public static void registerLifecycleEvents(){
         LifecycleEvent.SERVER_STARTED.register((MinecraftServer server) -> {
             minecraftServer = server;
             executorService = Executors.newFixedThreadPool(ServerConfig.databaseThreadCount.get());
+            MAX_QUEUE_SIZE = ServerConfig.databaseQueueSize.get();
             cachedDatabaseConnection = getDatabaseConnection();
             clearAllCaches();
         });

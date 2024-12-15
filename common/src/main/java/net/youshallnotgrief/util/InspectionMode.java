@@ -89,6 +89,7 @@ public class InspectionMode {
         INSPECTING_PLAYERS.add(player);
         player.sendSystemMessage(Component.translatable("msg.youshallnotgrief.inspection.enable").withStyle(style -> style
                 .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))));
+        DatabaseManager.commitAllQueuedDataToDatabase();
     }
 
     public static void disableInspectMode(Player player){
@@ -110,7 +111,6 @@ public class InspectionMode {
             return;
         }
 
-        DatabaseManager.commitAllQueuedDataToDatabase();
         BlockPos pos = CURRENTLY_SELECTED_BLOCK.get(player);
         String dimensionID = MiscUtils.getDimensionIDFromLevel(player.level());
         Future<RetrieveResult<BlockSetData>> futureData = DatabaseManager.BLOCK_SET_MANAGER.retrieveFromDatabase(new BlockSetQueryData(pos, dimensionID), ACTIONS_PER_PAGE, pageNumber * ACTIONS_PER_PAGE);
