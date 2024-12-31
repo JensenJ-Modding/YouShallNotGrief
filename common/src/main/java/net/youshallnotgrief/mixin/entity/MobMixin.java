@@ -2,7 +2,7 @@ package net.youshallnotgrief.mixin.entity;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.youshallnotgrief.util.MobTargetInterface;
+import net.youshallnotgrief.util.mixin.MobTargetInterface;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;

@@ -61,6 +61,7 @@
     "feature.SpikeFeatureMixin",
     "feature.TreeFeatureFoliageSetterMixin",
     "feature.TreeFeatureMixin",
+    "inventory.AbstractContainerMenuMixin",
     "item.AxeItemMixin",
     "item.EnderEyeItemMixin",
     "item.FlintAndSteelItemMixin",

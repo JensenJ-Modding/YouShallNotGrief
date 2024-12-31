@@ -2,6 +2,7 @@ package net.youshallnotgrief.util;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.youshallnotgrief.util.mixin.MobTargetInterface;
 
 import java.util.ArrayList;
 

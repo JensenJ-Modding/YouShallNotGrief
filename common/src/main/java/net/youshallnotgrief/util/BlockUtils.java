@@ -18,6 +18,7 @@ import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.data.block.*;
 import net.youshallnotgrief.data.block.cause.BlockSetCause;
 import net.youshallnotgrief.database.DatabaseManager;
+import net.youshallnotgrief.util.mixin.MixinDataHolder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

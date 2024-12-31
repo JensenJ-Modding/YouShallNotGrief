@@ -12,7 +12,7 @@ import net.minecraft.world.level.levelgen.feature.configurations.TreeConfigurati
 import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
-import net.youshallnotgrief.util.MixinDataHolder;
+import net.youshallnotgrief.util.mixin.MixinDataHolder;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

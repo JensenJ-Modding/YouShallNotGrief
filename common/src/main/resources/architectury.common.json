@@ -1,6 +1,7 @@
 {
   "accessWidener": "youshallnotgrief.accesswidener",
   "injected_interfaces": {
-    "net/minecraft/world/entity/class_1308": ["net/youshallnotgrief/mixin/MobTargetInterface"]
+    "net/minecraft/world/entity/class_1308": ["net/youshallnotgrief/mixin/MobTargetInterface"],
+    "net/minecraft/world/entity/class_3222": ["net/youshallnotgrief/mixin/PlayerMenuContext"]
   }
 }

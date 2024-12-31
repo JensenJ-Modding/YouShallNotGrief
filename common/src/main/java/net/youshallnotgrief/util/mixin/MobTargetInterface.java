@@ -1,4 +1,4 @@
-package net.youshallnotgrief.util;
+package net.youshallnotgrief.util.mixin;
 
 import net.minecraft.world.entity.LivingEntity;
 
