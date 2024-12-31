@@ -35,6 +35,7 @@ public class ServerConfig {
     //Player block logging
     public static ForgeConfigSpec.ConfigValue<Boolean> logBlockPlacement;
     public static ForgeConfigSpec.ConfigValue<Boolean> logBlockBreaking;
+    public static ForgeConfigSpec.ConfigValue<Boolean> logContainerAccesses;
 
     //Mob block logging
     public static ForgeConfigSpec.ConfigValue<Boolean> logBlockTrampling;
@@ -123,6 +124,7 @@ public class ServerConfig {
         BUILDER.push(CATEGORY_PLAYER);
         logBlockPlacement = BUILDER.define("logBlockPlacement", true);
         logBlockBreaking = BUILDER.define("logBlockBreaking", true);
+        logContainerAccesses = BUILDER.define("logBlockAccesses", true);
 
         BUILDER.pop();
 

@@ -12,6 +12,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -39,7 +40,6 @@ public class BlockEvents {
         });
 
         //This event is used to track which inventory the player is currently accessing which is used in transaction logging
-        //TODO: Log player accessing the block entity with a cause of "accessed"
         InteractionEvent.RIGHT_CLICK_BLOCK.register((Player player, InteractionHand hand, BlockPos pos, Direction face) -> {
             Level level = player.level();
             if(level.isClientSide){
@@ -56,6 +56,10 @@ public class BlockEvents {
             }
 
             ((PlayerMenuContext) player).youshallnotgrief$setContainerPos(pos);
+            if(ServerConfig.logContainerAccesses.get()){
+                BlockState state = level.getBlockState(pos);
+                BlockUtils.addToDatabase(pos, level, state, state, BlockSetCauses.ACCESSED, player, "");
+            }
             return EventResult.pass();
         });
 
@@ -64,6 +68,12 @@ public class BlockEvents {
             if(player.level().isClientSide){
                 return;
             }
+
+            //This is important as some menu implementation force the inventory closed before opening the block's menu.
+            if(menu instanceof InventoryMenu){
+                return;
+            }
+
             ((PlayerMenuContext) player).youshallnotgrief$setContainerPos(null);
         });
 

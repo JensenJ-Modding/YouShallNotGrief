@@ -51,6 +51,7 @@
   "msg.youshallnotgrief.inspection.block.cause.damaged": "%3$s damaged %1$s",
   "msg.youshallnotgrief.inspection.block.cause.hatched": "%1$s hatched",
   "msg.youshallnotgrief.inspection.block.cause.infested": "%3$s infested %1$s",
+  "msg.youshallnotgrief.inspection.block.cause.accessed": "%3$s accessed %1$s",
   "msg.youshallnotgrief.inspection.block.cause.fallback": "%3$s set %1$s to %2$s",
   "msg.youshallnotgrief.inspection.block.cause.fallback.fallback": "%1$s was set to %2$s",
 

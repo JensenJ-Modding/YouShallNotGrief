@@ -24,7 +24,6 @@ public class AbstractContainerMenuMixin {
         original.call(slot, player, itemStack);
     }
 
-
     @WrapOperation(method = "method_34249", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/Slot;onTake(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/ItemStack;)V"))
     private void youshallnotgrief$wrapOnTake2(Slot slot, Player player, ItemStack itemStack, Operation<Void> original){
         //When a player clicks a block which has an inventory map player to position
