@@ -50,6 +50,7 @@ public class BlockEvents {
                 ((PlayerMenuContext) player).youshallnotgrief$setContainerPos(null);
                 return EventResult.pass();
             }
+            //TODO: Revisit this as some blocks open a menu, but don't implement a provider themselves, such as the ender chest
             if(!(blockEntity instanceof MenuProvider)){
                 ((PlayerMenuContext) player).youshallnotgrief$setContainerPos(null);
                 return EventResult.pass();
