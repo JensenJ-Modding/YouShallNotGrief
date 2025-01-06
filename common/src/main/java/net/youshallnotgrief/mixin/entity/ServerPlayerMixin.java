@@ -10,15 +10,22 @@ import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
 import net.youshallnotgrief.util.mixin.BlockPositionMenuContext;
+import net.youshallnotgrief.util.mixin.EntityUUIDMenuContext;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
+import java.util.UUID;
+
 @Mixin(value = ServerPlayer.class, priority = 10100)
-public class ServerPlayerMixin implements BlockPositionMenuContext {
+public class ServerPlayerMixin implements BlockPositionMenuContext, EntityUUIDMenuContext {
 
     @Unique
     BlockPos youshallnotgrief$blockContainerPos = null;
+
+    @Unique
+    UUID youshallnotgrief$entityContainerID = null;
 
     @WrapOperation(method = "createEndPlatform", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;setBlockAndUpdate(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Z"))
     public boolean youshallnotgrief$logPlayerCreateEndPlatform(ServerLevel level, BlockPos pos, BlockState state, Operation<Boolean> original) {
@@ -31,12 +38,22 @@ public class ServerPlayerMixin implements BlockPositionMenuContext {
     }
 
     @Override
-    public BlockPos youshallnotgrief$getContainerPos() {
+    public @Nullable BlockPos youshallnotgrief$getContainerPos() {
         return youshallnotgrief$blockContainerPos;
     }
 
     @Override
     public void youshallnotgrief$setContainerPos(BlockPos pos) {
         youshallnotgrief$blockContainerPos = pos;
+    }
+
+    @Override
+    public void youshallnotgrief$setContainerUUID(UUID id) {
+        youshallnotgrief$entityContainerID = id;
+    }
+
+    @Override
+    public @Nullable UUID youshallnotgrief$getContainerUUID() {
+        return youshallnotgrief$entityContainerID;
     }
 }

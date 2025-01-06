@@ -3,15 +3,12 @@ package net.youshallnotgrief.event;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.BlockEvent;
 import dev.architectury.event.events.common.InteractionEvent;
-import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.utils.value.IntValue;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -56,20 +53,6 @@ public class BlockEvents {
                 BlockUtils.addToDatabase(pos, level, state, state, BlockSetCauses.ACCESSED, player, "");
             }
             return EventResult.pass();
-        });
-
-        //Used to clear which inventory the player is currently accessing, which prevents players being associated with unrelated actions
-        PlayerEvent.CLOSE_MENU.register((Player player, AbstractContainerMenu menu) -> {
-            if(player.level().isClientSide){
-                return;
-            }
-
-            //This is important as some menu implementation force the inventory closed before opening the block's menu.
-            if(menu instanceof InventoryMenu){
-                return;
-            }
-
-            ((BlockPositionMenuContext) player).youshallnotgrief$setContainerPos(null);
         });
 
         //TODO: FIX

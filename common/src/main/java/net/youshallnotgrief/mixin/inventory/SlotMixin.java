@@ -8,6 +8,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.youshallnotgrief.util.mixin.BlockPositionMenuContext;
+import net.youshallnotgrief.util.mixin.EntityUUIDMenuContext;
 import net.youshallnotgrief.util.mixin.MenuContext;
 import net.youshallnotgrief.util.mixin.SlotMenuContext;
 import org.jetbrains.annotations.Nullable;
@@ -18,6 +19,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.UUID;
 
 @Mixin(value = Slot.class, priority = 10100)
 public abstract class SlotMixin implements SlotMenuContext {
@@ -45,14 +48,18 @@ public abstract class SlotMixin implements SlotMenuContext {
                 return;
             }
 
-            BlockPos pos = youshallnotgrief$getInventoryPosition();
+            BlockPos pos = youshallnotgrief$getInventoryBlockPosition();
             if (pos != null) {
-                context.youshallnotgrief$onStackChanged(youshallnotgrief$oldStack, getItem().copy(), pos);
+                context.youshallnotgrief$onStackChangedInBlock(youshallnotgrief$oldStack, getItem().copy(), pos);
             }
             //If the position is null, this could be an entity slot interaction, such as a minecart, boat, horse etc.
-            //else {
+            else {
                 //TODO: Process entity slot change
-            //}
+                UUID entityID = youshallnotgrief$getInventoryEntityUUID();
+                if(entityID != null){
+                    context.youshallnotgrief$onStackChangedInEntity(youshallnotgrief$oldStack, getItem().copy(), entityID);
+                }
+            }
 
             youshallnotgrief$oldStack = getItem().copy();
         }
@@ -60,10 +67,18 @@ public abstract class SlotMixin implements SlotMenuContext {
 
     @Unique
     @Nullable
-    private BlockPos youshallnotgrief$getInventoryPosition(){
+    private BlockPos youshallnotgrief$getInventoryBlockPosition(){
         ServerPlayer player = ((MenuContext) youshallnotgrief$menu).youshallnotgrief$getPlayer();
         if(player == null) { return null; }
         return ((BlockPositionMenuContext) player).youshallnotgrief$getContainerPos();
+    }
+
+    @Unique
+    @Nullable
+    private UUID youshallnotgrief$getInventoryEntityUUID(){
+        ServerPlayer player = ((MenuContext) youshallnotgrief$menu).youshallnotgrief$getPlayer();
+        if(player == null) { return null; }
+        return ((EntityUUIDMenuContext) player).youshallnotgrief$getContainerUUID();
     }
 
     @Override

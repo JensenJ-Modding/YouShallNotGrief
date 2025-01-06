@@ -19,6 +19,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.UUID;
+
 @Mixin(value = AbstractContainerMenu.class, priority = 10100)
 public abstract class AbstractContainerMenuMixin implements MenuContext {
 
@@ -54,29 +56,26 @@ public abstract class AbstractContainerMenuMixin implements MenuContext {
     }
 
     @Override
-    public void youshallnotgrief$onStackChanged(@NotNull ItemStack oldStack, @NotNull ItemStack newStack, BlockPos pos) {
-        if (oldStack.isEmpty() && newStack.isEmpty()) {
+    public void youshallnotgrief$onStackChangedInEntity(ItemStack oldStack, ItemStack newStack, UUID entity) {
+        ItemStack changedStack = youshallnotgrief$onStackChanged(oldStack, newStack);
+        if(changedStack == null) {
             return;
         }
 
-        if (!oldStack.isEmpty() && !newStack.isEmpty()) { // 2 non-empty stacks
-            if (oldStack.getItem() == newStack.getItem()) { // If the items in the stack are the same, then we add or remove an amount
-                int newCount = newStack.getCount();
-                int oldCount = oldStack.getCount();
-                if (newCount > oldCount) {
-                    youshallnotgrief$onStackChanged(ItemStack.EMPTY, new ItemStack(newStack.getItem(), newCount - oldCount), pos);
-                } else {
-                    youshallnotgrief$onStackChanged(new ItemStack(newStack.getItem(), oldCount - newCount), ItemStack.EMPTY, pos);
-                }
-            } else { //Split up removing and adding items if we need to swap them.
-                youshallnotgrief$onStackChanged(oldStack, ItemStack.EMPTY, pos);
-                youshallnotgrief$onStackChanged(ItemStack.EMPTY, newStack, pos);
-            }
+        //TODO: Queue to database
+        if (oldStack.isEmpty()) {
+            YouShallNotGriefMod.LOGGER.info("{} has now added {} to {}", youshallnotgrief$player, changedStack, entity);
+        } else {
+            YouShallNotGriefMod.LOGGER.info("{} has now removed {} from {}", youshallnotgrief$player, changedStack, entity);
+        }
+    }
+
+    @Override
+    public void youshallnotgrief$onStackChangedInBlock(@NotNull ItemStack oldStack, @NotNull ItemStack newStack, @NotNull BlockPos pos) {
+        ItemStack changedStack = youshallnotgrief$onStackChanged(oldStack, newStack);
+        if(changedStack == null) {
             return;
         }
-
-        //Get the itemstack which was added or removed
-        ItemStack changedStack = oldStack.isEmpty() ? newStack : oldStack;
 
         //TODO: Queue to database
         if (oldStack.isEmpty()) {
@@ -84,5 +83,31 @@ public abstract class AbstractContainerMenuMixin implements MenuContext {
         } else {
             YouShallNotGriefMod.LOGGER.info("{} has now removed {} from {}", youshallnotgrief$player, changedStack, pos);
         }
+    }
+
+    @Unique
+    private ItemStack youshallnotgrief$onStackChanged(@NotNull ItemStack oldStack, @NotNull ItemStack newStack){
+        if (oldStack.isEmpty() && newStack.isEmpty()) {
+            return null;
+        }
+
+        if (!oldStack.isEmpty() && !newStack.isEmpty()) { // 2 non-empty stacks
+            if (oldStack.getItem() == newStack.getItem()) { // If the items in the stack are the same, then we add or remove an amount
+                int newCount = newStack.getCount();
+                int oldCount = oldStack.getCount();
+                if (newCount > oldCount) {
+                    youshallnotgrief$onStackChanged(ItemStack.EMPTY, new ItemStack(newStack.getItem(), newCount - oldCount));
+                } else {
+                    youshallnotgrief$onStackChanged(new ItemStack(newStack.getItem(), oldCount - newCount), ItemStack.EMPTY);
+                }
+            } else { //Split up removing and adding items if we need to swap them.
+                youshallnotgrief$onStackChanged(oldStack, ItemStack.EMPTY);
+                youshallnotgrief$onStackChanged(ItemStack.EMPTY, newStack);
+            }
+            return null;
+        }
+
+        //Return the itemstack which was added or removed
+        return oldStack.isEmpty() ? newStack : oldStack;
     }
 }
