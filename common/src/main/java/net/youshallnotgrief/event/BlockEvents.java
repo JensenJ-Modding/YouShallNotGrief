@@ -9,7 +9,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -19,8 +18,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.data.block.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
+import net.youshallnotgrief.util.mixin.BlockPositionMenuContext;
 import net.youshallnotgrief.util.mixin.MixinDataHolder;
-import net.youshallnotgrief.util.mixin.PlayerMenuContext;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockEvents {
@@ -47,16 +46,11 @@ public class BlockEvents {
             }
             BlockEntity blockEntity = level.getBlockEntity(pos);
             if(blockEntity == null){
-                ((PlayerMenuContext) player).youshallnotgrief$setContainerPos(null);
-                return EventResult.pass();
-            }
-            //TODO: Revisit this as some blocks open a menu, but don't implement a provider themselves, such as the ender chest
-            if(!(blockEntity instanceof MenuProvider)){
-                ((PlayerMenuContext) player).youshallnotgrief$setContainerPos(null);
+                ((BlockPositionMenuContext) player).youshallnotgrief$setContainerPos(null);
                 return EventResult.pass();
             }
 
-            ((PlayerMenuContext) player).youshallnotgrief$setContainerPos(pos);
+            ((BlockPositionMenuContext) player).youshallnotgrief$setContainerPos(pos);
             if(ServerConfig.logContainerAccesses.get()){
                 BlockState state = level.getBlockState(pos);
                 BlockUtils.addToDatabase(pos, level, state, state, BlockSetCauses.ACCESSED, player, "");
@@ -64,7 +58,7 @@ public class BlockEvents {
             return EventResult.pass();
         });
 
-        //Used to clear which inventory the player is currently accessing
+        //Used to clear which inventory the player is currently accessing, which prevents players being associated with unrelated actions
         PlayerEvent.CLOSE_MENU.register((Player player, AbstractContainerMenu menu) -> {
             if(player.level().isClientSide){
                 return;
@@ -75,7 +69,7 @@ public class BlockEvents {
                 return;
             }
 
-            ((PlayerMenuContext) player).youshallnotgrief$setContainerPos(null);
+            ((BlockPositionMenuContext) player).youshallnotgrief$setContainerPos(null);
         });
 
         //TODO: FIX
