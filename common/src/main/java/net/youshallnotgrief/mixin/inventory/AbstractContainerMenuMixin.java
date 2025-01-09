@@ -22,6 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.UUID;
+import java.util.function.Consumer;
 
 @Mixin(value = AbstractContainerMenu.class, priority = 10100)
 public abstract class AbstractContainerMenuMixin implements MenuContext {
@@ -59,62 +60,57 @@ public abstract class AbstractContainerMenuMixin implements MenuContext {
 
     @Override
     public void youshallnotgrief$onStackChangedInEntity(ItemStack oldStack, ItemStack newStack, UUID entity) {
-        ItemStack changedStack = youshallnotgrief$onStackChanged(oldStack, newStack);
-        if(changedStack == null) {
-            return;
-        }
-
-        if (oldStack.isEmpty()) {
-            InventoryUtils.addToDatabase(entity, changedStack.getItem(), changedStack.getCount(), youshallnotgrief$player, "");
-            YouShallNotGriefMod.LOGGER.info("{} has now added {} to {}", youshallnotgrief$player, changedStack, entity);
-        } else {
-            InventoryUtils.addToDatabase(entity, changedStack.getItem(), -changedStack.getCount(), youshallnotgrief$player, "");
-            YouShallNotGriefMod.LOGGER.info("{} has now removed {} from {}", youshallnotgrief$player, changedStack, entity);
-
-        }
+        youshallnotgrief$onStackChanged(oldStack, newStack, (addedStack) -> {
+            InventoryUtils.addToDatabase(entity, addedStack.getItem(), addedStack.getCount(), youshallnotgrief$player, "");
+            YouShallNotGriefMod.LOGGER.info("{} has now added {} to {}", youshallnotgrief$player, addedStack, entity);
+        }, (removedStack) -> {
+            InventoryUtils.addToDatabase(entity, removedStack.getItem(), -removedStack.getCount(), youshallnotgrief$player, "");
+            YouShallNotGriefMod.LOGGER.info("{} has now removed {} from {}", youshallnotgrief$player, removedStack, entity);
+        });
     }
 
     @Override
     public void youshallnotgrief$onStackChangedInBlock(@NotNull ItemStack oldStack, @NotNull ItemStack newStack, @NotNull BlockPos pos) {
-        ItemStack changedStack = youshallnotgrief$onStackChanged(oldStack, newStack);
-        if(changedStack == null) {
-            return;
-        }
-
         Level level = youshallnotgrief$player.level();
-        if (oldStack.isEmpty()) {
-            InventoryUtils.addToDatabase(pos, level, changedStack.getItem(), changedStack.getCount(), youshallnotgrief$player, "");
-            YouShallNotGriefMod.LOGGER.info("{} has now added {} to {}", youshallnotgrief$player, changedStack, pos);
-        } else {
-            InventoryUtils.addToDatabase(pos, level, changedStack.getItem(), -changedStack.getCount(), youshallnotgrief$player, "");
-            YouShallNotGriefMod.LOGGER.info("{} has now removed {} from {}", youshallnotgrief$player, changedStack, pos);
-        }
+        youshallnotgrief$onStackChanged(oldStack, newStack, (addedStack) -> {
+            InventoryUtils.addToDatabase(pos, level, addedStack.getItem(), addedStack.getCount(), youshallnotgrief$player, "");
+            YouShallNotGriefMod.LOGGER.info("{} has now added {} to {}", youshallnotgrief$player, addedStack, pos);
+        }, (removedStack) -> {
+            InventoryUtils.addToDatabase(pos, level, removedStack.getItem(), -removedStack.getCount(), youshallnotgrief$player, "");
+            YouShallNotGriefMod.LOGGER.info("{} has now removed {} from {}", youshallnotgrief$player, removedStack, pos);
+        });
     }
 
     @Unique
-    private ItemStack youshallnotgrief$onStackChanged(@NotNull ItemStack oldStack, @NotNull ItemStack newStack){
+    private void youshallnotgrief$onStackChanged(@NotNull ItemStack oldStack, @NotNull ItemStack newStack, Consumer<ItemStack> onItemAdded, Consumer<ItemStack> onItemRemoved){
         if (oldStack.isEmpty() && newStack.isEmpty()) {
-            return null;
+            return;
         }
 
-        //TODO: something here does not work, need to fix
-        if (!oldStack.isEmpty() && !newStack.isEmpty()) { // 2 non-empty stacks
+        if (!oldStack.isEmpty() && !newStack.isEmpty()) { // 2 non-empty stacks, so either a swap, grow or shrink
             if (oldStack.getItem() == newStack.getItem()) { // If the items in the stack are the same, then we add or remove an amount
                 int newCount = newStack.getCount();
                 int oldCount = oldStack.getCount();
                 if (newCount > oldCount) {
-                    youshallnotgrief$onStackChanged(ItemStack.EMPTY, new ItemStack(newStack.getItem(), newCount - oldCount));
+                    ItemStack addedStack = new ItemStack(newStack.getItem(), newCount - oldCount);
+                    onItemAdded.accept(addedStack);
+                    if(addedStack.isEmpty()) { return; }
                 } else {
-                    youshallnotgrief$onStackChanged(new ItemStack(newStack.getItem(), oldCount - newCount), ItemStack.EMPTY);
+                    ItemStack removedStack = new ItemStack(newStack.getItem(), oldCount - newCount);
+                    if(removedStack.isEmpty()) { return; }
+                    onItemRemoved.accept(removedStack);
                 }
             } else { //Split up removing and adding items if we need to swap them.
-                youshallnotgrief$onStackChanged(oldStack, ItemStack.EMPTY);
-                youshallnotgrief$onStackChanged(ItemStack.EMPTY, newStack);
+                youshallnotgrief$onStackChanged(oldStack, ItemStack.EMPTY, onItemAdded, onItemRemoved);
+                youshallnotgrief$onStackChanged(ItemStack.EMPTY, newStack, onItemAdded, onItemRemoved);
             }
-            return null;
+            return;
         }
 
-        //Return the itemstack which was added or removed
-        return oldStack.isEmpty() ? newStack : oldStack;
+        if(oldStack.isEmpty()){
+            onItemAdded.accept(newStack);
+        }else{
+            onItemRemoved.accept(oldStack);
+        }
     }
 }
