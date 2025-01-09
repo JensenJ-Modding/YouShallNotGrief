@@ -1,4 +1,4 @@
-package net.youshallnotgrief.util;
+package net.youshallnotgrief.inspection;
 
 import java.util.ArrayList;
 

@@ -6,7 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.config.ServerConfig;
-import net.youshallnotgrief.util.InspectionMode;
+import net.youshallnotgrief.inspection.InspectionMode;
 import net.youshallnotgrief.util.MiscUtils;
 
 public class NetworkRegistry {

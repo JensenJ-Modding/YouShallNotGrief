@@ -1,6 +1,7 @@
 package net.youshallnotgrief.database.data.cause;
 
 import net.youshallnotgrief.YouShallNotGriefMod;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,6 +1,8 @@
 package net.youshallnotgrief.database.data;
 
+import net.minecraft.network.chat.Component;
 import net.youshallnotgrief.database.manager.DatabaseManager;
+import net.youshallnotgrief.util.InventoryUtils;
 
 import java.sql.Timestamp;
 
@@ -36,5 +38,10 @@ public class EntityItemTransactionData extends BaseData{
         DatabaseManager.ENTITY_TABLE_MANAGER.queueData(entityUUID);
         DatabaseManager.ITEM_TABLE_MANAGER.queueData(item);
         DatabaseManager.SOURCE_TABLE_MANAGER.queueData(source);
+    }
+
+    @Override
+    public Component formatDataForInspection() {
+        return InventoryUtils.formatDataForInspection(timestamp, item, amount, source);
     }
 }

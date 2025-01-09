@@ -2,13 +2,13 @@
   "key.youshallnotgrief.inspect": "Toggle Inspect",
   "category.youshallnotgrief": "You Shall Not Grief",
 
-  "error.youshallnotgrief.inspection.nodata": "No data was found for the selected block.",
-  "error.youshallnotgrief.inspection.invalidpage": "This block does not have that many pages. It currently has a maximum of %1$s pages.",
+  "error.youshallnotgrief.inspection.nodata": "No data was found for the selected target.",
+  "error.youshallnotgrief.inspection.invalidpage": "This target does not have that many pages. It currently has a maximum of %1$s pages.",
   "error.youshallnotgrief.inspection.outofinspection": "You must be in inspect mode to do this.",
   "error.youshallnotgrief.inspection.inspectfirst": "You must inspect something first.",
   "error.youshallnotgrief.inspection.nopermission": "You do not have permission to enter inspect mode.",
 
-  "comment.msg.youshallnotgrief.inspection.header": "%1$s is block. %2$s is position. %3$s is dimension",
+  "comment.msg.youshallnotgrief.inspection.header": "%1$s is target. %2$s is position. %3$s is dimension",
   "msg.youshallnotgrief.inspection.header": "%1$s at %2$s in %3$s",
   "msg.youshallnotgrief.inspection.enable": "You are now in Inspection mode.",
   "msg.youshallnotgrief.inspection.enable.other": "Enabled inspection mode for %1$s.",
@@ -58,5 +58,9 @@
   "comment.msg.youshallnotgrief.inspection.block.cause.mob.source": "%1$s is the source entity.",
   "msg.youshallnotgrief.inspection.block.cause.mob.source": "Caused by %1$s",
   "comment.msg.youshallnotgrief.inspection.block.cause.mob.target": "%1$s is the source entity. %2$s is the targeted entity",
-  "msg.youshallnotgrief.inspection.block.cause.mob.target": "%1$s targeted %2$s"
+  "msg.youshallnotgrief.inspection.block.cause.mob.target": "%1$s targeted %2$s",
+
+  "comment.msg.youshallnotgrief.inspection.item.insert": "%1$s is the source. %2$s is the item",
+  "msg.youshallnotgrief.inspection.item.insert": "%1$s inserted %2$s",
+  "msg.youshallnotgrief.inspection.item.extract": "%1$s extracted %2$s"
 }

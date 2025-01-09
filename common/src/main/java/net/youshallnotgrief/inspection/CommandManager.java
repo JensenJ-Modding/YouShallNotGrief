@@ -1,4 +1,4 @@
-package net.youshallnotgrief.util;
+package net.youshallnotgrief.inspection;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -11,6 +11,7 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.youshallnotgrief.config.ServerConfig;
+import net.youshallnotgrief.util.MiscUtils;
 
 import java.util.Collection;
 

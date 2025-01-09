@@ -2,6 +2,7 @@ package net.youshallnotgrief.util;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import dev.architectury.registry.registries.Registrar;
+import net.minecraft.ResourceLocationException;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
@@ -35,24 +36,28 @@ public class BlockUtils {
     private static final Registrar<Block> BLOCKS_REGISTRY = YouShallNotGriefMod.REGISTRY_MANAGER.get().get(Registries.BLOCK);
     private static boolean isPropagating = false;
 
-    public static String getBlockIDFromBlockState(BlockState state){
+    public static String getBlockID(BlockState state){
         ResourceLocation location = state.getBlock().arch$registryName();
         return location != null ? location.toString() : "";
     }
 
-    public static String getBlockNameFromBlockState(BlockState state){
+    public static String getBlockName(BlockState state){
         return state.getBlock().getName().getString();
     }
 
     public static Block getBlockFromString(String resourceLocation){
-        return BLOCKS_REGISTRY.get(new ResourceLocation(resourceLocation));
+        try{
+            return BLOCKS_REGISTRY.get(new ResourceLocation(resourceLocation));
+        } catch (ResourceLocationException exception){
+                return null;
+        }
     }
 
     //Should be called after a call to level.setBlock has been made.
     public static void addToDatabase(@NotNull BlockPos pos, @NotNull Level level, @NotNull BlockState oldState, @NotNull BlockState newState, @NotNull BlockSetCause cause, @Nullable Entity source, @NotNull String sourceDesc){
         String sourceText = "";
         if(source != null){
-            sourceText = source.getName().getString();
+            sourceText = EntityUtils.getEntityName(source);
         }
         addToDatabaseRaw(pos.immutable(), level, oldState, newState, cause, sourceText, sourceDesc);
     }
@@ -60,7 +65,7 @@ public class BlockUtils {
     //Should be called after a call to level.setBlock has been made
     public static void addToDatabaseRaw(@NotNull BlockPos pos, @NotNull Level level, @NotNull BlockState oldState, @NotNull BlockState newState, @NotNull BlockSetCause cause, @NotNull String source, @NotNull String sourceDesc){
         propagateDatabaseInteraction(pos.immutable(), level, oldState, newState, cause, source, sourceDesc);
-        BlockData data = new BlockData(Timestamp.valueOf(LocalDateTime.now()), pos.immutable(), MiscUtils.getDimensionIDFromLevel(level), getBlockIDFromBlockState(oldState), getBlockIDFromBlockState(newState), cause.getDatabaseTag(), new SourceData(source, sourceDesc));
+        BlockData data = new BlockData(Timestamp.valueOf(LocalDateTime.now()), pos.immutable(), MiscUtils.getDimensionIDFromLevel(level), getBlockID(oldState), getBlockID(newState), cause.getDatabaseTag(), new SourceData(source, sourceDesc));
         DatabaseManager.addToDatabase(data);
     }
 

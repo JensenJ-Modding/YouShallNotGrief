@@ -7,7 +7,7 @@ import net.youshallnotgrief.database.tables.BlockDataManager;
 import net.youshallnotgrief.database.tables.BlockItemTransactionDataManager;
 import net.youshallnotgrief.database.tables.EntityItemTransactionDataManager;
 import net.youshallnotgrief.database.tables.foreign.*;
-import net.youshallnotgrief.util.InspectionMode;
+import net.youshallnotgrief.inspection.InspectionMode;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

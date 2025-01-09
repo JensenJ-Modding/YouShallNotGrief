@@ -11,8 +11,8 @@ import net.youshallnotgrief.event.BlockEvents;
 import net.youshallnotgrief.event.EntityEvents;
 import net.youshallnotgrief.event.KeyEvents;
 import net.youshallnotgrief.network.NetworkRegistry;
-import net.youshallnotgrief.util.CommandManager;
-import net.youshallnotgrief.util.InspectionMode;
+import net.youshallnotgrief.inspection.CommandManager;
+import net.youshallnotgrief.inspection.InspectionMode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

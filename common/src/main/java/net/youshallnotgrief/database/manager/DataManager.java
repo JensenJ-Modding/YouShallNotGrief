@@ -2,7 +2,7 @@ package net.youshallnotgrief.database.manager;
 
 import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.database.data.BaseData;
-import net.youshallnotgrief.util.RetrieveResult;
+import net.youshallnotgrief.inspection.RetrieveResult;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
