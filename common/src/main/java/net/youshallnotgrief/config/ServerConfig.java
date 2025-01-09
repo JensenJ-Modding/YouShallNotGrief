@@ -4,7 +4,7 @@ import net.minecraftforge.common.ForgeConfigSpec;
 
 public class ServerConfig {
 
-    public static ForgeConfigSpec SERVER_CONFIG;
+    public static final ForgeConfigSpec SERVER_CONFIG;
 
     private static final String CATEGORY_DATABASE = "database";
     private static final String CATEGORY_INSPECTION = "inspection";
@@ -16,72 +16,72 @@ public class ServerConfig {
     private static final String CATEGORY_INTERACTION = "interaction";
 
     //Database settings
-    public static ForgeConfigSpec.ConfigValue<Integer> databaseThreadCount;
-    public static ForgeConfigSpec.ConfigValue<Integer> databaseQueueSize;
+    public static final ForgeConfigSpec.ConfigValue<Integer> databaseThreadCount;
+    public static final ForgeConfigSpec.ConfigValue<Integer> databaseQueueSize;
 
     //Inspection settings
-    public static ForgeConfigSpec.ConfigValue<String> inspectionPrimaryColour;
-    public static ForgeConfigSpec.ConfigValue<String> inspectionSecondaryColour;
-    public static ForgeConfigSpec.ConfigValue<String> inspectionBackgroundColour;
-    public static ForgeConfigSpec.ConfigValue<String> inspectionErrorColour;
-    public static ForgeConfigSpec.ConfigValue<Integer> inspectionTimePrecision;
-    public static ForgeConfigSpec.ConfigValue<String> inspectionFullTimeFormat;
-    public static ForgeConfigSpec.ConfigValue<Boolean> inspectionOpNeeded;
+    public static final ForgeConfigSpec.ConfigValue<String> inspectionPrimaryColour;
+    public static final ForgeConfigSpec.ConfigValue<String> inspectionSecondaryColour;
+    public static final ForgeConfigSpec.ConfigValue<String> inspectionBackgroundColour;
+    public static final ForgeConfigSpec.ConfigValue<String> inspectionErrorColour;
+    public static final ForgeConfigSpec.ConfigValue<Integer> inspectionTimePrecision;
+    public static final ForgeConfigSpec.ConfigValue<String> inspectionFullTimeFormat;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> inspectionOpNeeded;
 
     //Debug settings
-    public static ForgeConfigSpec.ConfigValue<Boolean> debugLogUnhandledBlockSets;
-    public static ForgeConfigSpec.ConfigValue<Boolean> debugLogMultipleTimes;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> debugLogUnhandledBlockSets;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> debugLogMultipleTimes;
 
     //Player block logging
-    public static ForgeConfigSpec.ConfigValue<Boolean> logBlockPlacement;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logBlockBreaking;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logContainerAccesses;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logBlockPlacement;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logBlockBreaking;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logContainerAccesses;
 
     //Mob block logging
-    public static ForgeConfigSpec.ConfigValue<Boolean> logBlockTrampling;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logMobHatching;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logMobInfestingBlock;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logMobDoorBreak;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logMobOpenDoor;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logMobEatBlock;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logEndermanGriefing;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logEnderDragonGriefing;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logRavagerGriefing;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logVillagerHarvesting;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logSnowGolemWalking;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logBlazeFireball;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logFrostWalker;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logBlockTrampling;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logMobHatching;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logMobInfestingBlock;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logMobDoorBreak;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logMobOpenDoor;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logMobEatBlock;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logEndermanGriefing;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logEnderDragonGriefing;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logRavagerGriefing;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logVillagerHarvesting;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logSnowGolemWalking;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logBlazeFireball;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logFrostWalker;
 
     //Non mob block logging
-    public static ForgeConfigSpec.ConfigValue<Boolean> logEndFight;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logPlantGrowth;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logUnsupportedBlocks;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logAmethystGrowth;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logGolemCreation;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logFire;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logMelting;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logDecay;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logOxidization;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logLightning;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logGravity;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logGrassSpread;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logPortals;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logExplosions;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logFallbackLevelSets;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logModdedLevelSets;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logEndFight;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logPlantGrowth;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logUnsupportedBlocks;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logAmethystGrowth;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logGolemCreation;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logFire;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logMelting;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logDecay;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logOxidization;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logLightning;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logGravity;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logGrassSpread;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logPortals;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logExplosions;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logFallbackLevelSets;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logModdedLevelSets;
 
     //Player interaction logging
-    public static ForgeConfigSpec.ConfigValue<Boolean> logFlintAndSteel;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logWaxing;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logScraping;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logPaving;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logExtinguish;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logPloughing;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logAnvilUse;
-    public static ForgeConfigSpec.ConfigValue<Boolean> logDragonEggTeleportation;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logFlintAndSteel;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logWaxing;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logScraping;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logPaving;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logExtinguish;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logPloughing;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logAnvilUse;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logDragonEggTeleportation;
 
     //Interaction logging
-    public static ForgeConfigSpec.ConfigValue<Boolean> logProjectileLightBlock;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> logProjectileLightBlock;
 
     static {
         ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();

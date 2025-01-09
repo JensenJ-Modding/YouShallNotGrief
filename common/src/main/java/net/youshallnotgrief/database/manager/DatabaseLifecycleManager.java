@@ -1,43 +1,35 @@
-package net.youshallnotgrief.database;
+package net.youshallnotgrief.database.manager;
 
 import dev.architectury.event.events.common.LifecycleEvent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
 import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.config.ServerConfig;
-import net.youshallnotgrief.database.manager.AbstractDataManager;
-import net.youshallnotgrief.database.manager.block.BlockSetDataManager;
-import net.youshallnotgrief.database.manager.block.TableManager;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class DatabaseManager {
+public class DatabaseLifecycleManager {
 
     private static Connection cachedDatabaseConnection = null;
     private static MinecraftServer minecraftServer = null;
 
-    private static final ArrayList<AbstractDataManager<?, ?>> DATA_MANAGERS = new ArrayList<>();
-    public static final BlockSetDataManager BLOCK_SET_MANAGER = registerDataManager(new BlockSetDataManager());
-
     public static ExecutorService executorService = null;
-    public static int MAX_QUEUE_SIZE = 50;
 
     public static void registerLifecycleEvents(){
         LifecycleEvent.SERVER_STARTED.register((MinecraftServer server) -> {
             minecraftServer = server;
             executorService = Executors.newFixedThreadPool(ServerConfig.databaseThreadCount.get());
-            MAX_QUEUE_SIZE = ServerConfig.databaseQueueSize.get();
+            DatabaseManager.MAX_QUEUE_SIZE = ServerConfig.databaseQueueSize.get();
             cachedDatabaseConnection = getDatabaseConnection();
-            clearAllCaches();
+            DatabaseManager.clearCaches();
         });
 
         LifecycleEvent.SERVER_STOPPED.register((MinecraftServer server) -> {
-            commitAllQueuedDataToDatabase();
-            clearAllCaches();
+            DatabaseManager.commitQueuedToDatabase();
+            DatabaseManager.clearCaches();
             minecraftServer = null;
             int threadTimeout = 10;
             executorService.shutdown();
@@ -46,6 +38,7 @@ public class DatabaseManager {
                 if(executorService.awaitTermination(threadTimeout, TimeUnit.SECONDS)){
                     YouShallNotGriefMod.LOGGER.info("Threads shut down gracefully.");
                 }else{
+                    executorService.shutdownNow();
                     YouShallNotGriefMod.LOGGER.error("Threads were terminated as timeout expired.");
                 }
             } catch (InterruptedException e) {
@@ -89,7 +82,7 @@ public class DatabaseManager {
         }
         String DatabaseWorldPath = minecraftServer.getWorldPath(LevelResource.ROOT).toAbsolutePath() + "/";
         try {
-            String databasePath = "jdbc:sqlite:" + DatabaseWorldPath + "youshallnotgrief.db";
+            String databasePath = "jdbc:sqlite:" + DatabaseWorldPath + YouShallNotGriefMod.MOD_ID + ".db";
             connection = DriverManager.getConnection(databasePath);
             connection.setAutoCommit(false);
         } catch (SQLException e) {
@@ -98,55 +91,13 @@ public class DatabaseManager {
         }
         YouShallNotGriefMod.LOGGER.info("Established database connection.");
 
+        cachedDatabaseConnection = connection;
+
         //First time connection setup
         if(isFirstConnection && connection != null) {
-            for (AbstractDataManager<?, ?> dataManager : DATA_MANAGERS) {
-                //Set up all foreign tables
-                for(TableManager<?> table : dataManager.getForeignTables()){
-                    createTableIfNotExists(connection, table.getCreateTableSQL());
-                }
-                createTableIfNotExists(connection, dataManager.getCreateTableSQL());
-            }
+            DatabaseManager.createTables();
         }
-
-        clearAllCaches();
-        cachedDatabaseConnection = connection;
+        DatabaseManager.clearCaches();
         return connection;
-    }
-
-    private static void createTableIfNotExists(Connection database, String createTableSQL){
-        try (PreparedStatement preparedStatement = database.prepareStatement(createTableSQL)){
-            preparedStatement.execute();
-            database.commit();
-        }catch(SQLException e){
-            YouShallNotGriefMod.LOGGER.error(e.toString());
-            YouShallNotGriefMod.LOGGER.error(createTableSQL);
-            try {
-                database.rollback();
-            } catch (SQLException ex) {
-                YouShallNotGriefMod.LOGGER.error(ex.toString());
-            }
-        }
-    }
-
-    private static <DataManager extends AbstractDataManager<?, ?>> DataManager registerDataManager(DataManager dataManager){
-        DATA_MANAGERS.add(dataManager);
-        dataManager.registerForeignTables();
-        return dataManager;
-    }
-
-    public static void commitAllQueuedDataToDatabase(){
-        for(AbstractDataManager<?, ?> dataManager : DATA_MANAGERS){
-            dataManager.commitQueuedToDatabase();
-        }
-    }
-
-    public static void clearAllCaches(){
-        for(AbstractDataManager<?, ?> dataManager : DATA_MANAGERS){
-            for(TableManager<?> tableManager : dataManager.getForeignTables()){
-                tableManager.clearCache();
-            }
-            dataManager.clearCache();
-        }
     }
 }

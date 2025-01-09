@@ -10,7 +10,7 @@ import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.TreeFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
 import net.youshallnotgrief.config.ServerConfig;
-import net.youshallnotgrief.data.block.cause.BlockSetCauses;
+import net.youshallnotgrief.database.data.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
 import net.youshallnotgrief.util.mixin.MixinDataHolder;
 import org.spongepowered.asm.mixin.Mixin;

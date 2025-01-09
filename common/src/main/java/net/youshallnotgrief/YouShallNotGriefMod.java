@@ -2,16 +2,11 @@ package net.youshallnotgrief;
 
 import com.google.common.base.Suppliers;
 import dev.architectury.event.CompoundEventResult;
-import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.*;
 import dev.architectury.registry.registries.RegistrarManager;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
-import net.youshallnotgrief.database.DatabaseManager;
+import net.youshallnotgrief.database.manager.DatabaseLifecycleManager;
 import net.youshallnotgrief.event.BlockEvents;
 import net.youshallnotgrief.event.EntityEvents;
 import net.youshallnotgrief.event.KeyEvents;
@@ -29,7 +24,7 @@ public class YouShallNotGriefMod {
     public static final Supplier<RegistrarManager> REGISTRY_MANAGER = Suppliers.memoize(() -> RegistrarManager.get(YouShallNotGriefMod.MOD_ID));
 
     public static void init() {
-        DatabaseManager.registerLifecycleEvents();
+        DatabaseLifecycleManager.registerLifecycleEvents();
         CommandManager.registerCommands();
         InspectionMode.registerEvents();
         BlockEvents.registerEvents();

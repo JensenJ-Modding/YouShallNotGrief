@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ChorusFlowerBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.youshallnotgrief.config.ServerConfig;
-import net.youshallnotgrief.data.block.cause.BlockSetCauses;
+import net.youshallnotgrief.database.data.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
 import net.youshallnotgrief.util.mixin.MixinDataHolder;
 import org.spongepowered.asm.mixin.Mixin;

@@ -15,9 +15,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.youshallnotgrief.YouShallNotGriefMod;
-import net.youshallnotgrief.data.block.*;
-import net.youshallnotgrief.data.block.cause.BlockSetCause;
-import net.youshallnotgrief.database.DatabaseManager;
+import net.youshallnotgrief.database.manager.DatabaseManager;
+import net.youshallnotgrief.database.data.BlockData;
+import net.youshallnotgrief.database.data.SourceData;
+import net.youshallnotgrief.database.data.cause.BlockSetCause;
 import net.youshallnotgrief.util.mixin.MixinDataHolder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -59,8 +60,8 @@ public class BlockUtils {
     //Should be called after a call to level.setBlock has been made
     public static void addToDatabaseRaw(@NotNull BlockPos pos, @NotNull Level level, @NotNull BlockState oldState, @NotNull BlockState newState, @NotNull BlockSetCause cause, @NotNull String source, @NotNull String sourceDesc){
         propagateDatabaseInteraction(pos.immutable(), level, oldState, newState, cause, source, sourceDesc);
-        BlockSetData data = new BlockSetData(pos.immutable(), MiscUtils.getDimensionIDFromLevel(level), Timestamp.valueOf(LocalDateTime.now()), getBlockIDFromBlockState(oldState), getBlockIDFromBlockState(newState), cause.getDatabaseTag(), source, sourceDesc);
-        DatabaseManager.BLOCK_SET_MANAGER.addToDatabase(data);
+        BlockData data = new BlockData(Timestamp.valueOf(LocalDateTime.now()), pos.immutable(), MiscUtils.getDimensionIDFromLevel(level), getBlockIDFromBlockState(oldState), getBlockIDFromBlockState(newState), cause.getDatabaseTag(), new SourceData(source, sourceDesc));
+        DatabaseManager.addToDatabase(data);
     }
 
     //Used by mixins to ensure that setBlock was actually successful before recording changes.

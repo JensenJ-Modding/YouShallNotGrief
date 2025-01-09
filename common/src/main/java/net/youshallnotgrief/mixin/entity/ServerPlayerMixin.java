@@ -9,7 +9,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.level.block.state.BlockState;
 import net.youshallnotgrief.config.ServerConfig;
-import net.youshallnotgrief.data.block.cause.BlockSetCauses;
+import net.youshallnotgrief.database.data.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
 import net.youshallnotgrief.util.mixin.BlockPositionMenuContext;
 import net.youshallnotgrief.util.mixin.EntityUUIDMenuContext;

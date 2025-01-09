@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class MobMixin implements MobTargetInterface {
 
     @Unique
-    ArrayList<LivingEntity> youshallnotgrief$targets = new ArrayList<>();
+    private final ArrayList<LivingEntity> youshallnotgrief$targets = new ArrayList<>();
 
     @Inject(method = "setTarget", at = @At(value = "HEAD"))
     private void youshallnotgrief$addTarget(LivingEntity livingEntity, CallbackInfo ci){

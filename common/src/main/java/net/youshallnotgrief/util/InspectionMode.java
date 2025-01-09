@@ -15,11 +15,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.config.ServerConfig;
-import net.youshallnotgrief.data.block.BlockSetData;
-import net.youshallnotgrief.data.block.BlockSetQueryData;
-import net.youshallnotgrief.data.block.cause.BlockSetCause;
-import net.youshallnotgrief.data.block.cause.BlockSetCauses;
-import net.youshallnotgrief.database.DatabaseManager;
+import net.youshallnotgrief.database.manager.DatabaseManager;
+import net.youshallnotgrief.database.data.BlockData;
+import net.youshallnotgrief.database.data.cause.BlockSetCause;
+import net.youshallnotgrief.database.data.cause.BlockSetCauses;
 
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -30,7 +29,7 @@ import java.util.concurrent.*;
 
 public class InspectionMode {
 
-    public static HashSet<Player> INSPECTING_PLAYERS = new HashSet<>();
+    public static final HashSet<Player> INSPECTING_PLAYERS = new HashSet<>();
     private static final HashMap<Player, BlockPos> CURRENTLY_SELECTED_BLOCK = new HashMap<>();
 
     private static final int ACTIONS_PER_PAGE = 8;
@@ -89,7 +88,7 @@ public class InspectionMode {
         INSPECTING_PLAYERS.add(player);
         player.sendSystemMessage(Component.translatable("msg.youshallnotgrief.inspection.enable").withStyle(style -> style
                 .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionPrimaryColour.get()))));
-        DatabaseManager.commitAllQueuedDataToDatabase();
+        DatabaseManager.commitQueuedToDatabase();
     }
 
     public static void disableInspectMode(Player player){
@@ -113,11 +112,11 @@ public class InspectionMode {
 
         BlockPos pos = CURRENTLY_SELECTED_BLOCK.get(player);
         String dimensionID = MiscUtils.getDimensionIDFromLevel(player.level());
-        Future<RetrieveResult<BlockSetData>> futureData = DatabaseManager.BLOCK_SET_MANAGER.retrieveFromDatabase(new BlockSetQueryData(pos, dimensionID), ACTIONS_PER_PAGE, pageNumber * ACTIONS_PER_PAGE);
+        Future<RetrieveResult<BlockData>> futureData = DatabaseManager.BLOCK_DATA_MANAGER.retrieveFromDatabase(new BlockData(pos, dimensionID), ACTIONS_PER_PAGE, pageNumber * ACTIONS_PER_PAGE);
 
         try {
-            RetrieveResult<BlockSetData> retrieveResult = futureData.get(5, TimeUnit.SECONDS);
-            ArrayList<BlockSetData> data = retrieveResult.records();
+            RetrieveResult<BlockData> retrieveResult = futureData.get(5, TimeUnit.SECONDS);
+            ArrayList<BlockData> data = retrieveResult.records();
             int count = retrieveResult.count();
 
             if(count == 0){
@@ -134,7 +133,7 @@ public class InspectionMode {
             }
 
             player.sendSystemMessage(getHeader(player.level(), pos, dimensionID));
-            for (BlockSetData datum : data) {
+            for (BlockData datum : data) {
                 Component dataToSend = getData(datum);
                 if(dataToSend != null){
                     player.sendSystemMessage(dataToSend);
@@ -174,24 +173,24 @@ public class InspectionMode {
                 .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionBackgroundColour.get())));
     }
 
-    private static Component getData(BlockSetData data){
-        MutableComponent timeComp = formatTimeAgo(data.time())
+    private static Component getData(BlockData data){
+        MutableComponent timeComp = formatTimeAgo(data.timestamp)
                 .withStyle(style -> style
                         .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionSecondaryColour.get()))
-                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(formatTime(data.time()))))
+                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(formatTime(data.timestamp))))
                 );
 
-        MutableComponent oldBlockComp = getBlockComponentFromString(data.oldBlock());
-        MutableComponent newBlockComp = getBlockComponentFromString(data.newBlock());
+        MutableComponent oldBlockComp = getBlockComponentFromString(data.oldBlock);
+        MutableComponent newBlockComp = getBlockComponentFromString(data.newBlock);
 
-        String source = data.source();
-        BlockSetCause cause = BlockSetCauses.getCauseFromTag(data.cause());
+        String source = data.source.source();
+        BlockSetCause cause = BlockSetCauses.getCauseFromTag(data.cause);
         if(cause == null){
-            YouShallNotGriefMod.LOGGER.warn("Tried to show logs for a block cause which does not exist: {}.", data.cause());
+            YouShallNotGriefMod.LOGGER.warn("Tried to show logs for a block cause which does not exist: {}.", data.cause);
             return null;
         }
 
-        MutableComponent sourceComp = getSourceComponentFromString(source, data.sourceDesc());
+        MutableComponent sourceComp = getSourceComponentFromString(source, data.source.sourceDesc());
         MutableComponent comp = Component.empty().append(timeComp).append(" - ").withStyle(style -> style
                 .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionBackgroundColour.get())));
 

@@ -1,4 +1,4 @@
-package net.youshallnotgrief.data.block.cause;
+package net.youshallnotgrief.database.data.cause;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;

@@ -7,7 +7,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.config.ServerConfig;
-import net.youshallnotgrief.data.block.cause.BlockSetCauses;
+import net.youshallnotgrief.database.data.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
 import net.youshallnotgrief.util.mixin.MixinDataHolder;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,7 +24,7 @@ import java.util.HashSet;
 public class LevelMixin {
 
     @Unique
-    HashSet<String> youshallnotgrief$vanillaModules = new HashSet<>() {{
+    private final HashSet<String> youshallnotgrief$vanillaModules = new HashSet<>() {{
         add("minecraft");
         add("java.");
         add("fabricmc");
@@ -37,10 +37,10 @@ public class LevelMixin {
     }};
 
     @Unique
-    HashMap<String, String> youshallnotgrief$stackPathToModID = new HashMap<>();
+    private final HashMap<String, String> youshallnotgrief$stackPathToModID = new HashMap<>();
 
     @Unique
-    HashSet<String> youshallnotgrief$debugLoggedInteractions = new HashSet<>();
+    private final HashSet<String> youshallnotgrief$debugLoggedInteractions = new HashSet<>();
 
     //This variable is used to determine how deep in the callstack we are
     //this is used when level.setBlock is called recursively for neighbour updates
