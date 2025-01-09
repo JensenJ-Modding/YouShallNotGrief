@@ -5,28 +5,26 @@ import net.youshallnotgrief.database.manager.DatabaseManager;
 
 import java.sql.Timestamp;
 
-public class BlockData extends BaseData {
+public class BlockItemTransactionData extends BaseData{
 
     public BlockPos position;
     public String dimension;
-    public String oldBlock;
-    public String newBlock;
-    public String cause;
+    public String item;
+    public int amount;
     public SourceData source;
 
     //Used for constructing insertion data
-    public BlockData(Timestamp timestamp, BlockPos position, String dimension, String oldBlock, String newBlock, String cause, SourceData source) {
+    public BlockItemTransactionData(Timestamp timestamp, BlockPos position, String dimension, String item, int amount, SourceData source) {
         super(timestamp);
         this.position = position;
         this.dimension = dimension;
-        this.oldBlock = oldBlock;
-        this.newBlock = newBlock;
-        this.cause = cause;
+        this.item = item;
+        this.amount = amount;
         this.source = source;
     }
 
     //Used for constructing query data
-    public BlockData(BlockPos position, String dimension) {
+    public BlockItemTransactionData(BlockPos position, String dimension) {
         super(null);
         this.position = position;
         this.dimension = dimension;
@@ -34,16 +32,14 @@ public class BlockData extends BaseData {
 
     @Override
     public void queue() {
-        DatabaseManager.BLOCK_DATA_MANAGER.queueData(this);
+        DatabaseManager.BLOCK_ITEM_TRANSACTION_DATA_MANAGER.queueData(this);
     }
 
     @Override
     public void queueForeignTables() {
         DatabaseManager.POSITION_TABLE_MANAGER.queueData(position);
         DatabaseManager.DIMENSION_TABLE_MANAGER.queueData(dimension);
-        DatabaseManager.BLOCK_TABLE_MANAGER.queueData(oldBlock);
-        DatabaseManager.BLOCK_TABLE_MANAGER.queueData(newBlock);
-        DatabaseManager.CAUSE_TABLE_MANAGER.queueData(cause);
+        DatabaseManager.ITEM_TABLE_MANAGER.queueData(item);
         DatabaseManager.SOURCE_TABLE_MANAGER.queueData(source);
     }
 }

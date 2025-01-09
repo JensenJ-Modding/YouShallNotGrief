@@ -8,7 +8,9 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.youshallnotgrief.YouShallNotGriefMod;
+import net.youshallnotgrief.util.InventoryUtils;
 import net.youshallnotgrief.util.mixin.MenuContext;
 import net.youshallnotgrief.util.mixin.SlotMenuContext;
 import org.jetbrains.annotations.NotNull;
@@ -62,11 +64,13 @@ public abstract class AbstractContainerMenuMixin implements MenuContext {
             return;
         }
 
-        //TODO: Queue to database
         if (oldStack.isEmpty()) {
+            InventoryUtils.addToDatabase(entity, changedStack.getItem(), changedStack.getCount(), youshallnotgrief$player, "");
             YouShallNotGriefMod.LOGGER.info("{} has now added {} to {}", youshallnotgrief$player, changedStack, entity);
         } else {
+            InventoryUtils.addToDatabase(entity, changedStack.getItem(), -changedStack.getCount(), youshallnotgrief$player, "");
             YouShallNotGriefMod.LOGGER.info("{} has now removed {} from {}", youshallnotgrief$player, changedStack, entity);
+
         }
     }
 
@@ -77,10 +81,12 @@ public abstract class AbstractContainerMenuMixin implements MenuContext {
             return;
         }
 
-        //TODO: Queue to database
+        Level level = youshallnotgrief$player.level();
         if (oldStack.isEmpty()) {
+            InventoryUtils.addToDatabase(pos, level, changedStack.getItem(), changedStack.getCount(), youshallnotgrief$player, "");
             YouShallNotGriefMod.LOGGER.info("{} has now added {} to {}", youshallnotgrief$player, changedStack, pos);
         } else {
+            InventoryUtils.addToDatabase(pos, level, changedStack.getItem(), -changedStack.getCount(), youshallnotgrief$player, "");
             YouShallNotGriefMod.LOGGER.info("{} has now removed {} from {}", youshallnotgrief$player, changedStack, pos);
         }
     }
@@ -91,6 +97,7 @@ public abstract class AbstractContainerMenuMixin implements MenuContext {
             return null;
         }
 
+        //TODO: something here does not work, need to fix
         if (!oldStack.isEmpty() && !newStack.isEmpty()) { // 2 non-empty stacks
             if (oldStack.getItem() == newStack.getItem()) { // If the items in the stack are the same, then we add or remove an amount
                 int newCount = newStack.getCount();

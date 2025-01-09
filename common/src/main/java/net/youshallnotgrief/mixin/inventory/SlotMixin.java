@@ -54,7 +54,6 @@ public abstract class SlotMixin implements SlotMenuContext {
             }
             //If the position is null, this could be an entity slot interaction, such as a minecart, boat, horse etc.
             else {
-                //TODO: Process entity slot change
                 UUID entityID = youshallnotgrief$getInventoryEntityUUID();
                 if(entityID != null){
                     context.youshallnotgrief$onStackChangedInEntity(youshallnotgrief$oldStack, getItem().copy(), entityID);

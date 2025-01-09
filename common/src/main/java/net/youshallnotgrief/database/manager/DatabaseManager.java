@@ -4,6 +4,8 @@ import net.minecraft.client.Minecraft;
 import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.database.data.BaseData;
 import net.youshallnotgrief.database.tables.BlockDataManager;
+import net.youshallnotgrief.database.tables.BlockItemTransactionDataManager;
+import net.youshallnotgrief.database.tables.EntityItemTransactionDataManager;
 import net.youshallnotgrief.database.tables.foreign.*;
 import net.youshallnotgrief.util.InspectionMode;
 
@@ -22,11 +24,15 @@ public class DatabaseManager {
 
     private static final ArrayList<DataManager<?>> DATA_MANAGERS = new ArrayList<>();
     public static final BlockDataManager BLOCK_DATA_MANAGER = registerDataManager(new BlockDataManager());
+    public static final BlockItemTransactionDataManager BLOCK_ITEM_TRANSACTION_DATA_MANAGER = registerDataManager(new BlockItemTransactionDataManager());
+    public static final EntityItemTransactionDataManager ENTITY_ITEM_TRANSACTION_DATA_MANAGER = registerDataManager(new EntityItemTransactionDataManager());
 
     private static final ArrayList<ForeignTableManager<?>> TABLE_MANAGERS = new ArrayList<>();
     public static final PositionTableManager POSITION_TABLE_MANAGER = registerTableManager(new PositionTableManager());
     public static final DimensionTableManager DIMENSION_TABLE_MANAGER = registerTableManager(new DimensionTableManager());
     public static final BlockTableManager BLOCK_TABLE_MANAGER = registerTableManager(new BlockTableManager());
+    public static final ItemTableManager ITEM_TABLE_MANAGER = registerTableManager(new ItemTableManager());
+    public static final EntityTableManager ENTITY_TABLE_MANAGER = registerTableManager(new EntityTableManager());
     public static final CauseTableManager CAUSE_TABLE_MANAGER = registerTableManager(new CauseTableManager());
     public static final SourceTableManager SOURCE_TABLE_MANAGER = registerTableManager(new SourceTableManager());
 
