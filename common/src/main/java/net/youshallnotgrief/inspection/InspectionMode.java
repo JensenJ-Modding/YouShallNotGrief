@@ -13,12 +13,22 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
+import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.config.ServerConfig;
+import net.youshallnotgrief.database.data.BlockData;
+import net.youshallnotgrief.database.data.EntityItemTransactionData;
 import net.youshallnotgrief.database.manager.DatabaseManager;
+import net.youshallnotgrief.util.EntityUtils;
 import net.youshallnotgrief.util.MiscUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import static net.youshallnotgrief.inspection.InspectionModeDisplay.ACTIONS_PER_PAGE;
 
 public class InspectionMode {
 
@@ -138,5 +148,34 @@ public class InspectionMode {
 
     protected static Entity getSelectedEntityForPlayer(Player player){
         return CURRENTLY_SELECTED_ENTITY.get(player);
+    }
+
+
+    public static RetrieveResult<BlockData> getDataForBlock(BlockPos pos, String dimensionID, int pageNumber, Player player){
+        Future<RetrieveResult<BlockData>> futureData = DatabaseManager.BLOCK_DATA_MANAGER.retrieveFromDatabase(new BlockData(pos, dimensionID), ACTIONS_PER_PAGE, pageNumber * ACTIONS_PER_PAGE);
+        try {
+            //TODO: Replace with a better system, so we don't block the game thread
+            return futureData.get(5, TimeUnit.SECONDS);
+        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+            player.sendSystemMessage(Component.translatable("error.youshallnotgrief.inspection.database").withStyle(style -> style
+                    .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionErrorColour.get()))));
+            YouShallNotGriefMod.LOGGER.error("{} failed to inspect page {} of block at coordinates {} {} {} in {}. The database failed to retrieve data for this location.",
+                    EntityUtils.getEntityCustomNameOrFallbackID(player), pageNumber + 1, pos.getX(), pos.getY(), pos.getZ(), dimensionID);
+            return null;
+        }
+    }
+
+    public static RetrieveResult<EntityItemTransactionData> getDataForEntity(Entity entity, BlockPos pos, String dimensionID, int pageNumber, Player player){
+        Future<RetrieveResult<EntityItemTransactionData>> futureData = DatabaseManager.ENTITY_ITEM_TRANSACTION_DATA_MANAGER.retrieveFromDatabase(new EntityItemTransactionData(entity.getStringUUID()), ACTIONS_PER_PAGE, pageNumber * ACTIONS_PER_PAGE);
+        try {
+            //TODO: Replace with a better system, so we don't block the game thread
+            return futureData.get(5, TimeUnit.SECONDS);
+        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+            player.sendSystemMessage(Component.translatable("error.youshallnotgrief.inspection.database").withStyle(style -> style
+                    .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionErrorColour.get()))));
+            YouShallNotGriefMod.LOGGER.error("{} failed to inspect page {} of entity {} at coordinates {} {} {} in {}. The database failed to retrieve data for this entity.",
+                    player.getName().getString(), pageNumber + 1, entity.getStringUUID(), pos.getX(), pos.getY(), pos.getZ(), dimensionID);
+            return null;
+        }
     }
 }

@@ -49,7 +49,7 @@ public class BlockUtils {
         try{
             return BLOCKS_REGISTRY.get(new ResourceLocation(resourceLocation));
         } catch (ResourceLocationException exception){
-                return null;
+            return null;
         }
     }
 

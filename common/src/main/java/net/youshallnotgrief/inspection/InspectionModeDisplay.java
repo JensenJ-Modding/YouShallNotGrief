@@ -10,18 +10,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.config.ServerConfig;
+import net.youshallnotgrief.database.data.BaseData;
 import net.youshallnotgrief.database.data.BlockData;
 import net.youshallnotgrief.database.data.EntityItemTransactionData;
-import net.youshallnotgrief.database.manager.DatabaseManager;
 import net.youshallnotgrief.util.BlockUtils;
 import net.youshallnotgrief.util.EntityUtils;
 import net.youshallnotgrief.util.MiscUtils;
 
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public abstract class InspectionModeDisplay {
 
@@ -31,34 +27,20 @@ public abstract class InspectionModeDisplay {
     public static void showDetailsForBlock(Player player, int pageNumber){
         BlockPos pos = InspectionMode.getSelectedBlockPosForPlayer(player);
         String dimensionID = MiscUtils.getDimensionIDFromLevel(player.level());
-        Future<RetrieveResult<BlockData>> futureData = DatabaseManager.BLOCK_DATA_MANAGER.retrieveFromDatabase(new BlockData(pos, dimensionID), ACTIONS_PER_PAGE, pageNumber * ACTIONS_PER_PAGE);
-
-        try {
-            RetrieveResult<BlockData> retrieveResult = futureData.get(5, TimeUnit.SECONDS);
-            ArrayList<BlockData> data = retrieveResult.records();
-            int count = retrieveResult.count();
-            int maxPageCount = (int) Math.ceil((double) count / ACTIONS_PER_PAGE);
-
-            if(guardPageErrors(player, count, pageNumber, maxPageCount)){
-                return;
-            }
-
-            player.sendSystemMessage(InspectionModeDisplay.getHeaderForBlock(player.level(), pos, dimensionID));
-            for (BlockData datum : data) {
-
-                Component dataToSend = datum.formatDataForInspection();
-                if(dataToSend != null){
-                    player.sendSystemMessage(dataToSend);
-                }
-            }
-
-            player.sendSystemMessage(getFooter(pageNumber, maxPageCount));
-
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            YouShallNotGriefMod.LOGGER.error("{} failed to inspect page {} of block at coordinates {} {} {} in {}. The database failed to retrieve data for this location.",
-                    player.getName().getString(), pageNumber + 1, pos.getX(), pos.getY(), pos.getZ(), dimensionID);
+        RetrieveResult<BlockData> retrieveResult = InspectionMode.getDataForBlock(pos, dimensionID, pageNumber, player);
+        if(retrieveResult == null) {
             return;
         }
+        ArrayList<BlockData> data = retrieveResult.records();
+
+        int count = retrieveResult.count();
+        int maxPageCount = (int) Math.ceil((double) count / ACTIONS_PER_PAGE);
+        if(guardPageErrors(player, count, pageNumber, maxPageCount))
+            return;
+
+        player.sendSystemMessage(InspectionModeDisplay.getHeaderForBlock(player.level(), pos, dimensionID));
+        sendFormattedDataToPlayer(data, player);
+        player.sendSystemMessage(getFooter(pageNumber, maxPageCount));
 
         YouShallNotGriefMod.LOGGER.info("{} inspected page {} of block at coordinates {} {} {} in {}",
                 player.getName().getString(), pageNumber + 1, pos.getX(), pos.getY(), pos.getZ(), dimensionID);
@@ -68,37 +50,33 @@ public abstract class InspectionModeDisplay {
         Entity entity = InspectionMode.getSelectedEntityForPlayer(player);
         BlockPos pos = new BlockPos((int)entity.position().x, (int)entity.position().y, (int)entity.position().z);
         String dimensionID = MiscUtils.getDimensionIDFromLevel(player.level());
-        Future<RetrieveResult<EntityItemTransactionData>> futureData = DatabaseManager.ENTITY_ITEM_TRANSACTION_DATA_MANAGER.retrieveFromDatabase(new EntityItemTransactionData(entity.getStringUUID()), ACTIONS_PER_PAGE, pageNumber * ACTIONS_PER_PAGE);
-
-        try {
-            RetrieveResult<EntityItemTransactionData> retrieveResult = futureData.get(5, TimeUnit.SECONDS);
-            ArrayList<EntityItemTransactionData> data = retrieveResult.records();
-            int count = retrieveResult.count();
-            int maxPageCount = (int) Math.ceil((double) count / ACTIONS_PER_PAGE);
-
-            if(guardPageErrors(player, count, pageNumber, maxPageCount)){
-                return;
-            }
-
-            player.sendSystemMessage(InspectionModeDisplay.getHeaderForEntity(entity, pos, dimensionID));
-            for (EntityItemTransactionData datum : data) {
-
-                Component dataToSend = datum.formatDataForInspection();
-                if(dataToSend != null){
-                    player.sendSystemMessage(dataToSend);
-                }
-            }
-
-            player.sendSystemMessage(getFooter(pageNumber, maxPageCount));
-
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            YouShallNotGriefMod.LOGGER.error("{} failed to inspect page {} of entity {} at coordinates {} {} {} in {}. The database failed to retrieve data for this entity.",
-                    player.getName().getString(), pageNumber + 1, entity.getStringUUID(), pos.getX(), pos.getY(), pos.getZ(), dimensionID);
+        RetrieveResult<EntityItemTransactionData> retrieveResult = InspectionMode.getDataForEntity(entity, pos, dimensionID, pageNumber, player);
+        if(retrieveResult == null) {
             return;
         }
 
+        ArrayList<EntityItemTransactionData> data = retrieveResult.records();
+        int count = retrieveResult.count();
+        int maxPageCount = (int) Math.ceil((double) count / ACTIONS_PER_PAGE);
+
+        if(guardPageErrors(player, count, pageNumber, maxPageCount))
+            return;
+
+        player.sendSystemMessage(InspectionModeDisplay.getHeaderForEntity(entity, pos, dimensionID));
+        sendFormattedDataToPlayer(data, player);
+        player.sendSystemMessage(getFooter(pageNumber, maxPageCount));
+
         YouShallNotGriefMod.LOGGER.info("{} inspected page {} of entity {} at coordinates {} {} {} in {}",
                 player.getName().getString(), pageNumber + 1, entity.getStringUUID(), pos.getX(), pos.getY(), pos.getZ(), dimensionID);
+    }
+
+    private static void sendFormattedDataToPlayer(ArrayList<? extends BaseData> data, Player player){
+        for (BaseData datum : data) {
+            Component dataToSend = datum.formatDataForInspection();
+            if(dataToSend != null){
+                player.sendSystemMessage(dataToSend);
+            }
+        }
     }
 
     private static boolean guardPageErrors(Player player, int count, int pageNumber, int maxPageCount){

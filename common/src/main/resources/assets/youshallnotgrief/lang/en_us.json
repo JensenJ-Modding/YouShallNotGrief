@@ -2,6 +2,7 @@
   "key.youshallnotgrief.inspect": "Toggle Inspect",
   "category.youshallnotgrief": "You Shall Not Grief",
 
+  "error.youshallnotgrief.inspection.database": "An internal database exception occurred. Check logs for more details.",
   "error.youshallnotgrief.inspection.nodata": "No data was found for the selected target.",
   "error.youshallnotgrief.inspection.invalidpage": "This target does not have that many pages. It currently has a maximum of %1$s pages.",
   "error.youshallnotgrief.inspection.outofinspection": "You must be in inspect mode to do this.",
