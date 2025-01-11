@@ -27,47 +27,48 @@ public abstract class InspectionModeDisplay {
     public static void showDetailsForBlock(Player player, int pageNumber){
         BlockPos pos = InspectionMode.getSelectedBlockPosForPlayer(player);
         String dimensionID = MiscUtils.getDimensionIDFromLevel(player.level());
-        RetrieveResult<BlockData> retrieveResult = InspectionMode.getDataForBlock(pos, dimensionID, pageNumber, player);
-        if(retrieveResult == null) {
-            return;
-        }
-        ArrayList<BlockData> data = retrieveResult.records();
+        InspectionMode.getDataForBlock(pos, dimensionID, pageNumber, player, (retrieveResult) -> {
+            if(retrieveResult == null)
+                return;
+            ArrayList<BlockData> data = retrieveResult.records();
 
-        int count = retrieveResult.count();
-        int maxPageCount = (int) Math.ceil((double) count / ACTIONS_PER_PAGE);
-        if(guardPageErrors(player, count, pageNumber, maxPageCount))
-            return;
+            int count = retrieveResult.count();
+            int maxPageCount = (int) Math.ceil((double) count / ACTIONS_PER_PAGE);
+            if(guardPageErrors(player, count, pageNumber, maxPageCount))
+                return;
 
-        player.sendSystemMessage(InspectionModeDisplay.getHeaderForBlock(player.level(), pos, dimensionID));
-        sendFormattedDataToPlayer(data, player);
-        player.sendSystemMessage(getFooter(pageNumber, maxPageCount));
+            player.sendSystemMessage(InspectionModeDisplay.getHeaderForBlock(player.level(), pos, dimensionID));
+            sendFormattedDataToPlayer(data, player);
+            player.sendSystemMessage(getFooter(pageNumber, maxPageCount));
 
-        YouShallNotGriefMod.LOGGER.info("{} inspected page {} of block at coordinates {} {} {} in {}",
-                player.getName().getString(), pageNumber + 1, pos.getX(), pos.getY(), pos.getZ(), dimensionID);
+            YouShallNotGriefMod.LOGGER.info("{} inspected page {} of block at coordinates {} {} {} in {}",
+                    player.getName().getString(), pageNumber + 1, pos.getX(), pos.getY(), pos.getZ(), dimensionID);
+        });
     }
 
     public static void showDetailsForEntity(Player player, int pageNumber){
         Entity entity = InspectionMode.getSelectedEntityForPlayer(player);
         BlockPos pos = new BlockPos((int)entity.position().x, (int)entity.position().y, (int)entity.position().z);
         String dimensionID = MiscUtils.getDimensionIDFromLevel(player.level());
-        RetrieveResult<EntityItemTransactionData> retrieveResult = InspectionMode.getDataForEntity(entity, pos, dimensionID, pageNumber, player);
-        if(retrieveResult == null) {
-            return;
-        }
+        InspectionMode.getDataForEntity(entity, pos, dimensionID, pageNumber, player, (retrieveResult) -> {
+            if(retrieveResult == null) {
+                return;
+            }
 
-        ArrayList<EntityItemTransactionData> data = retrieveResult.records();
-        int count = retrieveResult.count();
-        int maxPageCount = (int) Math.ceil((double) count / ACTIONS_PER_PAGE);
+            ArrayList<EntityItemTransactionData> data = retrieveResult.records();
+            int count = retrieveResult.count();
+            int maxPageCount = (int) Math.ceil((double) count / ACTIONS_PER_PAGE);
 
-        if(guardPageErrors(player, count, pageNumber, maxPageCount))
-            return;
+            if(guardPageErrors(player, count, pageNumber, maxPageCount))
+                return;
 
-        player.sendSystemMessage(InspectionModeDisplay.getHeaderForEntity(entity, pos, dimensionID));
-        sendFormattedDataToPlayer(data, player);
-        player.sendSystemMessage(getFooter(pageNumber, maxPageCount));
+            player.sendSystemMessage(InspectionModeDisplay.getHeaderForEntity(entity, pos, dimensionID));
+            sendFormattedDataToPlayer(data, player);
+            player.sendSystemMessage(getFooter(pageNumber, maxPageCount));
 
-        YouShallNotGriefMod.LOGGER.info("{} inspected page {} of entity {} at coordinates {} {} {} in {}",
-                player.getName().getString(), pageNumber + 1, entity.getStringUUID(), pos.getX(), pos.getY(), pos.getZ(), dimensionID);
+            YouShallNotGriefMod.LOGGER.info("{} inspected page {} of entity {} at coordinates {} {} {} in {}",
+                    player.getName().getString(), pageNumber + 1, entity.getStringUUID(), pos.getX(), pos.getY(), pos.getZ(), dimensionID);
+        });
     }
 
     private static void sendFormattedDataToPlayer(ArrayList<? extends BaseData> data, Player player){

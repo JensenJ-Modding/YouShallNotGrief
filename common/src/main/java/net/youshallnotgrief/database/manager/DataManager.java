@@ -9,7 +9,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.concurrent.Future;
+import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 
 public abstract class DataManager<InsertData extends BaseData> extends TableManager<InsertData> {
 
@@ -51,12 +52,12 @@ public abstract class DataManager<InsertData extends BaseData> extends TableMana
         return query.toString();
     }
 
-    public Future<RetrieveResult<InsertData>> retrieveFromDatabase(InsertData data, int limit, int offset) {
+    public void retrieveFromDatabase(InsertData data, int limit, int offset, Consumer<RetrieveResult<InsertData>> callback) {
         if(DatabaseLifecycleManager.executorService == null){
-            return null;
+            return;
         }
 
-        return DatabaseLifecycleManager.executorService.submit(() -> {
+        Callable<RetrieveResult<InsertData>> task = () -> {
             ArrayList<InsertData> dataToReturn = new ArrayList<>();
             Connection database = DatabaseLifecycleManager.getDatabaseConnection();
             if (database == null) {
@@ -100,6 +101,17 @@ public abstract class DataManager<InsertData extends BaseData> extends TableMana
             }
 
             return new RetrieveResult<>(dataToReturn, count);
+        };
+
+        DatabaseLifecycleManager.executorService.submit(() -> {
+           try {
+               RetrieveResult<InsertData> result = task.call();
+               callback.accept(result);
+           } catch(Exception e) {
+               YouShallNotGriefMod.LOGGER.error("Error getting data from database retrieval:");
+               YouShallNotGriefMod.LOGGER.error(e.toString());
+               callback.accept(null);
+           }
         });
     }
 }

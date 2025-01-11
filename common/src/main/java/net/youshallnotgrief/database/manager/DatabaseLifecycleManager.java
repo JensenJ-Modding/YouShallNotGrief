@@ -10,18 +10,25 @@ import java.sql.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class DatabaseLifecycleManager {
 
     private static Connection cachedDatabaseConnection = null;
     private static MinecraftServer minecraftServer = null;
 
+    private static final AtomicInteger threadNumber = new AtomicInteger(1);
     public static ExecutorService executorService = null;
 
     public static void registerLifecycleEvents(){
         LifecycleEvent.SERVER_STARTED.register((MinecraftServer server) -> {
             minecraftServer = server;
-            executorService = Executors.newFixedThreadPool(ServerConfig.databaseThreadCount.get());
+            threadNumber.set(1);
+            executorService = Executors.newFixedThreadPool(ServerConfig.databaseThreadCount.get(), runnable -> {
+                Thread thread = new Thread(runnable);
+                thread.setName("YouShallNotGrief-" + threadNumber.getAndIncrement());
+                return thread;
+            });
             DatabaseManager.MAX_QUEUE_SIZE = ServerConfig.databaseQueueSize.get();
             cachedDatabaseConnection = getDatabaseConnection();
             DatabaseManager.clearCaches();
