@@ -63,7 +63,7 @@ public class BlockItemTransactionDataManager extends DataManager<BlockItemTransa
     }
 
     @Override
-    protected void appendJoinsToSQL(StringBuilder query) {
+    public void appendJoinsToSQL(StringBuilder query) {
         query.append(
                 " JOIN positions ON blockItemTransactions.posID = positions.posID" +
                 " JOIN dimensions ON blockItemTransactions.dimID = dimensions.dimID" +
@@ -91,7 +91,7 @@ public class BlockItemTransactionDataManager extends DataManager<BlockItemTransa
     }
 
     @Override
-    protected BlockItemTransactionData mapDataFromResultSet(ResultSet set) throws SQLException {
+    public BlockItemTransactionData mapDataFromResultSet(ResultSet set) throws SQLException {
         return new BlockItemTransactionData(
                 set.getTimestamp("timestamp"),
                 new BlockPos(set.getInt("x"), set.getInt("y"), set.getInt("z")),

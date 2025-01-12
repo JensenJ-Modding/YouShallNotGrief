@@ -57,7 +57,7 @@ public class EntityItemTransactionDataManager extends DataManager<EntityItemTran
     }
 
     @Override
-    protected void appendJoinsToSQL(StringBuilder query) {
+    public void appendJoinsToSQL(StringBuilder query) {
         query.append(
                 " JOIN entities ON entityItemTransactions.entityID = entities.entityID" +
                 " JOIN items ON entityItemTransactions.itemID = items.itemID" +
@@ -79,7 +79,7 @@ public class EntityItemTransactionDataManager extends DataManager<EntityItemTran
     }
 
     @Override
-    protected EntityItemTransactionData mapDataFromResultSet(ResultSet set) throws SQLException {
+    public EntityItemTransactionData mapDataFromResultSet(ResultSet set) throws SQLException {
         return new EntityItemTransactionData(
                 set.getTimestamp("timestamp"),
                 set.getString("entity"),

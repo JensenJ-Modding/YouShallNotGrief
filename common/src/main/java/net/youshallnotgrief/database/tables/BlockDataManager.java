@@ -70,7 +70,7 @@ public class BlockDataManager extends DataManager<BlockData> {
     }
 
     @Override
-    protected void appendJoinsToSQL(StringBuilder query) {
+    public void appendJoinsToSQL(StringBuilder query) {
         query.append(
                 " JOIN positions ON blockChanges.posID = positions.posID" +
                 " JOIN dimensions ON blockChanges.dimID = dimensions.dimID" +
@@ -101,7 +101,7 @@ public class BlockDataManager extends DataManager<BlockData> {
     }
 
     @Override
-    protected BlockData mapDataFromResultSet(ResultSet set) throws SQLException {
+    public BlockData mapDataFromResultSet(ResultSet set) throws SQLException {
         return new BlockData(
                 set.getTimestamp("timestamp"),
                 new BlockPos(set.getInt("x"), set.getInt("y"), set.getInt("z")),

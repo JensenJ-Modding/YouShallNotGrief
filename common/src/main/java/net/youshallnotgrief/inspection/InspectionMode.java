@@ -15,8 +15,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.config.ServerConfig;
-import net.youshallnotgrief.database.data.BlockData;
+import net.youshallnotgrief.database.data.CombinedBlockData;
 import net.youshallnotgrief.database.data.EntityItemTransactionData;
+import net.youshallnotgrief.database.manager.DatabaseBlockQueryManager;
 import net.youshallnotgrief.database.manager.DatabaseManager;
 import net.youshallnotgrief.util.EntityUtils;
 import net.youshallnotgrief.util.MiscUtils;
@@ -148,8 +149,8 @@ public class InspectionMode {
     }
 
 
-    public static void getDataForBlock(BlockPos pos, String dimensionID, int pageNumber, Player player, Consumer<RetrieveResult<BlockData>> consumer){
-        DatabaseManager.BLOCK_DATA_MANAGER.retrieveFromDatabase(new BlockData(pos, dimensionID), ACTIONS_PER_PAGE, pageNumber * ACTIONS_PER_PAGE, (data) -> {
+    public static void getDataForBlock(BlockPos pos, String dimensionID, int pageNumber, Player player, Consumer<RetrieveResult<CombinedBlockData>> consumer){
+        DatabaseBlockQueryManager.retrieveFromDatabase(new CombinedBlockData(pos, dimensionID), ACTIONS_PER_PAGE, pageNumber * ACTIONS_PER_PAGE, (data) -> {
             if(data == null){
                 player.sendSystemMessage(Component.translatable("error.youshallnotgrief.inspection.database").withStyle(style -> style
                         .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionErrorColour.get()))));
@@ -166,7 +167,7 @@ public class InspectionMode {
                 player.sendSystemMessage(Component.translatable("error.youshallnotgrief.inspection.database").withStyle(style -> style
                         .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionErrorColour.get()))));
                 YouShallNotGriefMod.LOGGER.error("{} failed to inspect page {} of entity {} at coordinates {} {} {} in {}. The database failed to retrieve data for this entity.",
-                        player.getName().getString(), pageNumber + 1, entity.getStringUUID(), pos.getX(), pos.getY(), pos.getZ(), dimensionID);
+                        EntityUtils.getEntityCustomNameOrFallbackID(player), pageNumber + 1, entity.getStringUUID(), pos.getX(), pos.getY(), pos.getZ(), dimensionID);
             }
             consumer.accept(data);
         });

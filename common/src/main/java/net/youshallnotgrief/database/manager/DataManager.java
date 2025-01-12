@@ -1,7 +1,6 @@
 package net.youshallnotgrief.database.manager;
 
 import net.youshallnotgrief.YouShallNotGriefMod;
-import net.youshallnotgrief.database.data.BaseData;
 import net.youshallnotgrief.inspection.RetrieveResult;
 
 import java.sql.PreparedStatement;
@@ -12,13 +11,13 @@ import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
-public abstract class DataManager<InsertData extends BaseData> extends TableManager<InsertData> {
+public abstract class DataManager<InsertData> extends TableManager<InsertData> {
 
     protected abstract String getRetrieveSQL();
     protected abstract int setRetrievePreparedStatementValues(PreparedStatement preparedStatement, InsertData data) throws SQLException;
-    protected abstract InsertData mapDataFromResultSet(ResultSet set) throws SQLException;
-    protected abstract void appendJoinsToSQL(StringBuilder builder);
     protected abstract void appendFiltersToSQL(InsertData data, StringBuilder builder);
+    public abstract void appendJoinsToSQL(StringBuilder builder);
+    public abstract InsertData mapDataFromResultSet(ResultSet set) throws SQLException;
 
     protected abstract String getCountSQL();
 
@@ -29,7 +28,7 @@ public abstract class DataManager<InsertData extends BaseData> extends TableMana
         preparedStatement.setInt(index, offset);
     }
 
-    protected String getRetrieveSQLInternal(InsertData data){
+    private String getRetrieveSQLInternal(InsertData data){
         StringBuilder query = new StringBuilder();
         query.append(getRetrieveSQL());
 
@@ -52,54 +51,63 @@ public abstract class DataManager<InsertData extends BaseData> extends TableMana
         return query.toString();
     }
 
-    public void retrieveFromDatabase(InsertData data, int limit, int offset, Consumer<RetrieveResult<InsertData>> callback) {
-        if(DatabaseLifecycleManager.executorService == null){
-            return;
+    public int getCountFromDatabase(InsertData data, Connection database){
+        String countQuery = getCountSQLInternal(data);
+        try (PreparedStatement preparedStatement = database.prepareStatement(countQuery)) {
+            setRetrievePreparedStatementValues(preparedStatement, data);
+            ResultSet set = preparedStatement.executeQuery();
+            if (set.next()) {
+                return set.getInt(1);
+            }
+        } catch (SQLException e) {
+            YouShallNotGriefMod.LOGGER.error("Error retrieving count from database:");
+            YouShallNotGriefMod.LOGGER.error(e.toString());
+            YouShallNotGriefMod.LOGGER.error(countQuery);
         }
+        return -1;
+    }
+
+    public ArrayList<InsertData> getDataFromDatabase(InsertData data, Connection database, int limit, int offset){
+        ArrayList<InsertData> dataToReturn = new ArrayList<>();
+        String retrieveQuery = getRetrieveSQLInternal(data);
+        try (PreparedStatement preparedStatement = database.prepareStatement(retrieveQuery)) {
+            setRetrievePreparedStatementValuesWithLimits(preparedStatement, data, limit, offset);
+            ResultSet set = preparedStatement.executeQuery();
+            while (set.next()) {
+                try {
+                    dataToReturn.add(mapDataFromResultSet(set));
+                } catch (SQLException e) {
+                    YouShallNotGriefMod.LOGGER.error("Error retrieving data from database when performing mapping data from result set.");
+                    YouShallNotGriefMod.LOGGER.error(e.toString());
+                    YouShallNotGriefMod.LOGGER.error(retrieveQuery);
+                    return null;
+                }
+            }
+        } catch (SQLException e) {
+            YouShallNotGriefMod.LOGGER.error("Error retrieving data from database:");
+            YouShallNotGriefMod.LOGGER.error(e.toString());
+            YouShallNotGriefMod.LOGGER.error(retrieveQuery);
+            return null;
+        }
+        return dataToReturn;
+    }
+
+
+    public void retrieveFromDatabase(InsertData data, int limit, int offset, Consumer<RetrieveResult<InsertData>> callback) {
+        if(DatabaseLifecycleManager.executorService == null)
+            return;
 
         Callable<RetrieveResult<InsertData>> task = () -> {
-            ArrayList<InsertData> dataToReturn = new ArrayList<>();
             Connection database = DatabaseLifecycleManager.getDatabaseConnection();
             if (database == null) {
                 return null;
             }
 
-            int count = 0;
-            String countQuery = getCountSQLInternal(data);
-            try (PreparedStatement preparedStatement = database.prepareStatement(countQuery)) {
-                setRetrievePreparedStatementValues(preparedStatement, data);
-                ResultSet set = preparedStatement.executeQuery();
-                if (set.next()) {
-                    count = set.getInt(1);
-                }
-            } catch (SQLException e) {
-                YouShallNotGriefMod.LOGGER.error("Error retrieving count from database:");
-                YouShallNotGriefMod.LOGGER.error(e.toString());
-                YouShallNotGriefMod.LOGGER.error(countQuery);
+            int count = getCountFromDatabase(data, database);
+            if(count == -1){
                 return null;
             }
-
-            String retrieveQuery = getRetrieveSQLInternal(data);
-            try (PreparedStatement preparedStatement = database.prepareStatement(retrieveQuery)) {
-                setRetrievePreparedStatementValuesWithLimits(preparedStatement, data, limit, offset);
-                ResultSet set = preparedStatement.executeQuery();
-                while (set.next()) {
-                    try {
-                        dataToReturn.add(mapDataFromResultSet(set));
-                    } catch (SQLException e) {
-                        YouShallNotGriefMod.LOGGER.error("Error retrieving data from database when performing mapping data from result set.");
-                        YouShallNotGriefMod.LOGGER.error(e.toString());
-                        YouShallNotGriefMod.LOGGER.error(retrieveQuery);
-                        return null;
-                    }
-                }
-            } catch (SQLException e) {
-                YouShallNotGriefMod.LOGGER.error("Error retrieving data from database:");
-                YouShallNotGriefMod.LOGGER.error(e.toString());
-                YouShallNotGriefMod.LOGGER.error(retrieveQuery);
-                return null;
-            }
-
+            ArrayList<InsertData> dataToReturn = getDataFromDatabase(data, database, limit, offset);
             return new RetrieveResult<>(dataToReturn, count);
         };
 

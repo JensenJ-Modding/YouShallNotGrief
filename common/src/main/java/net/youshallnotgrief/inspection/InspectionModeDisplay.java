@@ -10,8 +10,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.config.ServerConfig;
-import net.youshallnotgrief.database.data.BaseData;
-import net.youshallnotgrief.database.data.BlockData;
+import net.youshallnotgrief.database.data.CombinedBlockData;
 import net.youshallnotgrief.database.data.EntityItemTransactionData;
 import net.youshallnotgrief.util.BlockUtils;
 import net.youshallnotgrief.util.EntityUtils;
@@ -30,7 +29,7 @@ public abstract class InspectionModeDisplay {
         InspectionMode.getDataForBlock(pos, dimensionID, pageNumber, player, (retrieveResult) -> {
             if(retrieveResult == null)
                 return;
-            ArrayList<BlockData> data = retrieveResult.records();
+            ArrayList<CombinedBlockData> data = retrieveResult.records();
 
             int count = retrieveResult.count();
             int maxPageCount = (int) Math.ceil((double) count / ACTIONS_PER_PAGE);
@@ -38,7 +37,7 @@ public abstract class InspectionModeDisplay {
                 return;
 
             player.sendSystemMessage(InspectionModeDisplay.getHeaderForBlock(player.level(), pos, dimensionID));
-            sendFormattedDataToPlayer(data, player);
+            sendFormattedBlockDataToPlayer(data, player);
             player.sendSystemMessage(getFooter(pageNumber, maxPageCount));
 
             YouShallNotGriefMod.LOGGER.info("{} inspected page {} of block at coordinates {} {} {} in {}",
@@ -63,7 +62,7 @@ public abstract class InspectionModeDisplay {
                 return;
 
             player.sendSystemMessage(InspectionModeDisplay.getHeaderForEntity(entity, pos, dimensionID));
-            sendFormattedDataToPlayer(data, player);
+            sendFormattedEntityDataToPlayer(data, player);
             player.sendSystemMessage(getFooter(pageNumber, maxPageCount));
 
             YouShallNotGriefMod.LOGGER.info("{} inspected page {} of entity {} at coordinates {} {} {} in {}",
@@ -71,8 +70,22 @@ public abstract class InspectionModeDisplay {
         });
     }
 
-    private static void sendFormattedDataToPlayer(ArrayList<? extends BaseData> data, Player player){
-        for (BaseData datum : data) {
+    private static void sendFormattedBlockDataToPlayer(ArrayList<CombinedBlockData> data, Player player){
+        for (CombinedBlockData datum : data) {
+            Component dataToSend;
+            if(datum.blockData.oldBlock == null){ //This is used as a basic test as oldBlock will be null in an entry returned from the blockItemInteractionData table.
+                dataToSend = datum.blockItemTransactionData.formatDataForInspection();
+            }else{
+                dataToSend = datum.blockData.formatDataForInspection();
+            }
+            if(dataToSend != null){
+                player.sendSystemMessage(dataToSend);
+            }
+        }
+    }
+
+    private static void sendFormattedEntityDataToPlayer(ArrayList<EntityItemTransactionData> data, Player player){
+        for (EntityItemTransactionData datum : data) {
             Component dataToSend = datum.formatDataForInspection();
             if(dataToSend != null){
                 player.sendSystemMessage(dataToSend);
