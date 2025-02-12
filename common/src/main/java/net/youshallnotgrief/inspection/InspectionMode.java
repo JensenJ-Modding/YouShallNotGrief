@@ -43,21 +43,16 @@ public class InspectionMode {
     }
 
     public static void registerEvents(){
-        InteractionEvent.LEFT_CLICK_BLOCK.register((Player player, InteractionHand hand, BlockPos pos, Direction face) ->{
-            if(guardInspectionModeInteraction(player, hand))
-                return EventResult.pass();
-
-            CURRENTLY_SELECTED_BLOCK.put(player, pos);
-            CURRENTLY_SELECTED_ENTITY.remove(player);
-            showDetails(player, 0);
-            return EventResult.interruptFalse();
-        });
-
         InteractionEvent.RIGHT_CLICK_BLOCK.register((Player player, InteractionHand hand, BlockPos pos, Direction face) -> {
             if(guardInspectionModeInteraction(player, hand))
                 return EventResult.pass();
 
-            CURRENTLY_SELECTED_BLOCK.put(player, pos.relative(face, 1));
+            BlockPos position = pos;
+            if(player.isCrouching()){
+                position = pos.relative(face, 1);
+            }
+
+            CURRENTLY_SELECTED_BLOCK.put(player, position);
             CURRENTLY_SELECTED_ENTITY.remove(player);
             showDetails(player, 0);
             return EventResult.interruptFalse();
@@ -74,12 +69,6 @@ public class InspectionMode {
         });
 
         PlayerEvent.ATTACK_ENTITY.register((Player player, Level level, Entity target, InteractionHand hand, @Nullable EntityHitResult result) -> {
-            if(guardInspectionModeInteraction(player, hand))
-                return EventResult.pass();
-
-            CURRENTLY_SELECTED_ENTITY.put(player, target);
-            CURRENTLY_SELECTED_BLOCK.remove(player);
-            showDetails(player, 0);
             return EventResult.interruptFalse();
         });
 

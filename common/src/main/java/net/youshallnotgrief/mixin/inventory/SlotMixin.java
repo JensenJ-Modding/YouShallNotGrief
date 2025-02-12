@@ -27,7 +27,6 @@ public abstract class SlotMixin implements SlotMenuContext {
 
     @Shadow public abstract ItemStack getItem();
 
-    @Shadow public int index;
     @Shadow @Final public Container container;
     @Unique
     private ItemStack youshallnotgrief$oldStack;
