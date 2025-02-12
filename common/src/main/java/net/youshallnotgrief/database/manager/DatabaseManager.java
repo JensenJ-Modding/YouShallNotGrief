@@ -1,6 +1,6 @@
 package net.youshallnotgrief.database.manager;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.world.level.Level;
 import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.database.data.BaseData;
 import net.youshallnotgrief.database.tables.BlockDataManager;
@@ -46,8 +46,8 @@ public class DatabaseManager {
         return manager;
     }
 
-    public static void addToDatabase(BaseData data){
-        if(isClientSide()){
+    public static void addToDatabase(BaseData data, Level level){
+        if(level.isClientSide()){
             throw new IllegalStateException("Failed to add data to Database Queue. addToDatabase called from clientside." + data);
         }
         QUEUE_SIZE++;
@@ -119,14 +119,6 @@ public class DatabaseManager {
             } catch (SQLException ex) {
                 YouShallNotGriefMod.LOGGER.error(ex.toString());
             }
-        }
-    }
-
-    public static boolean isClientSide() {
-        try {
-            return Minecraft.getInstance().isSameThread();
-        } catch (RuntimeException e) {
-            return false;
         }
     }
 }

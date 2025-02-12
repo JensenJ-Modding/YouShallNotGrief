@@ -9,7 +9,6 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.util.InventoryUtils;
 import net.youshallnotgrief.util.mixin.MenuContext;
 import net.youshallnotgrief.util.mixin.SlotMenuContext;
@@ -60,12 +59,11 @@ public abstract class AbstractContainerMenuMixin implements MenuContext {
 
     @Override
     public void youshallnotgrief$onStackChangedInEntity(ItemStack oldStack, ItemStack newStack, UUID entity) {
+        Level level = youshallnotgrief$player.level();
         youshallnotgrief$onStackChanged(oldStack, newStack, (addedStack) -> {
-            InventoryUtils.addToDatabase(entity, addedStack.getItem(), addedStack.getCount(), youshallnotgrief$player, "");
-            YouShallNotGriefMod.LOGGER.info("{} has now added {} to {}", youshallnotgrief$player, addedStack, entity);
+            InventoryUtils.addToDatabase(entity, level, addedStack.getItem(), addedStack.getCount(), youshallnotgrief$player, "");
         }, (removedStack) -> {
-            InventoryUtils.addToDatabase(entity, removedStack.getItem(), -removedStack.getCount(), youshallnotgrief$player, "");
-            YouShallNotGriefMod.LOGGER.info("{} has now removed {} from {}", youshallnotgrief$player, removedStack, entity);
+            InventoryUtils.addToDatabase(entity, level, removedStack.getItem(), -removedStack.getCount(), youshallnotgrief$player, "");
         });
     }
 
@@ -74,10 +72,8 @@ public abstract class AbstractContainerMenuMixin implements MenuContext {
         Level level = youshallnotgrief$player.level();
         youshallnotgrief$onStackChanged(oldStack, newStack, (addedStack) -> {
             InventoryUtils.addToDatabase(pos, level, addedStack.getItem(), addedStack.getCount(), youshallnotgrief$player, "");
-            YouShallNotGriefMod.LOGGER.info("{} has now added {} to {}", youshallnotgrief$player, addedStack, pos);
         }, (removedStack) -> {
             InventoryUtils.addToDatabase(pos, level, removedStack.getItem(), -removedStack.getCount(), youshallnotgrief$player, "");
-            YouShallNotGriefMod.LOGGER.info("{} has now removed {} from {}", youshallnotgrief$player, removedStack, pos);
         });
     }
 

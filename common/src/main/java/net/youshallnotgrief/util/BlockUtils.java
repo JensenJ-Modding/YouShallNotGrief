@@ -66,7 +66,7 @@ public class BlockUtils {
     public static void addToDatabaseRaw(@NotNull BlockPos pos, @NotNull Level level, @NotNull BlockState oldState, @NotNull BlockState newState, @NotNull BlockSetCause cause, @NotNull String source, @NotNull String sourceDesc){
         propagateDatabaseInteraction(pos.immutable(), level, oldState, newState, cause, source, sourceDesc);
         BlockData data = new BlockData(Timestamp.valueOf(LocalDateTime.now()), pos.immutable(), MiscUtils.getDimensionIDFromLevel(level), getBlockID(oldState), getBlockID(newState), cause.getDatabaseTag(), new SourceData(source, sourceDesc));
-        DatabaseManager.addToDatabase(data);
+        DatabaseManager.addToDatabase(data, level);
     }
 
     //Used by mixins to ensure that setBlock was actually successful before recording changes.

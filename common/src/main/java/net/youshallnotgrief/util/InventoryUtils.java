@@ -53,17 +53,17 @@ public class InventoryUtils {
         }
 
         BlockItemTransactionData data = new BlockItemTransactionData(Timestamp.valueOf(LocalDateTime.now()), pos.immutable(), MiscUtils.getDimensionIDFromLevel(level), getItemID(item), amount, new SourceData(sourceText, sourceDesc));
-        DatabaseManager.addToDatabase(data);
+        DatabaseManager.addToDatabase(data, level);
     }
 
-    public static void addToDatabase(@NotNull UUID entity, @NotNull Item item, int amount, @Nullable Entity source, @NotNull String sourceDesc){
+    public static void addToDatabase(@NotNull UUID entity, @NotNull Level level, @NotNull Item item, int amount, @Nullable Entity source, @NotNull String sourceDesc){
         String sourceText = "";
         if(source != null){
             sourceText = source.getName().getString();
         }
 
         EntityItemTransactionData data = new EntityItemTransactionData(Timestamp.valueOf(LocalDateTime.now()), entity.toString(), getItemID(item), amount, new SourceData(sourceText, sourceDesc));
-        DatabaseManager.addToDatabase(data);
+        DatabaseManager.addToDatabase(data, level);
     }
 
     public static Component formatDataForInspection(Timestamp timestamp, String item, int amount, SourceData sourceData){
