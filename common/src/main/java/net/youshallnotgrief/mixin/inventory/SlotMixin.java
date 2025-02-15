@@ -37,6 +37,9 @@ public abstract class SlotMixin implements SlotMenuContext {
     @Inject(method = "setChanged", at = @At(value = "HEAD"))
     private void youshallnotgrief$captureSlotChange(CallbackInfo ci){
         MenuContext context = ((MenuContext) youshallnotgrief$menu);
+        if(context == null){
+            return;
+        }
         ServerPlayer player = context.youshallnotgrief$getPlayer();
         if(container instanceof Inventory){
             return;
