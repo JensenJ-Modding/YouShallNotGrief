@@ -69,6 +69,9 @@ public class InspectionMode {
         });
 
         PlayerEvent.ATTACK_ENTITY.register((Player player, Level level, Entity target, InteractionHand hand, @Nullable EntityHitResult result) -> {
+            if(guardInspectionModeInteraction(player, hand)){
+                return EventResult.pass();
+            }
             return EventResult.interruptFalse();
         });
 
