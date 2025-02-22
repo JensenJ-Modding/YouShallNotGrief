@@ -10,8 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
-import java.util.function.Consumer;
-
+import java.util.function.BiConsumer;
 public class DatabaseBlockQueryManager {
 
     private static int getCountFromDatabase(CombinedBlockData data, Connection database){
@@ -90,7 +89,8 @@ public class DatabaseBlockQueryManager {
         return dataToReturn;
     }
 
-    public static void retrieveFromDatabase(CombinedBlockData data, int limit, int offset, Consumer<RetrieveResult<CombinedBlockData>> callback) {
+    //BiConsumer is a function to pass the returned data to, the boolean is whether a task is already running
+    public static void retrieveFromDatabase(CombinedBlockData data, int limit, int offset, BiConsumer<Boolean, RetrieveResult<CombinedBlockData>> callback) {
         if(DatabaseLifecycleManager.executorService == null)
             return;
 
@@ -108,15 +108,21 @@ public class DatabaseBlockQueryManager {
             return new RetrieveResult<>(dataToReturn, count);
         };
 
-        DatabaseLifecycleManager.executorService.submit(() -> {
-            try {
-                RetrieveResult<CombinedBlockData> result = task.call();
-                callback.accept(result);
-            } catch(Exception e) {
-                YouShallNotGriefMod.LOGGER.error("Error getting data from database retrieval:");
-                YouShallNotGriefMod.LOGGER.error(e.toString());
-                callback.accept(null);
-            }
-        });
+        if(DatabaseManager.isQuerying.compareAndSet(false, true)) {
+            DatabaseLifecycleManager.executorService.submit(() -> {
+                try {
+                    RetrieveResult<CombinedBlockData> result = task.call();
+                    DatabaseManager.isQuerying.set(false);
+                    callback.accept(false, result);
+                } catch (Exception e) {
+                    YouShallNotGriefMod.LOGGER.error("Error getting data from database retrieval:");
+                    YouShallNotGriefMod.LOGGER.error(e.toString());
+                    DatabaseManager.isQuerying.set(false);
+                    callback.accept(false, null);
+                }
+            });
+        }else{
+            callback.accept(true, null);
+        }
     }
 }

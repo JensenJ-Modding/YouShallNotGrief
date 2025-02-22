@@ -21,6 +21,8 @@ public class DatabaseManager {
     private static int QUEUE_SIZE = 0;
     protected static int MAX_QUEUE_SIZE = 50;
     private static final AtomicBoolean isCommitting = new AtomicBoolean(false);
+    //TODO: possibly update in future so that it's a map of player to query, allowing multiple people to query at once, this mainly exists to stop queueing loads of queries to the DB, if players are unaware it's loading.
+    public static final AtomicBoolean isQuerying = new AtomicBoolean(false);
 
     private static final ArrayList<DataManager<?>> DATA_MANAGERS = new ArrayList<>();
     public static final BlockDataManager BLOCK_DATA_MANAGER = registerDataManager(new BlockDataManager());

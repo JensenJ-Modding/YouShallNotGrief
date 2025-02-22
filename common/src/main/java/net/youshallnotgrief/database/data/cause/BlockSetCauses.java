@@ -40,6 +40,7 @@ public class BlockSetCauses {
     public static final BlockSetCause HATCHED = registerCause(new BlockSetCause("hatched"));
     public static final BlockSetCause INFESTED = registerCause(new BlockSetCause("infested"));
     public static final BlockSetCause ACCESSED = registerCause(new BlockSetCause("accessed"));
+    public static final BlockSetCause INTERACTED = registerCause(new BlockSetCause("interacted"));
     public static final BlockSetCause FALLBACK = registerCause(new BlockSetCauseWithSourceFallback("fallback"));
 
     private static BlockSetCause registerCause(BlockSetCause cause){
