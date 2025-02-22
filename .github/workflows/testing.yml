@@ -35,7 +35,7 @@ jobs:
           cache-read-only: false
 
       - name: Build
-        run: gradle build
+        run: gradle build -PbuildNumber=${{ github.run_number }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
