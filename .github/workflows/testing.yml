@@ -73,7 +73,7 @@ jobs:
       - name: Move artifact to run/mods
         run: |
           mkdir -p run/mods
-          cp ${{ matrix.loader }}/build/libs/youshallnotgrief-${{ env.MINECRAFT_VERSION }}-${{ matrix.loader }}-${{ env.MOD_VERSION }}.jar run/mods
+          cp ${{ matrix.loader }}/build/libs/youshallnotgrief-${{ env.MINECRAFT_VERSION }}-${{ matrix.loader }}-${{ github.run_number }}-${{ env.MOD_VERSION }}.jar run/mods
 
       - name: Download forge dependencies to run/mods
         if: matrix.loader == 'forge'
