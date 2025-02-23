@@ -16,6 +16,7 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.HitResult;
@@ -42,10 +43,9 @@ public class BlockEvents {
                 return EventResult.interruptFalse();
             }
 
-            BlockState newState = level.getBlockState(pos);
             MixinDataHolder.wasLevelSetTracked = true;
             if(ServerConfig.logBlockBreaking.get()) {
-                BlockUtils.addToDatabase(pos, level, state, newState, BlockSetCauses.REMOVED, player, "");
+                BlockUtils.addToDatabase(pos, level, state, Blocks.AIR.defaultBlockState(), BlockSetCauses.REMOVED, player, "");
             }
             return EventResult.pass();
         });
