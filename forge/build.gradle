@@ -15,6 +15,10 @@ repositories {
     }
 }
 
+base {
+    archivesName = archives_name + "-forge"
+}
+
 loom {
     forge {
         mixinConfig "youshallnotgrief-common.mixins.json"

@@ -26,6 +26,10 @@ repositories {
     }
 }
 
+base {
+    archivesName = archives_name + "-fabric"
+}
+
 configurations {
     common {
         canBeResolved = true
