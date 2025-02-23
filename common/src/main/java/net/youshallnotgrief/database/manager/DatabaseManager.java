@@ -9,9 +9,11 @@ import net.youshallnotgrief.database.tables.EntityItemTransactionDataManager;
 import net.youshallnotgrief.database.tables.foreign.*;
 import net.youshallnotgrief.inspection.InspectionMode;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -100,7 +102,10 @@ public class DatabaseManager {
         TABLE_MANAGERS.forEach(ForeignTableManager::clearCache);
     }
 
-    protected static void createTablesAndIndexes(){
+    protected static void startupQueries(){
+        Path dbPath = Paths.get(DatabaseLifecycleManager.getDatabaseWorldPath());
+        Path tempPath = dbPath.resolve("temp");
+        executeSetupQuery("PRAGMA temp_store_directory = '" + tempPath + "';");
         TABLE_MANAGERS.forEach((manager) -> executeSetupQuery(manager.getCreateTableSQL()));
         DATA_MANAGERS.forEach((manager) -> executeSetupQuery(manager.getCreateTableSQL()));
         DATA_MANAGERS.forEach((manager) -> executeSetupQuery(manager.getCreateIndexSQL()));
@@ -111,17 +116,11 @@ public class DatabaseManager {
         if(database == null) {
             return;
         }
-        try (PreparedStatement preparedStatement = database.prepareStatement(query)){
-            preparedStatement.execute();
-            database.commit();
+        try(Statement statement = database.createStatement()){
+             statement.execute(query);
         }catch(SQLException e){
             YouShallNotGriefMod.LOGGER.error(e.toString());
             YouShallNotGriefMod.LOGGER.error(query);
-            try {
-                database.rollback();
-            } catch (SQLException ex) {
-                YouShallNotGriefMod.LOGGER.error(ex.toString());
-            }
         }
     }
 }

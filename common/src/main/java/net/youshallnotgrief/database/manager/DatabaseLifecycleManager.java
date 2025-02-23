@@ -6,6 +6,7 @@ import net.minecraft.world.level.storage.LevelResource;
 import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.config.ServerConfig;
 
+import java.io.File;
 import java.sql.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -87,11 +88,15 @@ public class DatabaseLifecycleManager {
             YouShallNotGriefMod.LOGGER.error("Tried to establish database connection when server was null.");
             return null;
         }
-        String DatabaseWorldPath = minecraftServer.getWorldPath(LevelResource.ROOT).toAbsolutePath() + "/";
         try {
-            String databasePath = "jdbc:sqlite:" + DatabaseWorldPath + YouShallNotGriefMod.MOD_ID + ".db";
-            connection = DriverManager.getConnection(databasePath);
-            connection.setAutoCommit(false);
+            File folder = new File(getDatabaseWorldPath() + "temp");
+            if(folder.exists() || folder.mkdirs()){
+                String databasePath = "jdbc:sqlite:" + getDatabaseWorldPath() + YouShallNotGriefMod.MOD_ID + ".db";
+                connection = DriverManager.getConnection(databasePath);
+                connection.setAutoCommit(true);
+            }else{
+                YouShallNotGriefMod.LOGGER.error("Failed to create folder for database.");
+            }
         } catch (SQLException e) {
             YouShallNotGriefMod.LOGGER.error("Failed to connect to database: ");
             YouShallNotGriefMod.LOGGER.error(e.toString());
@@ -101,12 +106,23 @@ public class DatabaseLifecycleManager {
         cachedDatabaseConnection = connection;
 
         //First time connection setup
-        if(isFirstConnection && connection != null) {
-            YouShallNotGriefMod.LOGGER.info("Creating database tables and indexes. This may take a while.");
-            DatabaseManager.createTablesAndIndexes();
-            YouShallNotGriefMod.LOGGER.info("Successfully created database tables and indexes.");
+        if(connection != null) {
+            if (isFirstConnection) {
+                YouShallNotGriefMod.LOGGER.info("Performing startup. This may take a while.");
+                DatabaseManager.startupQueries();
+                YouShallNotGriefMod.LOGGER.info("Performed startup queries.");
+            }
+            try {
+                connection.setAutoCommit(false);
+            } catch (SQLException e) {
+                YouShallNotGriefMod.LOGGER.error(e.toString());
+            }
         }
         DatabaseManager.clearCaches();
         return connection;
+    }
+
+    public static String getDatabaseWorldPath(){
+        return minecraftServer.getWorldPath(LevelResource.ROOT).toAbsolutePath() + "\\youshallnotgrief/";
     }
 }
