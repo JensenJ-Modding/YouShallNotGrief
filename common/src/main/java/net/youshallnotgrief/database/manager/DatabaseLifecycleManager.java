@@ -123,6 +123,6 @@ public class DatabaseLifecycleManager {
     }
 
     public static String getDatabaseWorldPath(){
-        return minecraftServer.getWorldPath(LevelResource.ROOT).toAbsolutePath() + "\\youshallnotgrief/";
+        return minecraftServer.getWorldPath(LevelResource.ROOT).toAbsolutePath() + "/youshallnotgrief/";
     }
 }
