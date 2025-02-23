@@ -100,22 +100,23 @@ public class DatabaseManager {
         TABLE_MANAGERS.forEach(ForeignTableManager::clearCache);
     }
 
-    protected static void createTables(){
-        TABLE_MANAGERS.forEach((manager) -> createTableIfNotExists(manager.getCreateTableSQL()));
-        DATA_MANAGERS.forEach((manager) -> createTableIfNotExists(manager.getCreateTableSQL()));
+    protected static void createTablesAndIndexes(){
+        TABLE_MANAGERS.forEach((manager) -> executeSetupQuery(manager.getCreateTableSQL()));
+        DATA_MANAGERS.forEach((manager) -> executeSetupQuery(manager.getCreateTableSQL()));
+        DATA_MANAGERS.forEach((manager) -> executeSetupQuery(manager.getCreateIndexSQL()));
     }
 
-    private static void createTableIfNotExists(String createTableSQL){
+    private static void executeSetupQuery(String query){
         Connection database = DatabaseLifecycleManager.getDatabaseConnection();
         if(database == null) {
             return;
         }
-        try (PreparedStatement preparedStatement = database.prepareStatement(createTableSQL)){
+        try (PreparedStatement preparedStatement = database.prepareStatement(query)){
             preparedStatement.execute();
             database.commit();
         }catch(SQLException e){
             YouShallNotGriefMod.LOGGER.error(e.toString());
-            YouShallNotGriefMod.LOGGER.error(createTableSQL);
+            YouShallNotGriefMod.LOGGER.error(query);
             try {
                 database.rollback();
             } catch (SQLException ex) {

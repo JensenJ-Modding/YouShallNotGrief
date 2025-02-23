@@ -20,6 +20,7 @@ public abstract class DataManager<InsertData> extends TableManager<InsertData> {
     public abstract InsertData mapDataFromResultSet(ResultSet set) throws SQLException;
 
     protected abstract String getCountSQL();
+    protected abstract String getCreateIndexSQL();
 
     //The query and count logic is the same, except that count has two parameters chucked on the end
     protected void setRetrievePreparedStatementValuesWithLimits(PreparedStatement preparedStatement, InsertData data, int limit, int offset) throws SQLException {

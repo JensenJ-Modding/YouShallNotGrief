@@ -38,6 +38,11 @@ public class BlockItemTransactionDataManager extends DataManager<BlockItemTransa
         return "SELECT COUNT(*) FROM blockItemTransactions";
     }
 
+    @Override
+    protected String getCreateIndexSQL() {
+        return "CREATE INDEX IF NOT EXISTS idx_blockItemInteractions_posID ON blockItemTransactions (posID);";
+    }
+
     protected void setInsertPreparedStatementValues(PreparedStatement preparedStatement, BlockItemTransactionData data) throws SQLException {
         int posID = DatabaseManager.POSITION_TABLE_MANAGER.getForeignKeyInDatabase(data.position);
         int dimID = DatabaseManager.DIMENSION_TABLE_MANAGER.getForeignKeyInDatabase(data.dimension);

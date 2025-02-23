@@ -41,6 +41,11 @@ public class BlockDataManager extends DataManager<BlockData> {
         return "SELECT COUNT(*) FROM blockChanges";
     }
 
+    @Override
+    protected String getCreateIndexSQL() {
+        return "CREATE INDEX IF NOT EXISTS idx_blockChanges_posID ON blockChanges (posID);";
+    }
+
     protected void setInsertPreparedStatementValues(PreparedStatement preparedStatement, BlockData data) throws SQLException {
         int posID = DatabaseManager.POSITION_TABLE_MANAGER.getForeignKeyInDatabase(data.position);
         int dimID = DatabaseManager.DIMENSION_TABLE_MANAGER.getForeignKeyInDatabase(data.dimension);

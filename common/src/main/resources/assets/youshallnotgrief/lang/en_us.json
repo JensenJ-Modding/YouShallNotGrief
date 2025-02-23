@@ -9,7 +9,7 @@
   "error.youshallnotgrief.inspection.inspectfirst": "You must inspect something first.",
   "error.youshallnotgrief.inspection.nopermission": "You do not have permission to enter inspect mode.",
   "error.youshallnotgrief.inspection.event": "You cannot do that while in inspect mode.",
-  "error.youshallnotgrief.inspection.busy": "The database is currently busy. Try again soon.",
+  "error.youshallnotgrief.inspection.busy": "The database is processing a request. Try again soon.",
 
   "comment.msg.youshallnotgrief.inspection.header": "%1$s is target. %2$s is position. %3$s is dimension",
   "msg.youshallnotgrief.inspection.header": "%1$s at %2$s in %3$s",

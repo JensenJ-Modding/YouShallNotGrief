@@ -35,6 +35,11 @@ public class EntityItemTransactionDataManager extends DataManager<EntityItemTran
         return "SELECT COUNT(*) FROM entityItemTransactions";
     }
 
+    @Override
+    protected String getCreateIndexSQL() {
+        return "CREATE INDEX IF NOT EXISTS idx_entityItemTransactions_entityID ON entityItemTransactions (entityID);";
+    }
+
     protected void setInsertPreparedStatementValues(PreparedStatement preparedStatement, EntityItemTransactionData data) throws SQLException {
         int entityID = DatabaseManager.ENTITY_TABLE_MANAGER.getForeignKeyInDatabase(data.entityUUID);
         int itemID = DatabaseManager.ITEM_TABLE_MANAGER.getForeignKeyInDatabase(data.item);

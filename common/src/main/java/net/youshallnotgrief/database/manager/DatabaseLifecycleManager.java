@@ -102,7 +102,9 @@ public class DatabaseLifecycleManager {
 
         //First time connection setup
         if(isFirstConnection && connection != null) {
-            DatabaseManager.createTables();
+            YouShallNotGriefMod.LOGGER.info("Creating database tables and indexes. This may take a while.");
+            DatabaseManager.createTablesAndIndexes();
+            YouShallNotGriefMod.LOGGER.info("Successfully created database tables and indexes.");
         }
         DatabaseManager.clearCaches();
         return connection;
