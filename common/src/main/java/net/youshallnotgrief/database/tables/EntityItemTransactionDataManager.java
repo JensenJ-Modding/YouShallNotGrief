@@ -1,5 +1,6 @@
 package net.youshallnotgrief.database.tables;
 
+import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.database.data.EntityItemTransactionData;
 import net.youshallnotgrief.database.data.SourceData;
 import net.youshallnotgrief.database.manager.DataManager;
@@ -14,7 +15,7 @@ public class EntityItemTransactionDataManager extends DataManager<EntityItemTran
     @Override
     public String getCreateTableSQL() {
         return "CREATE TABLE IF NOT EXISTS entityItemTransactions " +
-                "(id INTEGER PRIMARY KEY, timestamp DATETIME NOT NULL, entityID INTEGER NOT NULL, itemID INTEGER NOT NULL, amount INTEGER NOT NULL, sourceID INTEGER NOT NULL, " +
+                "(id INTEGER PRIMARY KEY, timestamp DATETIME NOT NULL, lastTimestamp DATETIME NOT NULL, count INTEGER NOT NULL DEFAULT 1, entityID INTEGER NOT NULL, itemID INTEGER NOT NULL, amount INTEGER NOT NULL, sourceID INTEGER NOT NULL, " +
                 "FOREIGN KEY (entityID) REFERENCES entities(entityID)," +
                 "FOREIGN KEY (itemID) REFERENCES items(itemID)," +
                 "FOREIGN KEY (sourceID) REFERENCES sources(sourceID));";
@@ -22,13 +23,9 @@ public class EntityItemTransactionDataManager extends DataManager<EntityItemTran
 
     @Override
     protected String getRetrieveSQL() {
-        return "SELECT timestamp, entities.entity, items.item, amount, sources.source, sources.sourceDesc FROM entityItemTransactions";
+        return "SELECT timestamp, count, entities.entity, items.item, amount, sources.source, sources.sourceDesc FROM entityItemTransactions";
     }
 
-    protected String getInsertSQL(){
-        return "INSERT INTO entityItemTransactions (timestamp, entityID, itemID, amount, sourceID) " +
-                "VALUES (?, ?, ?, ?, ?);";
-    }
 
     @Override
     protected String getCountSQL() {
@@ -40,7 +37,32 @@ public class EntityItemTransactionDataManager extends DataManager<EntityItemTran
         return "CREATE INDEX IF NOT EXISTS idx_entityItemTransactions_entityID ON entityItemTransactions (entityID);";
     }
 
+    protected String getInsertSQL(){
+        return "INSERT INTO entityItemTransactions (timestamp, lastTimestamp, count, entityID, itemID, amount, sourceID) " +
+                "VALUES (?, ?, 1, ?, ?, ?, ?);";
+    }
+
     protected void setInsertPreparedStatementValues(PreparedStatement preparedStatement, EntityItemTransactionData data) throws SQLException {
+        int entityID = DatabaseManager.ENTITY_TABLE_MANAGER.getForeignKeyInDatabase(data.entityUUID);
+        int itemID = DatabaseManager.ITEM_TABLE_MANAGER.getForeignKeyInDatabase(data.item);
+        int sourceID = DatabaseManager.SOURCE_TABLE_MANAGER.getForeignKeyInDatabase(data.source);
+
+        preparedStatement.setTimestamp(1, data.timestamp);
+        preparedStatement.setTimestamp(2, data.timestamp);
+        preparedStatement.setInt(3, entityID);
+        preparedStatement.setInt(4, itemID);
+        preparedStatement.setInt(5, data.amount);
+        preparedStatement.setInt(6, sourceID);
+    }
+
+    @Override
+    protected String getUpdateSQL() {
+        return "UPDATE entityItemTransactions SET count = count + 1, lastTimestamp = ? " +
+                "WHERE entityID = ? AND itemID = ? AND amount = ? AND sourceID = ? AND (? - lastTimestamp) <= ?;";
+    }
+
+    @Override
+    protected void setUpdatePreparedStatementValues(PreparedStatement preparedStatement, EntityItemTransactionData data) throws SQLException {
         int entityID = DatabaseManager.ENTITY_TABLE_MANAGER.getForeignKeyInDatabase(data.entityUUID);
         int itemID = DatabaseManager.ITEM_TABLE_MANAGER.getForeignKeyInDatabase(data.item);
         int sourceID = DatabaseManager.SOURCE_TABLE_MANAGER.getForeignKeyInDatabase(data.source);
@@ -50,6 +72,8 @@ public class EntityItemTransactionDataManager extends DataManager<EntityItemTran
         preparedStatement.setInt(3, itemID);
         preparedStatement.setInt(4, data.amount);
         preparedStatement.setInt(5, sourceID);
+        preparedStatement.setTimestamp(6, data.timestamp);
+        preparedStatement.setInt(7, ServerConfig.databaseMergeTime.get() * 1000);
     }
 
     @Override
@@ -87,6 +111,7 @@ public class EntityItemTransactionDataManager extends DataManager<EntityItemTran
     public EntityItemTransactionData mapDataFromResultSet(ResultSet set) throws SQLException {
         return new EntityItemTransactionData(
                 set.getTimestamp("timestamp"),
+                set.getInt("count"),
                 set.getString("entity"),
                 set.getString("item"),
                 set.getInt("amount"),

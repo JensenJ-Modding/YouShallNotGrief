@@ -10,7 +10,6 @@ import net.youshallnotgrief.database.data.cause.BlockSetCause;
 import net.youshallnotgrief.database.data.cause.BlockSetCauses;
 import net.youshallnotgrief.database.manager.DatabaseManager;
 import net.youshallnotgrief.inspection.ComponentUtils;
-import net.youshallnotgrief.inspection.InspectionModeDisplay;
 import net.youshallnotgrief.util.MiscUtils;
 
 import java.sql.Timestamp;
@@ -18,6 +17,7 @@ import java.sql.Timestamp;
 public class BlockData extends BaseData {
 
     public BlockPos position;
+    public int count;
     public String dimension;
     public String oldBlock;
     public String newBlock;
@@ -25,9 +25,10 @@ public class BlockData extends BaseData {
     public SourceData source;
 
     //Used for constructing insertion data
-    public BlockData(Timestamp timestamp, BlockPos position, String dimension, String oldBlock, String newBlock, String cause, SourceData source) {
+    public BlockData(Timestamp timestamp, int count, BlockPos position, String dimension, String oldBlock, String newBlock, String cause, SourceData source) {
         super(timestamp);
         this.position = position;
+        this.count = count;
         this.dimension = dimension;
         this.oldBlock = oldBlock;
         this.newBlock = newBlock;
@@ -65,6 +66,9 @@ public class BlockData extends BaseData {
                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(ComponentUtils.formatTime(timestamp))))
                 );
 
+        //TODO: FORMAT
+        MutableComponent countComp = Component.literal(count + "x ");
+
         MutableComponent oldBlockComp = ComponentUtils.getBlockComponentFromString(oldBlock);
         MutableComponent newBlockComp = ComponentUtils.getBlockComponentFromString(newBlock);
 
@@ -77,6 +81,9 @@ public class BlockData extends BaseData {
         MutableComponent sourceComp = ComponentUtils.getSourceComponentFromString(source.source(), source.sourceDesc());
         MutableComponent comp = Component.empty().append(timeComp).append(" - ").withStyle(style -> style
                 .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionBackgroundColour.get())));
+
+        //TODO: REPLACE
+        comp = comp.append(countComp);
 
         return comp.append(blockSetCause.getInspectMessage(oldBlockComp, newBlockComp, sourceComp));
     }

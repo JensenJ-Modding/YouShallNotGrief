@@ -12,14 +12,16 @@ public class BlockItemTransactionData extends BaseData{
     public BlockPos position;
     public String dimension;
     public String item;
+    public int count;
     public int amount;
     public SourceData source;
 
     //Used for constructing insertion data
-    public BlockItemTransactionData(Timestamp timestamp, BlockPos position, String dimension, String item, int amount, SourceData source) {
+    public BlockItemTransactionData(Timestamp timestamp, int count, BlockPos position, String dimension, String item, int amount, SourceData source) {
         super(timestamp);
         this.position = position;
         this.dimension = dimension;
+        this.count = count;
         this.item = item;
         this.amount = amount;
         this.source = source;
@@ -47,6 +49,6 @@ public class BlockItemTransactionData extends BaseData{
 
     @Override
     public Component formatDataForInspection() {
-        return InventoryUtils.formatDataForInspection(timestamp, item, amount, source);
+        return InventoryUtils.formatDataForInspection(timestamp, count, item, amount, source);
     }
 }

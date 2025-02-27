@@ -18,6 +18,7 @@ public class ServerConfig {
     //Database settings
     public static final ForgeConfigSpec.ConfigValue<Integer> databaseThreadCount;
     public static final ForgeConfigSpec.ConfigValue<Integer> databaseQueueSize;
+    public static final ForgeConfigSpec.ConfigValue<Integer> databaseMergeTime;
 
     //Inspection settings
     public static final ForgeConfigSpec.ConfigValue<String> inspectionPrimaryColour;
@@ -92,6 +93,8 @@ public class ServerConfig {
                 .defineInRange("databaseThreadCount", 2, 1, 8);
         databaseQueueSize = BUILDER.comment("Number of interactions the mod should queue before committing it into the database. [Default: 50]")
                 .defineInRange("databaseQueueSize", 50, 1, Integer.MAX_VALUE);
+        databaseMergeTime = BUILDER.comment("If a similar interaction within this timeframe occurs, it is merged together. [Default: 20]")
+                .defineInRange("databaseMergeTime", 20, 1, Integer.MAX_VALUE);
         BUILDER.pop();
 
         BUILDER.comment("Inspection mode settings").push(CATEGORY_INSPECTION);

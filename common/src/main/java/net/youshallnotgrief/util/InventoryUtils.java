@@ -52,7 +52,7 @@ public class InventoryUtils {
             sourceText = source.getName().getString();
         }
 
-        BlockItemTransactionData data = new BlockItemTransactionData(Timestamp.valueOf(LocalDateTime.now()), pos.immutable(), MiscUtils.getDimensionIDFromLevel(level), getItemID(item), amount, new SourceData(sourceText, sourceDesc));
+        BlockItemTransactionData data = new BlockItemTransactionData(Timestamp.valueOf(LocalDateTime.now()), 1, pos.immutable(), MiscUtils.getDimensionIDFromLevel(level), getItemID(item), amount, new SourceData(sourceText, sourceDesc));
         DatabaseManager.addToDatabase(data, level);
     }
 
@@ -62,16 +62,19 @@ public class InventoryUtils {
             sourceText = source.getName().getString();
         }
 
-        EntityItemTransactionData data = new EntityItemTransactionData(Timestamp.valueOf(LocalDateTime.now()), entity.toString(), getItemID(item), amount, new SourceData(sourceText, sourceDesc));
+        EntityItemTransactionData data = new EntityItemTransactionData(Timestamp.valueOf(LocalDateTime.now()), 1, entity.toString(), getItemID(item), amount, new SourceData(sourceText, sourceDesc));
         DatabaseManager.addToDatabase(data, level);
     }
 
-    public static Component formatDataForInspection(Timestamp timestamp, String item, int amount, SourceData sourceData){
+    public static Component formatDataForInspection(Timestamp timestamp, int count, String item, int amount, SourceData sourceData){
         MutableComponent timeComp = ComponentUtils.formatTimeAgo(timestamp)
                 .withStyle(style -> style
                         .withColor(MiscUtils.getTextColourFromConfig(ServerConfig.inspectionSecondaryColour.get()))
                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(ComponentUtils.formatTime(timestamp))))
                 );
+
+        //TODO: FORMAT
+        MutableComponent countComp = Component.literal(count + "x ");
 
         MutableComponent itemComp = ComponentUtils.getItemComponentFromString(item, amount);
         MutableComponent sourceComp = ComponentUtils.getSourceComponentFromString(sourceData.source(), sourceData.sourceDesc());
@@ -84,6 +87,9 @@ public class InventoryUtils {
         }else{
             operationComp = Component.translatable("msg.youshallnotgrief.inspection.item.insert", sourceComp, itemComp);
         }
+
+        //TODO: REPLACE
+        comp = comp.append(countComp);
 
         return comp.append(operationComp);
     }

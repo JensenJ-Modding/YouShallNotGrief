@@ -1,6 +1,7 @@
 package net.youshallnotgrief.database.tables;
 
 import net.minecraft.core.BlockPos;
+import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.database.data.BlockItemTransactionData;
 import net.youshallnotgrief.database.data.SourceData;
 import net.youshallnotgrief.database.manager.DataManager;
@@ -15,7 +16,7 @@ public class BlockItemTransactionDataManager extends DataManager<BlockItemTransa
     @Override
     public String getCreateTableSQL() {
         return "CREATE TABLE IF NOT EXISTS blockItemTransactions " +
-                "(id INTEGER PRIMARY KEY, timestamp DATETIME NOT NULL, posID INTEGER NOT NULL, dimID INTEGER NOT NULL, itemID INTEGER NOT NULL, amount INTEGER NOT NULL, sourceID INTEGER NOT NULL, " +
+                "(id INTEGER PRIMARY KEY, timestamp DATETIME NOT NULL, lastTimestamp DATETIME NOT NULL, count INTEGER NOT NULL DEFAULT 1, posID INTEGER NOT NULL, dimID INTEGER NOT NULL, itemID INTEGER NOT NULL, amount INTEGER NOT NULL, sourceID INTEGER NOT NULL, " +
                 "FOREIGN KEY (posID) REFERENCES positions(posID)," +
                 "FOREIGN KEY (dimID) REFERENCES dimensions(dimID)," +
                 "FOREIGN KEY (itemID) REFERENCES items(itemID)," +
@@ -24,13 +25,8 @@ public class BlockItemTransactionDataManager extends DataManager<BlockItemTransa
 
     @Override
     protected String getRetrieveSQL() {
-        return "SELECT timestamp, positions.x, positions.y, positions.z, dimensions.dimension, " +
+        return "SELECT timestamp, count, positions.x, positions.y, positions.z, dimensions.dimension, " +
                 "items.item, amount, sources.source, sources.sourceDesc FROM blockItemTransactions";
-    }
-
-    protected String getInsertSQL(){
-        return "INSERT INTO blockItemTransactions (timestamp, posID, dimID, itemID, amount, sourceID) " +
-                "VALUES (?, ?, ?, ?, ?, ?);";
     }
 
     @Override
@@ -43,7 +39,34 @@ public class BlockItemTransactionDataManager extends DataManager<BlockItemTransa
         return "CREATE INDEX IF NOT EXISTS idx_blockItemInteractions_posID ON blockItemTransactions (posID);";
     }
 
+    protected String getInsertSQL(){
+        return "INSERT INTO blockItemTransactions (timestamp, lastTimestamp, count, posID, dimID, itemID, amount, sourceID) " +
+                "VALUES (?, ?, 1, ?, ?, ?, ?, ?);";
+    }
+
     protected void setInsertPreparedStatementValues(PreparedStatement preparedStatement, BlockItemTransactionData data) throws SQLException {
+        int posID = DatabaseManager.POSITION_TABLE_MANAGER.getForeignKeyInDatabase(data.position);
+        int dimID = DatabaseManager.DIMENSION_TABLE_MANAGER.getForeignKeyInDatabase(data.dimension);
+        int itemID = DatabaseManager.ITEM_TABLE_MANAGER.getForeignKeyInDatabase(data.item);
+        int sourceID = DatabaseManager.SOURCE_TABLE_MANAGER.getForeignKeyInDatabase(data.source);
+
+        preparedStatement.setTimestamp(1, data.timestamp);
+        preparedStatement.setTimestamp(2, data.timestamp);
+        preparedStatement.setInt(3, posID);
+        preparedStatement.setInt(4, dimID);
+        preparedStatement.setInt(5, itemID);
+        preparedStatement.setInt(6, data.amount);
+        preparedStatement.setInt(7, sourceID);
+    }
+
+    @Override
+    protected String getUpdateSQL() {
+        return "UPDATE blockItemTransactions SET count = count + 1, lastTimestamp = ? " +
+                "WHERE posID = ? AND dimID = ? AND itemID = ? AND amount = ? AND sourceID = ? AND (? - lastTimestamp) <= ?;";
+    }
+
+    @Override
+    protected void setUpdatePreparedStatementValues(PreparedStatement preparedStatement, BlockItemTransactionData data) throws SQLException {
         int posID = DatabaseManager.POSITION_TABLE_MANAGER.getForeignKeyInDatabase(data.position);
         int dimID = DatabaseManager.DIMENSION_TABLE_MANAGER.getForeignKeyInDatabase(data.dimension);
         int itemID = DatabaseManager.ITEM_TABLE_MANAGER.getForeignKeyInDatabase(data.item);
@@ -55,6 +78,8 @@ public class BlockItemTransactionDataManager extends DataManager<BlockItemTransa
         preparedStatement.setInt(4, itemID);
         preparedStatement.setInt(5, data.amount);
         preparedStatement.setInt(6, sourceID);
+        preparedStatement.setTimestamp(7, data.timestamp);
+        preparedStatement.setInt(8, ServerConfig.databaseMergeTime.get() * 1000);
     }
 
     @Override
@@ -99,6 +124,7 @@ public class BlockItemTransactionDataManager extends DataManager<BlockItemTransa
     public BlockItemTransactionData mapDataFromResultSet(ResultSet set) throws SQLException {
         return new BlockItemTransactionData(
                 set.getTimestamp("timestamp"),
+                set.getInt("count"),
                 new BlockPos(set.getInt("x"), set.getInt("y"), set.getInt("z")),
                 set.getString("dimension"),
                 set.getString("item"),

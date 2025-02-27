@@ -11,6 +11,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.function.BiConsumer;
+
+//TODO: REFACTOR CLASS
 public class DatabaseBlockQueryManager {
 
     private static int getCountFromDatabase(CombinedBlockData data, Connection database){
@@ -21,7 +23,7 @@ public class DatabaseBlockQueryManager {
 
     protected static String getRetrieveSQL() {
         StringBuilder query = new StringBuilder();
-        query.append("SELECT timestamp, positions.x, positions.y, positions.z, dimensions.dimension, ");
+        query.append("SELECT timestamp, count, positions.x, positions.y, positions.z, dimensions.dimension, ");
         query.append("oldBlock.block AS oldBlock, newBlock.block AS newBlock, ");
         query.append("causes.cause, sources.source, sources.sourceDesc, ");
         query.append("NULL AS item, NULL AS amount ");
@@ -31,7 +33,7 @@ public class DatabaseBlockQueryManager {
         query.append("positions.x = ? AND positions.y = ? AND positions.z = ? ");
         query.append("AND dimensions.dimension = ? ");
         query.append("UNION ALL ");
-        query.append("SELECT timestamp, positions.x, positions.y, positions.z, dimensions.dimension, ");
+        query.append("SELECT timestamp, count, positions.x, positions.y, positions.z, dimensions.dimension, ");
         query.append("NULL AS oldBlock, NULL AS newBlock, ");
         query.append("NULL as cause, sources.source, sources.sourceDesc, ");
         query.append("items.item, amount ");

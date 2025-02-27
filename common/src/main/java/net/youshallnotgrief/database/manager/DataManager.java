@@ -19,6 +19,9 @@ public abstract class DataManager<InsertData> extends TableManager<InsertData> {
     public abstract void appendJoinsToSQL(StringBuilder builder);
     public abstract InsertData mapDataFromResultSet(ResultSet set) throws SQLException;
 
+    protected abstract String getUpdateSQL();
+    protected abstract void setUpdatePreparedStatementValues(PreparedStatement preparedStatement, InsertData data) throws SQLException;
+
     protected abstract String getCountSQL();
     protected abstract String getCreateIndexSQL();
 
@@ -122,5 +125,40 @@ public abstract class DataManager<InsertData> extends TableManager<InsertData> {
                callback.accept(null);
            }
         });
+    }
+
+    @Override
+    public void commitTable(){
+        Connection database = DatabaseLifecycleManager.getDatabaseConnection();
+        if(database == null) {
+            return;
+        }
+
+        for (InsertData data : COMMITTING_QUEUED_DATA){
+            try (PreparedStatement updatePreparedStatement = database.prepareStatement(getUpdateSQL())) {
+                setUpdatePreparedStatementValues(updatePreparedStatement, data);
+                int updatedRows = updatePreparedStatement.executeUpdate();
+
+                if (updatedRows == 0){
+                    PreparedStatement insertPreparedStatement = database.prepareStatement(getInsertSQL());
+                    setInsertPreparedStatementValues(insertPreparedStatement, data);
+                    insertPreparedStatement.executeUpdate();
+                }
+
+                database.commit();
+            } catch (SQLException e) {
+                YouShallNotGriefMod.LOGGER.error("Error inserting or updating data in database:");
+                YouShallNotGriefMod.LOGGER.error(e.toString());
+                YouShallNotGriefMod.LOGGER.error(getUpdateSQL());
+                YouShallNotGriefMod.LOGGER.error(getInsertSQL());
+                try {
+                    database.rollback();
+                } catch (SQLException ex) {
+                    YouShallNotGriefMod.LOGGER.error("Error performing rollback of database:");
+                    YouShallNotGriefMod.LOGGER.error(ex.toString());
+                }
+            }
+        }
+        COMMITTING_QUEUED_DATA.clear();
     }
 }

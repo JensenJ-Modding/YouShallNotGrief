@@ -10,14 +10,16 @@ public class EntityItemTransactionData extends BaseData{
 
     public String entityUUID;
     public String item;
+    public int count;
     public int amount;
     public SourceData source;
 
     //Used for constructing insertion data
-    public EntityItemTransactionData(Timestamp timestamp, String entityUUID, String item, int amount, SourceData source) {
+    public EntityItemTransactionData(Timestamp timestamp, int count, String entityUUID, String item, int amount, SourceData source) {
         super(timestamp);
         this.entityUUID = entityUUID;
         this.item = item;
+        this.count = count;
         this.amount = amount;
         this.source = source;
     }
@@ -42,6 +44,6 @@ public class EntityItemTransactionData extends BaseData{
 
     @Override
     public Component formatDataForInspection() {
-        return InventoryUtils.formatDataForInspection(timestamp, item, amount, source);
+        return InventoryUtils.formatDataForInspection(timestamp, count, item, amount, source);
     }
 }
