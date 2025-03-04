@@ -23,7 +23,7 @@
     ]
   },
   "mixins": [
-    "youshallnotgrief.mixins.json",
+    "youshallnotgrief-fabric.mixins.json",
     "youshallnotgrief-common.mixins.json"
   ],
   "depends": {

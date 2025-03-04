@@ -21,9 +21,10 @@ base {
 
 loom {
     forge {
-        mixinConfig "youshallnotgrief-common.mixins.json"
-        mixinConfig "youshallnotgrief.mixins.json"
+        mixinConfig "${archives_name}-common.mixins.json"
+        mixinConfig "${archives_name}-forge.mixins.json"
     }
+    mixin.defaultRefmapName.set("${archives_name}-forge-refmap.json")
 }
 
 architectury {

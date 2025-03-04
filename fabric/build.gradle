@@ -26,6 +26,10 @@ repositories {
     }
 }
 
+loom {
+    mixin.defaultRefmapName.set("${archives_name}-fabric-refmap.json")
+}
+
 base {
     archivesName = archives_name + "-fabric"
 }

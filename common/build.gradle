@@ -8,6 +8,9 @@ repositories {
         url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
     }
 }
+loom {
+    mixin.defaultRefmapName.set("${archives_name}-common-refmap.json")
+}
 
 dependencies {
     // We depend on Fabric Loader here to use the Fabric @Environment annotations,
