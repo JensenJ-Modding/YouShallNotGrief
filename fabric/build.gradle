@@ -2,10 +2,6 @@ plugins {
     id 'com.github.johnrengelman.shadow'
 }
 
-architectury {
-    platformSetupLoomIde()
-    fabric()
-}
 repositories {
     maven { url = "https://mvn.devos.one/snapshots/" }
     maven { url = "https://mvn.devos.one/releases/" }
@@ -20,75 +16,15 @@ repositories {
             includeGroup("com.jozufozu.flywheel")
         }
     }
-    maven {
-        name = "Fuzs Mod Resources"
-        url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
-    }
-}
-
-loom {
-    mixin.defaultRefmapName.set("${archives_name}-fabric-refmap.json")
-}
-
-base {
-    archivesName = archives_name + "-fabric"
-}
-
-configurations {
-    common {
-        canBeResolved = true
-        canBeConsumed = false
-    }
-    compileClasspath.extendsFrom common
-    runtimeClasspath.extendsFrom common
-    developmentFabric.extendsFrom common
-
-    // Files in this configuration will be bundled into your mod using the Shadow plugin.
-    // Don't use the `shadow` configuration from the plugin itself as it's meant for excluding files.
-    shadowBundle {
-        canBeResolved = true
-        canBeConsumed = false
-    }
 }
 
 dependencies {
-    modImplementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
-
-    // Fabric API. This is technically optional, but you probably want it anyway.
-    modImplementation "net.fabricmc.fabric-api:fabric-api:$rootProject.fabric_api_version+$rootProject.minecraft_version"
-
-    // Architectury API. This is optional, and you can comment it out if you don't need it.
-    modImplementation "dev.architectury:architectury-fabric:$rootProject.architectury_api_version"
-
     // SQLite Driver
     implementation "org.xerial:sqlite-jdbc:$rootProject.sqlite_fabric_dev_version"
     include "maven.modrinth:sqlite-jdbc:${sqlite_version}"
 
-    // Config dependencies
-    implementation "com.electronwill.night-config:core:${night_config_version}"
-    implementation "com.electronwill.night-config:toml:${night_config_version}"
-    modApi "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${forge_config_api_port_version}"
-
     //Dependencies for testing
     modImplementation "com.simibubi.create:create-fabric-${minecraft_version}:${create_fabric_version}"
-
-    common(project(path: ':common', configuration: 'namedElements')) { transitive false }
-    shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
 }
 
-processResources {
-    inputs.property 'version', project.version
-
-    filesMatching('fabric.mod.json') {
-        expand version: project.version
-    }
-}
-
-shadowJar {
-    configurations = [project.configurations.shadowBundle]
-    archiveClassifier = 'dev-shadow'
-}
-
-remapJar {
-    input.set shadowJar.archiveFile
-}
+apply from: 'https://raw.githubusercontent.com/JensenJ-Modding/Mod-Resources/refs/heads/main/1.20.1/Gradle/fabric-build.gradle'
