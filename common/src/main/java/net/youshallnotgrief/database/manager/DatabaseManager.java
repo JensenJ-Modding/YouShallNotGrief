@@ -1,14 +1,5 @@
 package net.youshallnotgrief.database.manager;
 
-import net.minecraft.world.level.Level;
-import net.youshallnotgrief.YouShallNotGriefMod;
-import net.youshallnotgrief.database.data.BaseData;
-import net.youshallnotgrief.database.tables.BlockDataManager;
-import net.youshallnotgrief.database.tables.BlockItemTransactionDataManager;
-import net.youshallnotgrief.database.tables.EntityItemTransactionDataManager;
-import net.youshallnotgrief.database.tables.foreign.*;
-import net.youshallnotgrief.inspection.InspectionMode;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
@@ -18,58 +9,73 @@ import java.util.ArrayList;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import net.minecraft.world.level.Level;
+
+import net.youshallnotgrief.YouShallNotGriefMod;
+import net.youshallnotgrief.database.data.BaseData;
+import net.youshallnotgrief.database.tables.BlockDataManager;
+import net.youshallnotgrief.database.tables.BlockItemTransactionDataManager;
+import net.youshallnotgrief.database.tables.EntityItemTransactionDataManager;
+import net.youshallnotgrief.database.tables.foreign.*;
+import net.youshallnotgrief.inspection.InspectionMode;
+
 public class DatabaseManager {
 
     private static int QUEUE_SIZE = 0;
     protected static int MAX_QUEUE_SIZE = 50;
     private static final AtomicBoolean isCommitting = new AtomicBoolean(false);
-    //TODO: possibly update in future so that it's a map of player to query, allowing multiple people to query at once, this mainly exists to stop queueing loads of queries to the DB, if players are unaware it's loading.
+    // TODO: possibly update in future so that it's a map of player to query, allowing multiple people to query at once,
+    // this mainly exists to stop queueing loads of queries to the DB, if players are unaware it's loading.
     public static final AtomicBoolean isQuerying = new AtomicBoolean(false);
 
     private static final ArrayList<DataManager<?>> DATA_MANAGERS = new ArrayList<>();
     public static final BlockDataManager BLOCK_DATA_MANAGER = registerDataManager(new BlockDataManager());
-    public static final BlockItemTransactionDataManager BLOCK_ITEM_TRANSACTION_DATA_MANAGER = registerDataManager(new BlockItemTransactionDataManager());
-    public static final EntityItemTransactionDataManager ENTITY_ITEM_TRANSACTION_DATA_MANAGER = registerDataManager(new EntityItemTransactionDataManager());
+    public static final BlockItemTransactionDataManager BLOCK_ITEM_TRANSACTION_DATA_MANAGER =
+            registerDataManager(new BlockItemTransactionDataManager());
+    public static final EntityItemTransactionDataManager ENTITY_ITEM_TRANSACTION_DATA_MANAGER =
+            registerDataManager(new EntityItemTransactionDataManager());
 
     private static final ArrayList<ForeignTableManager<?>> TABLE_MANAGERS = new ArrayList<>();
     public static final PositionTableManager POSITION_TABLE_MANAGER = registerTableManager(new PositionTableManager());
-    public static final DimensionTableManager DIMENSION_TABLE_MANAGER = registerTableManager(new DimensionTableManager());
+    public static final DimensionTableManager DIMENSION_TABLE_MANAGER =
+            registerTableManager(new DimensionTableManager());
     public static final BlockTableManager BLOCK_TABLE_MANAGER = registerTableManager(new BlockTableManager());
     public static final ItemTableManager ITEM_TABLE_MANAGER = registerTableManager(new ItemTableManager());
     public static final EntityTableManager ENTITY_TABLE_MANAGER = registerTableManager(new EntityTableManager());
     public static final CauseTableManager CAUSE_TABLE_MANAGER = registerTableManager(new CauseTableManager());
     public static final SourceTableManager SOURCE_TABLE_MANAGER = registerTableManager(new SourceTableManager());
 
-    protected static <Table extends ForeignTableManager<?>> Table registerTableManager(Table manager){
+    protected static <Table extends ForeignTableManager<?>> Table registerTableManager(Table manager) {
         TABLE_MANAGERS.add(manager);
         return manager;
     }
 
-    protected static <Table extends DataManager<?>> Table registerDataManager(Table manager){
+    protected static <Table extends DataManager<?>> Table registerDataManager(Table manager) {
         DATA_MANAGERS.add(manager);
         return manager;
     }
 
-    public static void addToDatabase(BaseData data, Level level){
-        if(level.isClientSide()){
-            throw new IllegalStateException("Failed to add data to Database Queue. addToDatabase called from clientside." + data);
+    public static void addToDatabase(BaseData data, Level level) {
+        if (level.isClientSide()) {
+            throw new IllegalStateException(
+                    "Failed to add data to Database Queue. addToDatabase called from clientside." + data);
         }
         QUEUE_SIZE++;
         data.queueForeignTables();
         data.queue();
 
-        if((QUEUE_SIZE >= MAX_QUEUE_SIZE || !InspectionMode.INSPECTING_PLAYERS.isEmpty())) {
+        if ((QUEUE_SIZE >= MAX_QUEUE_SIZE || !InspectionMode.INSPECTING_PLAYERS.isEmpty())) {
             commitQueuedToDatabase();
         }
     }
 
-    public static void commitQueuedToDatabase(){
+    public static void commitQueuedToDatabase() {
         try {
-            if(QUEUE_SIZE == 0){
+            if (QUEUE_SIZE == 0) {
                 return;
             }
 
-            if(isCommitting.compareAndSet(false, true)) {
+            if (isCommitting.compareAndSet(false, true)) {
                 if (DatabaseLifecycleManager.executorService == null) {
                     return;
                 }
@@ -92,17 +98,17 @@ public class DatabaseManager {
                     isCommitting.set(false);
                 });
             }
-        } catch (RejectedExecutionException e){
+        } catch (RejectedExecutionException e) {
             YouShallNotGriefMod.LOGGER.error("Failed to commit queued data to database. Task could not be scheduled.");
             YouShallNotGriefMod.LOGGER.error(e.toString());
         }
     }
 
-    public static void clearCaches(){
+    public static void clearCaches() {
         TABLE_MANAGERS.forEach(ForeignTableManager::clearCache);
     }
 
-    protected static void startupQueries(){
+    protected static void startupQueries() {
         Path dbPath = Paths.get(DatabaseLifecycleManager.getDatabaseWorldPath());
         Path tempPath = dbPath.resolve("temp");
         executeSetupQuery("PRAGMA temp_store_directory = '" + tempPath + "';");
@@ -111,14 +117,14 @@ public class DatabaseManager {
         DATA_MANAGERS.forEach((manager) -> executeSetupQuery(manager.getCreateIndexSQL()));
     }
 
-    private static void executeSetupQuery(String query){
+    private static void executeSetupQuery(String query) {
         Connection database = DatabaseLifecycleManager.getDatabaseConnection();
-        if(database == null) {
+        if (database == null) {
             return;
         }
-        try(Statement statement = database.createStatement()){
-             statement.execute(query);
-        }catch(SQLException e){
+        try (Statement statement = database.createStatement()) {
+            statement.execute(query);
+        } catch (SQLException e) {
             YouShallNotGriefMod.LOGGER.error(e.toString());
             YouShallNotGriefMod.LOGGER.error(query);
         }

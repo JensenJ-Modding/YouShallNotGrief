@@ -1,35 +1,61 @@
 package net.youshallnotgrief.mixin.fabric;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
+
 import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.database.data.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(value = HoeItem.class, priority = 10100)
 public abstract class HoeItemMixin {
 
-    @WrapOperation(method = "method_36984", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
-    private static boolean youshallnotgrief$logHoeInteraction1(Level level, BlockPos pos, BlockState state, int i, Operation<Boolean> original, @Local(argsOnly = true) UseOnContext context) {
+    @WrapOperation(
+            method = "method_36984",
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/world/level/Level;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
+    private static boolean youshallnotgrief$logHoeInteraction1(
+            Level level,
+            BlockPos pos,
+            BlockState state,
+            int i,
+            Operation<Boolean> original,
+            @Local(argsOnly = true) UseOnContext context) {
         return BlockUtils.wrapLevelSetBlock(level, pos, state, i, original, oldState -> {
-            if(ServerConfig.logPloughing.get()) {
+            if (ServerConfig.logPloughing.get()) {
                 BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.PLOUGHED, context.getPlayer(), "");
             }
         });
     }
 
-    @WrapOperation(method = "method_36986", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
-    private static boolean youshallnotgrief$logHoeInteraction2(Level level, BlockPos pos, BlockState state, int i, Operation<Boolean> original, @Local(argsOnly = true) UseOnContext context) {
+    @WrapOperation(
+            method = "method_36986",
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/world/level/Level;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
+    private static boolean youshallnotgrief$logHoeInteraction2(
+            Level level,
+            BlockPos pos,
+            BlockState state,
+            int i,
+            Operation<Boolean> original,
+            @Local(argsOnly = true) UseOnContext context) {
         return BlockUtils.wrapLevelSetBlock(level, pos, state, i, original, oldState -> {
-            if(ServerConfig.logPloughing.get()) {
+            if (ServerConfig.logPloughing.get()) {
                 BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.PLOUGHED, context.getPlayer(), "");
             }
         });

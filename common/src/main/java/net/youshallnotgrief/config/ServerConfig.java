@@ -15,12 +15,12 @@ public class ServerConfig {
     private static final String CATEGORY_MOB = "mobs";
     private static final String CATEGORY_INTERACTION = "interaction";
 
-    //Database settings
+    // Database settings
     public static final ForgeConfigSpec.ConfigValue<Integer> databaseThreadCount;
     public static final ForgeConfigSpec.ConfigValue<Integer> databaseQueueSize;
     public static final ForgeConfigSpec.ConfigValue<Integer> databaseMergeTime;
 
-    //Inspection settings
+    // Inspection settings
     public static final ForgeConfigSpec.ConfigValue<String> inspectionPrimaryColour;
     public static final ForgeConfigSpec.ConfigValue<String> inspectionSecondaryColour;
     public static final ForgeConfigSpec.ConfigValue<String> inspectionBackgroundColour;
@@ -29,17 +29,17 @@ public class ServerConfig {
     public static final ForgeConfigSpec.ConfigValue<String> inspectionFullTimeFormat;
     public static final ForgeConfigSpec.ConfigValue<Boolean> inspectionOpNeeded;
 
-    //Debug settings
+    // Debug settings
     public static final ForgeConfigSpec.ConfigValue<Boolean> debugLogUnhandledBlockSets;
     public static final ForgeConfigSpec.ConfigValue<Boolean> debugLogMultipleTimes;
 
-    //Player block logging
+    // Player block logging
     public static final ForgeConfigSpec.ConfigValue<Boolean> logBlockPlacement;
     public static final ForgeConfigSpec.ConfigValue<Boolean> logBlockBreaking;
     public static final ForgeConfigSpec.ConfigValue<Boolean> logContainerAccesses;
     public static final ForgeConfigSpec.ConfigValue<Boolean> logBlockEntityInteractions;
 
-    //Mob block logging
+    // Mob block logging
     public static final ForgeConfigSpec.ConfigValue<Boolean> logBlockTrampling;
     public static final ForgeConfigSpec.ConfigValue<Boolean> logMobHatching;
     public static final ForgeConfigSpec.ConfigValue<Boolean> logMobInfestingBlock;
@@ -54,7 +54,7 @@ public class ServerConfig {
     public static final ForgeConfigSpec.ConfigValue<Boolean> logBlazeFireball;
     public static final ForgeConfigSpec.ConfigValue<Boolean> logFrostWalker;
 
-    //Non mob block logging
+    // Non mob block logging
     public static final ForgeConfigSpec.ConfigValue<Boolean> logEndFight;
     public static final ForgeConfigSpec.ConfigValue<Boolean> logPlantGrowth;
     public static final ForgeConfigSpec.ConfigValue<Boolean> logUnsupportedBlocks;
@@ -72,7 +72,7 @@ public class ServerConfig {
     public static final ForgeConfigSpec.ConfigValue<Boolean> logFallbackLevelSets;
     public static final ForgeConfigSpec.ConfigValue<Boolean> logModdedLevelSets;
 
-    //Player interaction logging
+    // Player interaction logging
     public static final ForgeConfigSpec.ConfigValue<Boolean> logFlintAndSteel;
     public static final ForgeConfigSpec.ConfigValue<Boolean> logWaxing;
     public static final ForgeConfigSpec.ConfigValue<Boolean> logScraping;
@@ -82,7 +82,7 @@ public class ServerConfig {
     public static final ForgeConfigSpec.ConfigValue<Boolean> logAnvilUse;
     public static final ForgeConfigSpec.ConfigValue<Boolean> logDragonEggTeleportation;
 
-    //Interaction logging
+    // Interaction logging
     public static final ForgeConfigSpec.ConfigValue<Boolean> logProjectileLightBlock;
 
     static {
@@ -91,40 +91,50 @@ public class ServerConfig {
         BUILDER.comment("Database Settings").push(CATEGORY_DATABASE);
         databaseThreadCount = BUILDER.comment("Number of threads the mod should use at any one time. [Default: 2]")
                 .defineInRange("databaseThreadCount", 2, 1, 8);
-        databaseQueueSize = BUILDER.comment("Number of interactions the mod should queue before committing it into the database. [Default: 50]")
+        databaseQueueSize = BUILDER.comment(
+                        "Number of interactions the mod should queue before committing it into the database. [Default: 50]")
                 .defineInRange("databaseQueueSize", 50, 1, Integer.MAX_VALUE);
-        databaseMergeTime = BUILDER.comment("If a similar interaction within this timeframe occurs, it is merged together. [Default: 20]")
+        databaseMergeTime = BUILDER.comment(
+                        "If a similar interaction within this timeframe occurs, it is merged together. [Default: 20]")
                 .defineInRange("databaseMergeTime", 20, 1, Integer.MAX_VALUE);
         BUILDER.pop();
 
         BUILDER.comment("Inspection mode settings").push(CATEGORY_INSPECTION);
-        inspectionTimePrecision = BUILDER.comment("Number of decimal points to use when displaying time information [Default: 2]")
+        inspectionTimePrecision = BUILDER.comment(
+                        "Number of decimal points to use when displaying time information [Default: 2]")
                 .defineInRange("inspectionTimePrecision", 2, 1, 4);
-        inspectionFullTimeFormat = BUILDER.comment("Full format of time to use when hovering over time value [Default: dd/MM/yyyy - HH:mm:ss]")
+        inspectionFullTimeFormat = BUILDER.comment(
+                        "Full format of time to use when hovering over time value [Default: dd/MM/yyyy - HH:mm:ss]")
                 .define("inspectionFullTimeFormat", "dd/MM/yyyy - HH:mm:ss");
         inspectionPrimaryColour = BUILDER.comment("Primary text colour used when in inspection mode [Default: #FFAA00]")
                 .define("inspectionPrimaryColour", "#FFAA00");
-        inspectionSecondaryColour = BUILDER.comment("Secondary text colour used when in inspection mode [Default: #BA9B5D]")
+        inspectionSecondaryColour = BUILDER.comment(
+                        "Secondary text colour used when in inspection mode [Default: #BA9B5D]")
                 .define("inspectionSecondaryColour", "#BA9B5D");
-        inspectionBackgroundColour = BUILDER.comment("Background text colour used when in inspection mode [Default: #FFFFFF]")
+        inspectionBackgroundColour = BUILDER.comment(
+                        "Background text colour used when in inspection mode [Default: #FFFFFF]")
                 .define("inspectionBackgroundColour", "#FFFFFF");
         inspectionErrorColour = BUILDER.comment("Error text colour used when in inspection mode [Default: #ff5555]")
                 .define("inspectionErrorColour", "#ff5555");
-        inspectionOpNeeded = BUILDER.comment("Whether only server operators can use inspection mode and it's commands. [Default: true]")
+        inspectionOpNeeded = BUILDER.comment(
+                        "Whether only server operators can use inspection mode and it's commands. [Default: true]")
                 .define("inspectionOpNeeded", true);
         BUILDER.pop();
 
         BUILDER.comment("Dev/debug settings").push(CATEGORY_DEBUG);
-        debugLogUnhandledBlockSets = BUILDER.comment("Should calls to Level.setBlock not wrapped by the mod be logged to console? [Default: false]")
+        debugLogUnhandledBlockSets = BUILDER.comment(
+                        "Should calls to Level.setBlock not wrapped by the mod be logged to console? [Default: false]")
                 .define("debugLogUnhandledBlockSets", false);
-        debugLogMultipleTimes = BUILDER.comment("Should console logs of the same type be logged beyond the first occurrence? [Default: false]")
+        debugLogMultipleTimes = BUILDER.comment(
+                        "Should console logs of the same type be logged beyond the first occurrence? [Default: false]")
                 .define("debugLogMultipleTimes", false);
         BUILDER.pop();
 
         BUILDER.push(CATEGORY_LOGGING);
-        BUILDER.comment("Block logging settings, by default everything is logged").push(CATEGORY_BLOCK);
+        BUILDER.comment("Block logging settings, by default everything is logged")
+                .push(CATEGORY_BLOCK);
 
-        //Player block logging
+        // Player block logging
         BUILDER.push(CATEGORY_PLAYER);
         logBlockPlacement = BUILDER.define("logBlockPlacement", true);
         logBlockBreaking = BUILDER.define("logBlockBreaking", true);
@@ -133,7 +143,7 @@ public class ServerConfig {
 
         BUILDER.pop();
 
-        //Mob block logging
+        // Mob block logging
         BUILDER.push(CATEGORY_MOB);
         logEndFight = BUILDER.define("logEndFight", true);
         logBlockTrampling = BUILDER.define("logBlockTrampling", true);
@@ -151,7 +161,7 @@ public class ServerConfig {
 
         BUILDER.pop();
 
-        //Non mob block logging
+        // Non mob block logging
         logPlantGrowth = BUILDER.define("logPlantGrowth", true);
         logUnsupportedBlocks = BUILDER.define("logUnsupportedBlocks", true);
         logAmethystGrowth = BUILDER.define("logAmethystGrowth", true);
@@ -169,7 +179,8 @@ public class ServerConfig {
         logModdedLevelSets = BUILDER.define("logModdedLevelSets", true);
         BUILDER.pop();
 
-        BUILDER.comment("Interaction logging settings, by default everything is logged.").push(CATEGORY_INTERACTION);
+        BUILDER.comment("Interaction logging settings, by default everything is logged.")
+                .push(CATEGORY_INTERACTION);
         BUILDER.push(CATEGORY_PLAYER);
         logFlintAndSteel = BUILDER.define("logFlintAndSteel", true);
         logWaxing = BUILDER.define("logWaxing", true);

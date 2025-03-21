@@ -1,9 +1,5 @@
 package net.youshallnotgrief.database.manager;
 
-import net.youshallnotgrief.YouShallNotGriefMod;
-import net.youshallnotgrief.database.data.CombinedBlockData;
-import net.youshallnotgrief.inspection.RetrieveResult;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,12 +8,17 @@ import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.function.BiConsumer;
 
-//TODO: REFACTOR CLASS
+import net.youshallnotgrief.YouShallNotGriefMod;
+import net.youshallnotgrief.database.data.CombinedBlockData;
+import net.youshallnotgrief.inspection.RetrieveResult;
+
+// TODO: REFACTOR CLASS
 public class DatabaseBlockQueryManager {
 
-    private static int getCountFromDatabase(CombinedBlockData data, Connection database){
+    private static int getCountFromDatabase(CombinedBlockData data, Connection database) {
         int count = DatabaseManager.BLOCK_DATA_MANAGER.getCountFromDatabase(data.blockData, database);
-        count += DatabaseManager.BLOCK_ITEM_TRANSACTION_DATA_MANAGER.getCountFromDatabase(data.blockItemTransactionData, database);
+        count += DatabaseManager.BLOCK_ITEM_TRANSACTION_DATA_MANAGER.getCountFromDatabase(
+                data.blockItemTransactionData, database);
         return count;
     }
 
@@ -47,7 +48,8 @@ public class DatabaseBlockQueryManager {
         return query.toString();
     }
 
-    protected static void setRetrievePreparedStatementValues(PreparedStatement preparedStatement, CombinedBlockData data, int limit, int offset) throws SQLException {
+    protected static void setRetrievePreparedStatementValues(
+            PreparedStatement preparedStatement, CombinedBlockData data, int limit, int offset) throws SQLException {
         preparedStatement.setInt(1, data.blockData.position.getX());
         preparedStatement.setInt(2, data.blockData.position.getY());
         preparedStatement.setInt(3, data.blockData.position.getZ());
@@ -63,10 +65,13 @@ public class DatabaseBlockQueryManager {
     }
 
     private static CombinedBlockData mapDataFromResultSet(ResultSet set) throws SQLException {
-        return new CombinedBlockData(DatabaseManager.BLOCK_DATA_MANAGER.mapDataFromResultSet(set), DatabaseManager.BLOCK_ITEM_TRANSACTION_DATA_MANAGER.mapDataFromResultSet(set));
+        return new CombinedBlockData(
+                DatabaseManager.BLOCK_DATA_MANAGER.mapDataFromResultSet(set),
+                DatabaseManager.BLOCK_ITEM_TRANSACTION_DATA_MANAGER.mapDataFromResultSet(set));
     }
 
-    public static ArrayList<CombinedBlockData> getDataFromDatabase(CombinedBlockData data, Connection database, int limit, int offset){
+    public static ArrayList<CombinedBlockData> getDataFromDatabase(
+            CombinedBlockData data, Connection database, int limit, int offset) {
         ArrayList<CombinedBlockData> dataToReturn = new ArrayList<>();
         String retrieveQuery = getRetrieveSQL();
         try (PreparedStatement preparedStatement = database.prepareStatement(retrieveQuery)) {
@@ -76,7 +81,8 @@ public class DatabaseBlockQueryManager {
                 try {
                     dataToReturn.add(mapDataFromResultSet(set));
                 } catch (SQLException e) {
-                    YouShallNotGriefMod.LOGGER.error("Error retrieving data from database when performing mapping data from result set.");
+                    YouShallNotGriefMod.LOGGER.error(
+                            "Error retrieving data from database when performing mapping data from result set.");
                     YouShallNotGriefMod.LOGGER.error(e.toString());
                     YouShallNotGriefMod.LOGGER.error(retrieveQuery);
                     return null;
@@ -91,10 +97,13 @@ public class DatabaseBlockQueryManager {
         return dataToReturn;
     }
 
-    //BiConsumer is a function to pass the returned data to, the boolean is whether a task is already running
-    public static void retrieveFromDatabase(CombinedBlockData data, int limit, int offset, BiConsumer<Boolean, RetrieveResult<CombinedBlockData>> callback) {
-        if(DatabaseLifecycleManager.executorService == null)
-            return;
+    // BiConsumer is a function to pass the returned data to, the boolean is whether a task is already running
+    public static void retrieveFromDatabase(
+            CombinedBlockData data,
+            int limit,
+            int offset,
+            BiConsumer<Boolean, RetrieveResult<CombinedBlockData>> callback) {
+        if (DatabaseLifecycleManager.executorService == null) return;
 
         Callable<RetrieveResult<CombinedBlockData>> task = () -> {
             Connection database = DatabaseLifecycleManager.getDatabaseConnection();
@@ -103,14 +112,14 @@ public class DatabaseBlockQueryManager {
             }
 
             int count = getCountFromDatabase(data, database);
-            if(count <= -1){
+            if (count <= -1) {
                 return null;
             }
             ArrayList<CombinedBlockData> dataToReturn = getDataFromDatabase(data, database, limit, offset);
             return new RetrieveResult<>(dataToReturn, count);
         };
 
-        if(DatabaseManager.isQuerying.compareAndSet(false, true)) {
+        if (DatabaseManager.isQuerying.compareAndSet(false, true)) {
             DatabaseLifecycleManager.executorService.submit(() -> {
                 try {
                     RetrieveResult<CombinedBlockData> result = task.call();
@@ -123,7 +132,7 @@ public class DatabaseBlockQueryManager {
                     callback.accept(false, null);
                 }
             });
-        }else{
+        } else {
             callback.accept(true, null);
         }
     }

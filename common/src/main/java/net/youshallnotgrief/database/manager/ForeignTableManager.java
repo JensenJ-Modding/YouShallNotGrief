@@ -1,9 +1,5 @@
 package net.youshallnotgrief.database.manager;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import net.youshallnotgrief.YouShallNotGriefMod;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,19 +8,25 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-public abstract class ForeignTableManager<InsertData> extends TableManager<InsertData>{
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import net.youshallnotgrief.YouShallNotGriefMod;
+
+public abstract class ForeignTableManager<InsertData> extends TableManager<InsertData> {
 
     private final Cache<InsertData, Integer> dataToDatabaseForeignKeyCache = CacheBuilder.newBuilder()
-            .maximumSize(50).expireAfterAccess(5, TimeUnit.MINUTES).build();
+            .maximumSize(50)
+            .expireAfterAccess(5, TimeUnit.MINUTES)
+            .build();
 
     @Override
-    public void onInsertionCompleted(){
+    public void onInsertionCompleted() {
         updateCachedForeignKeys();
     }
 
-    private void updateCachedForeignKeys(){
+    private void updateCachedForeignKeys() {
         for (InsertData data : COMMITTING_QUEUED_DATA) {
-            if(dataToDatabaseForeignKeyCache.asMap().containsKey(data)){
+            if (dataToDatabaseForeignKeyCache.asMap().containsKey(data)) {
                 continue;
             }
             mapForeignID(data, dataToDatabaseForeignKeyCache.asMap());
@@ -34,7 +36,8 @@ public abstract class ForeignTableManager<InsertData> extends TableManager<Inser
     public void mapForeignID(InsertData key, Map<InsertData, Integer> map) {
         Connection database = DatabaseLifecycleManager.getDatabaseConnection();
         if (database == null) {
-            YouShallNotGriefMod.LOGGER.error("Failed to get ID for {} when inserting. Database connection failed.", key);
+            YouShallNotGriefMod.LOGGER.error(
+                    "Failed to get ID for {} when inserting. Database connection failed.", key);
             YouShallNotGriefMod.LOGGER.error(getCacheQuerySQL());
             return;
         }
@@ -57,13 +60,13 @@ public abstract class ForeignTableManager<InsertData> extends TableManager<Inser
         });
     }
 
-    //Should be called when the database is closed, as caches may not be correct with a different world/server.
+    // Should be called when the database is closed, as caches may not be correct with a different world/server.
     public void clearCache() {
         dataToDatabaseForeignKeyCache.asMap().clear();
     }
 
-    public int getForeignKeyInDatabase(InsertData data){
-        //Map the foreign key into cache from the database if it doesn't exist
+    public int getForeignKeyInDatabase(InsertData data) {
+        // Map the foreign key into cache from the database if it doesn't exist
         mapForeignID(data, dataToDatabaseForeignKeyCache.asMap());
         return Objects.requireNonNullElse(dataToDatabaseForeignKeyCache.asMap().get(data), -1);
     }

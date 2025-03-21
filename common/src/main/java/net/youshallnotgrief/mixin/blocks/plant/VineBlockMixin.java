@@ -1,7 +1,5 @@
 package net.youshallnotgrief.mixin.blocks.plant;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -10,32 +8,57 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.VineBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.youshallnotgrief.config.ServerConfig;
-import net.youshallnotgrief.database.data.cause.BlockSetCauses;
-import net.youshallnotgrief.util.BlockUtils;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+
+import net.youshallnotgrief.config.ServerConfig;
+import net.youshallnotgrief.database.data.cause.BlockSetCauses;
+import net.youshallnotgrief.util.BlockUtils;
 
 @Mixin(value = VineBlock.class, priority = 10100)
 public class VineBlockMixin {
-    @WrapOperation(method="randomTick", at = @At(value="INVOKE", target="Lnet/minecraft/server/level/ServerLevel;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
-    private boolean youshallnotgrief$logVineGrowth(ServerLevel level, BlockPos pos, BlockState state, int i, Operation<Boolean> original) {
+    @WrapOperation(
+            method = "randomTick",
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/server/level/ServerLevel;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
+    private boolean youshallnotgrief$logVineGrowth(
+            ServerLevel level, BlockPos pos, BlockState state, int i, Operation<Boolean> original) {
         return BlockUtils.wrapLevelSetBlock(level, pos, state, i, original, oldState -> {
-            if(ServerConfig.logPlantGrowth.get()) {
+            if (ServerConfig.logPlantGrowth.get()) {
                 BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.GROW, null, "");
             }
         });
     }
 
-    @Inject(method="updateShape", at = @At(value="RETURN"))
-    private void youshallnotgrief$logVineBreak(BlockState blockState, Direction direction, BlockState blockState2, LevelAccessor levelAccessor, BlockPos blockPos, BlockPos blockPos2, CallbackInfoReturnable<BlockState> cir){
-        if(cir.getReturnValue() == Blocks.AIR.defaultBlockState()) {
-            if(!levelAccessor.isClientSide()){
-                if(levelAccessor instanceof Level level) {
-                    if(ServerConfig.logUnsupportedBlocks.get()) {
-                        BlockUtils.addToDatabase(blockPos, level, Blocks.VINE.defaultBlockState(), Blocks.AIR.defaultBlockState(), BlockSetCauses.UNSUPPORTED, null, "");
+    @Inject(method = "updateShape", at = @At(value = "RETURN"))
+    private void youshallnotgrief$logVineBreak(
+            BlockState blockState,
+            Direction direction,
+            BlockState blockState2,
+            LevelAccessor levelAccessor,
+            BlockPos blockPos,
+            BlockPos blockPos2,
+            CallbackInfoReturnable<BlockState> cir) {
+        if (cir.getReturnValue() == Blocks.AIR.defaultBlockState()) {
+            if (!levelAccessor.isClientSide()) {
+                if (levelAccessor instanceof Level level) {
+                    if (ServerConfig.logUnsupportedBlocks.get()) {
+                        BlockUtils.addToDatabase(
+                                blockPos,
+                                level,
+                                Blocks.VINE.defaultBlockState(),
+                                Blocks.AIR.defaultBlockState(),
+                                BlockSetCauses.UNSUPPORTED,
+                                null,
+                                "");
                     }
                 }
             }

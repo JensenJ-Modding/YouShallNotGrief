@@ -1,17 +1,18 @@
 package net.youshallnotgrief.database.manager;
 
-import dev.architectury.event.events.common.LifecycleEvent;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.level.storage.LevelResource;
-import net.youshallnotgrief.YouShallNotGriefMod;
-import net.youshallnotgrief.config.ServerConfig;
-
 import java.io.File;
 import java.sql.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.level.storage.LevelResource;
+
+import dev.architectury.event.events.common.LifecycleEvent;
+import net.youshallnotgrief.YouShallNotGriefMod;
+import net.youshallnotgrief.config.ServerConfig;
 
 public class DatabaseLifecycleManager {
 
@@ -21,7 +22,7 @@ public class DatabaseLifecycleManager {
     private static final AtomicInteger threadNumber = new AtomicInteger(1);
     public static ExecutorService executorService = null;
 
-    public static void registerLifecycleEvents(){
+    public static void registerLifecycleEvents() {
         LifecycleEvent.SERVER_STARTED.register((MinecraftServer server) -> {
             minecraftServer = server;
             threadNumber.set(1);
@@ -41,11 +42,12 @@ public class DatabaseLifecycleManager {
             minecraftServer = null;
             int threadTimeout = 10;
             executorService.shutdown();
-            YouShallNotGriefMod.LOGGER.info("Shutting down database threads. Waiting {} seconds before closing forcefully.", threadTimeout);
+            YouShallNotGriefMod.LOGGER.info(
+                    "Shutting down database threads. Waiting {} seconds before closing forcefully.", threadTimeout);
             try {
-                if(executorService.awaitTermination(threadTimeout, TimeUnit.SECONDS)){
+                if (executorService.awaitTermination(threadTimeout, TimeUnit.SECONDS)) {
                     YouShallNotGriefMod.LOGGER.info("Threads shut down gracefully.");
-                }else{
+                } else {
                     executorService.shutdownNow();
                     YouShallNotGriefMod.LOGGER.error("Threads were terminated as timeout expired.");
                 }
@@ -53,7 +55,7 @@ public class DatabaseLifecycleManager {
                 YouShallNotGriefMod.LOGGER.error("Thread shutdown was interrupted.");
             }
 
-            if(cachedDatabaseConnection == null){
+            if (cachedDatabaseConnection == null) {
                 return;
             }
 
@@ -70,12 +72,12 @@ public class DatabaseLifecycleManager {
     public static Connection getDatabaseConnection() {
         boolean isFirstConnection = cachedDatabaseConnection == null;
 
-        //If we already have a connection use that
-        if(cachedDatabaseConnection != null) {
+        // If we already have a connection use that
+        if (cachedDatabaseConnection != null) {
             try {
                 if (!cachedDatabaseConnection.isValid(3)) {
                     YouShallNotGriefMod.LOGGER.error("Database connection timed out. Attempting reconnection.");
-                }else{
+                } else {
                     return cachedDatabaseConnection;
                 }
             } catch (SQLException e) {
@@ -84,17 +86,17 @@ public class DatabaseLifecycleManager {
         }
 
         Connection connection = null;
-        if(minecraftServer == null) {
+        if (minecraftServer == null) {
             YouShallNotGriefMod.LOGGER.error("Tried to establish database connection when server was null.");
             return null;
         }
         try {
             File folder = new File(getDatabaseWorldPath() + "temp");
-            if(folder.exists() || folder.mkdirs()){
+            if (folder.exists() || folder.mkdirs()) {
                 String databasePath = "jdbc:sqlite:" + getDatabaseWorldPath() + YouShallNotGriefMod.MOD_ID + ".db";
                 connection = DriverManager.getConnection(databasePath);
                 connection.setAutoCommit(true);
-            }else{
+            } else {
                 YouShallNotGriefMod.LOGGER.error("Failed to create folder for database.");
             }
         } catch (SQLException e) {
@@ -105,8 +107,8 @@ public class DatabaseLifecycleManager {
 
         cachedDatabaseConnection = connection;
 
-        //First time connection setup
-        if(connection != null) {
+        // First time connection setup
+        if (connection != null) {
             if (isFirstConnection) {
                 YouShallNotGriefMod.LOGGER.info("Performing startup. This may take a while.");
                 DatabaseManager.startupQueries();
@@ -122,7 +124,7 @@ public class DatabaseLifecycleManager {
         return connection;
     }
 
-    public static String getDatabaseWorldPath(){
+    public static String getDatabaseWorldPath() {
         return minecraftServer.getWorldPath(LevelResource.ROOT).toAbsolutePath() + "/youshallnotgrief/";
     }
 }

@@ -1,7 +1,9 @@
 package net.youshallnotgrief.util;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import dev.architectury.registry.registries.Registrar;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.function.Consumer;
+
 import net.minecraft.ResourceLocationException;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -15,155 +17,215 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.youshallnotgrief.YouShallNotGriefMod;
-import net.youshallnotgrief.database.manager.DatabaseManager;
-import net.youshallnotgrief.database.data.BlockData;
-import net.youshallnotgrief.database.data.SourceData;
-import net.youshallnotgrief.database.data.cause.BlockSetCause;
-import net.youshallnotgrief.util.mixin.MixinDataHolder;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.function.Consumer;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.BED_PART;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.DOUBLE_BLOCK_HALF;
 
+import dev.architectury.registry.registries.Registrar;
+import net.youshallnotgrief.YouShallNotGriefMod;
+import net.youshallnotgrief.database.data.BlockData;
+import net.youshallnotgrief.database.data.SourceData;
+import net.youshallnotgrief.database.data.cause.BlockSetCause;
+import net.youshallnotgrief.database.manager.DatabaseManager;
+import net.youshallnotgrief.util.mixin.MixinDataHolder;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 public class BlockUtils {
 
-    private static final Registrar<Block> BLOCKS_REGISTRY = YouShallNotGriefMod.REGISTRY_MANAGER.get().get(Registries.BLOCK);
+    private static final Registrar<Block> BLOCKS_REGISTRY =
+            YouShallNotGriefMod.REGISTRY_MANAGER.get().get(Registries.BLOCK);
     private static boolean isPropagating = false;
 
-    public static String getBlockID(BlockState state){
+    public static String getBlockID(BlockState state) {
         ResourceLocation location = state.getBlock().arch$registryName();
         return location != null ? location.toString() : "";
     }
 
-    public static String getBlockName(BlockState state){
+    public static String getBlockName(BlockState state) {
         return state.getBlock().getName().getString();
     }
 
-    public static Block getBlockFromString(String resourceLocation){
-        try{
+    public static Block getBlockFromString(String resourceLocation) {
+        try {
             return BLOCKS_REGISTRY.get(new ResourceLocation(resourceLocation));
-        } catch (ResourceLocationException exception){
+        } catch (ResourceLocationException exception) {
             return null;
         }
     }
 
-    //Should be called after a call to level.setBlock has been made.
-    public static void addToDatabase(@NotNull BlockPos pos, @NotNull Level level, @NotNull BlockState oldState, @NotNull BlockState newState, @NotNull BlockSetCause cause, @Nullable Entity source, @NotNull String sourceDesc){
+    // Should be called after a call to level.setBlock has been made.
+    public static void addToDatabase(
+            @NotNull BlockPos pos,
+            @NotNull Level level,
+            @NotNull BlockState oldState,
+            @NotNull BlockState newState,
+            @NotNull BlockSetCause cause,
+            @Nullable Entity source,
+            @NotNull String sourceDesc) {
         String sourceText = "";
-        if(source != null){
+        if (source != null) {
             sourceText = EntityUtils.getEntityName(source);
         }
         addToDatabaseRaw(pos.immutable(), level, oldState, newState, cause, sourceText, sourceDesc);
     }
 
-    //Should be called after a call to level.setBlock has been made
-    public static void addToDatabaseRaw(@NotNull BlockPos pos, @NotNull Level level, @NotNull BlockState oldState, @NotNull BlockState newState, @NotNull BlockSetCause cause, @NotNull String source, @NotNull String sourceDesc){
+    // Should be called after a call to level.setBlock has been made
+    public static void addToDatabaseRaw(
+            @NotNull BlockPos pos,
+            @NotNull Level level,
+            @NotNull BlockState oldState,
+            @NotNull BlockState newState,
+            @NotNull BlockSetCause cause,
+            @NotNull String source,
+            @NotNull String sourceDesc) {
         propagateDatabaseInteraction(pos.immutable(), level, oldState, newState, cause, source, sourceDesc);
-        BlockData data = new BlockData(Timestamp.valueOf(LocalDateTime.now()), 1, pos.immutable(), MiscUtils.getDimensionIDFromLevel(level), getBlockID(oldState), getBlockID(newState), cause.getDatabaseTag(), new SourceData(source, sourceDesc));
+        BlockData data = new BlockData(
+                Timestamp.valueOf(LocalDateTime.now()),
+                1,
+                pos.immutable(),
+                MiscUtils.getDimensionIDFromLevel(level),
+                getBlockID(oldState),
+                getBlockID(newState),
+                cause.getDatabaseTag(),
+                new SourceData(source, sourceDesc));
         DatabaseManager.addToDatabase(data, level);
     }
 
-    //Used by mixins to ensure that setBlock was actually successful before recording changes.
-    public static boolean wrapLevelSetBlock(LevelAccessor level, BlockPos pos, BlockState state, int i, Operation<Boolean> originalSet, Consumer<BlockState> callback)
-    {
+    // Used by mixins to ensure that setBlock was actually successful before recording changes.
+    public static boolean wrapLevelSetBlock(
+            LevelAccessor level,
+            BlockPos pos,
+            BlockState state,
+            int i,
+            Operation<Boolean> originalSet,
+            Consumer<BlockState> callback) {
         MixinDataHolder.wasLevelSetTracked = true;
         BlockState oldState = level.getBlockState(pos);
         boolean wasSet = originalSet.call(level, pos, state, i);
-        if(wasSet){
-            if(!level.isClientSide()) {
+        if (wasSet) {
+            if (!level.isClientSide()) {
                 callback.accept(oldState);
             }
         }
         return wasSet;
     }
 
-    //Used by mixins to ensure that setBlockAndUpdate was actually successful before recording changes.
-    public static boolean wrapLevelSetBlockAndUpdate(LevelAccessor level, BlockPos pos, BlockState state, Operation<Boolean> originalSet, Consumer<BlockState> callback)
-    {
+    // Used by mixins to ensure that setBlockAndUpdate was actually successful before recording changes.
+    public static boolean wrapLevelSetBlockAndUpdate(
+            LevelAccessor level,
+            BlockPos pos,
+            BlockState state,
+            Operation<Boolean> originalSet,
+            Consumer<BlockState> callback) {
         MixinDataHolder.wasLevelSetTracked = true;
         BlockState oldState = level.getBlockState(pos);
         boolean wasSet = originalSet.call(level, pos, state);
-        if(wasSet){
-            if(!level.isClientSide()) {
+        if (wasSet) {
+            if (!level.isClientSide()) {
                 callback.accept(oldState);
             }
         }
         return wasSet;
     }
 
-    //Used by mixins to ensure that removeBlock was actually successful before recording changes.
-    public static boolean wrapLevelRemoveBlock(Level level, BlockPos pos, boolean b, Operation<Boolean> originalRemove, Consumer<BlockState> callback)
-    {
+    // Used by mixins to ensure that removeBlock was actually successful before recording changes.
+    public static boolean wrapLevelRemoveBlock(
+            Level level, BlockPos pos, boolean b, Operation<Boolean> originalRemove, Consumer<BlockState> callback) {
         MixinDataHolder.wasLevelSetTracked = true;
         BlockState oldState = level.getBlockState(pos);
         boolean wasSet = originalRemove.call(level, pos, b);
-        if(wasSet){
-            if(!level.isClientSide()) {
+        if (wasSet) {
+            if (!level.isClientSide()) {
                 callback.accept(oldState);
             }
         }
         return wasSet;
     }
 
-    public static boolean wrapLevelDestroyBlock(Level level, BlockPos pos, boolean b, Entity entity, Operation<Boolean> originalRemove, Consumer<BlockState> callback)
-    {
+    public static boolean wrapLevelDestroyBlock(
+            Level level,
+            BlockPos pos,
+            boolean b,
+            Entity entity,
+            Operation<Boolean> originalRemove,
+            Consumer<BlockState> callback) {
         MixinDataHolder.wasLevelSetTracked = true;
         BlockState oldState = level.getBlockState(pos);
         boolean wasSet = originalRemove.call(level, pos, b, entity);
-        if(wasSet){
-            if(!level.isClientSide()) {
+        if (wasSet) {
+            if (!level.isClientSide()) {
                 callback.accept(oldState);
             }
         }
         return wasSet;
     }
 
-    //This function is used to copy the details of one block interaction into another blockPos, useful for blocks which lazily update state on next block update, such as doors, plants and beds
-    private static void propagateDatabaseInteraction(BlockPos pos, Level level, BlockState oldState, BlockState newState, BlockSetCause cause, String source, String sourceDesc){
-        if(isPropagating){
+    // This function is used to copy the details of one block interaction into another blockPos, useful for blocks which
+    // lazily update state on next block update, such as doors, plants and beds
+    private static void propagateDatabaseInteraction(
+            BlockPos pos,
+            Level level,
+            BlockState oldState,
+            BlockState newState,
+            BlockSetCause cause,
+            String source,
+            String sourceDesc) {
+        if (isPropagating) {
             return;
         }
-        //This runs after the main block interaction has been made, so oldState and newState may not be state accurate, but will be block accurate
+        // This runs after the main block interaction has been made, so oldState and newState may not be state accurate,
+        // but will be block accurate
         isPropagating = true;
         handleTallBlockInteraction(level, pos, oldState, newState, cause, source, sourceDesc);
         handleBedBlockInteraction(level, pos, oldState, newState, cause, source, sourceDesc);
         isPropagating = false;
     }
 
-    //Helper method to work out which block in an interaction has a desired property, if any
-    private static BlockState isValidState(BlockState oldState, BlockState newState, EnumProperty<?> property){
-        if(oldState.hasProperty(property)){
+    // Helper method to work out which block in an interaction has a desired property, if any
+    private static BlockState isValidState(BlockState oldState, BlockState newState, EnumProperty<?> property) {
+        if (oldState.hasProperty(property)) {
             return oldState;
         }
-        if(newState.hasProperty(property)){
+        if (newState.hasProperty(property)) {
             return newState;
         }
         return null;
     }
 
-    private static void handleTallBlockInteraction(Level level, BlockPos pos, BlockState oldState, BlockState newState, BlockSetCause cause, String source, String sourceDesc){
+    private static void handleTallBlockInteraction(
+            Level level,
+            BlockPos pos,
+            BlockState oldState,
+            BlockState newState,
+            BlockSetCause cause,
+            String source,
+            String sourceDesc) {
         BlockState state = isValidState(oldState, newState, DOUBLE_BLOCK_HALF);
-        if(state == null){
+        if (state == null) {
             return;
         }
 
         DoubleBlockHalf doubleBlockHalf = state.getValue(DOUBLE_BLOCK_HALF);
-        if(doubleBlockHalf == DoubleBlockHalf.LOWER){
+        if (doubleBlockHalf == DoubleBlockHalf.LOWER) {
             addToDatabaseRaw(pos.above(), level, oldState, newState, cause, source, sourceDesc);
-        }else{
+        } else {
             addToDatabaseRaw(pos.below(), level, oldState, newState, cause, source, sourceDesc);
         }
     }
 
-    private static void handleBedBlockInteraction(Level level, BlockPos pos, BlockState oldState, BlockState newState, BlockSetCause cause, String source, String sourceDesc){
+    private static void handleBedBlockInteraction(
+            Level level,
+            BlockPos pos,
+            BlockState oldState,
+            BlockState newState,
+            BlockSetCause cause,
+            String source,
+            String sourceDesc) {
         BlockState state = isValidState(oldState, newState, BED_PART);
-        if(state == null){
+        if (state == null) {
             return;
         }
 

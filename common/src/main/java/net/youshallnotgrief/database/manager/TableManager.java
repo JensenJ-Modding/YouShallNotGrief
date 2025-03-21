@@ -1,12 +1,12 @@
 package net.youshallnotgrief.database.manager;
 
-import net.youshallnotgrief.YouShallNotGriefMod;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+
+import net.youshallnotgrief.YouShallNotGriefMod;
 
 public abstract class TableManager<InsertData> {
 
@@ -17,16 +17,17 @@ public abstract class TableManager<InsertData> {
         QUEUED_DATA.add(data);
     }
 
-    //This copies the contents of queued into a commiting array so we don't conflict with main-thread operations while committing the table
-    public void prepareToCommitTable(){
+    // This copies the contents of queued into a commiting array so we don't conflict with main-thread operations while
+    // committing the table
+    public void prepareToCommitTable() {
         COMMITTING_QUEUED_DATA = new ArrayList<>(QUEUED_DATA);
         QUEUED_DATA.clear();
     }
 
-    //Called on database thread
-    public void commitTable(){
+    // Called on database thread
+    public void commitTable() {
         Connection database = DatabaseLifecycleManager.getDatabaseConnection();
-        if(database == null) {
+        if (database == null) {
             return;
         }
         try (PreparedStatement preparedStatement = database.prepareStatement(getInsertSQL())) {
@@ -54,7 +55,11 @@ public abstract class TableManager<InsertData> {
     }
 
     protected void onInsertionCompleted() {}
+
     public abstract String getCreateTableSQL();
+
     protected abstract String getInsertSQL();
-    protected abstract void setInsertPreparedStatementValues(PreparedStatement preparedStatement, InsertData data) throws SQLException;
+
+    protected abstract void setInsertPreparedStatementValues(PreparedStatement preparedStatement, InsertData data)
+            throws SQLException;
 }

@@ -1,20 +1,22 @@
 package net.youshallnotgrief.mixin.entity;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.monster.Silverfish;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.youshallnotgrief.config.ServerConfig;
-import net.youshallnotgrief.database.data.cause.BlockSetCauses;
-import net.youshallnotgrief.util.BlockUtils;
-import net.youshallnotgrief.util.EntityUtils;
+
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+
+import net.youshallnotgrief.config.ServerConfig;
+import net.youshallnotgrief.database.data.cause.BlockSetCauses;
+import net.youshallnotgrief.util.BlockUtils;
+import net.youshallnotgrief.util.EntityUtils;
 
 @Mixin(targets = "net.minecraft.world.entity.monster.Silverfish$SilverfishWakeUpFriendsGoal", priority = 10100)
 public class SilverfishWakeUpFriendsGoalMixin {
@@ -23,12 +25,26 @@ public class SilverfishWakeUpFriendsGoalMixin {
     @Shadow
     private Silverfish silverfish;
 
-    @WrapOperation(method="tick", at = @At(value="INVOKE", target="Lnet/minecraft/world/level/Level;destroyBlock(Lnet/minecraft/core/BlockPos;ZLnet/minecraft/world/entity/Entity;)Z"))
-    private boolean youshallnotgrief$logSilverfishHatchBlock(Level level, BlockPos pos, boolean b, Entity entity, Operation<Boolean> original) {
+    @WrapOperation(
+            method = "tick",
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/world/level/Level;destroyBlock(Lnet/minecraft/core/BlockPos;ZLnet/minecraft/world/entity/Entity;)Z"))
+    private boolean youshallnotgrief$logSilverfishHatchBlock(
+            Level level, BlockPos pos, boolean b, Entity entity, Operation<Boolean> original) {
         String sourceDesc = EntityUtils.getSourceAndTargets(silverfish);
         return BlockUtils.wrapLevelDestroyBlock(level, pos, b, entity, original, oldState -> {
-            if(ServerConfig.logMobHatching.get()) {
-                BlockUtils.addToDatabase(pos, level, oldState, Blocks.AIR.defaultBlockState(), BlockSetCauses.HATCHED, silverfish, sourceDesc);
+            if (ServerConfig.logMobHatching.get()) {
+                BlockUtils.addToDatabase(
+                        pos,
+                        level,
+                        oldState,
+                        Blocks.AIR.defaultBlockState(),
+                        BlockSetCauses.HATCHED,
+                        silverfish,
+                        sourceDesc);
             }
         });
     }

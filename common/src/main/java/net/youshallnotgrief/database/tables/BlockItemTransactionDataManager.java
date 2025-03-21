@@ -1,32 +1,33 @@
 package net.youshallnotgrief.database.tables;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import net.minecraft.core.BlockPos;
+
 import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.database.data.BlockItemTransactionData;
 import net.youshallnotgrief.database.data.SourceData;
 import net.youshallnotgrief.database.manager.DataManager;
 import net.youshallnotgrief.database.manager.DatabaseManager;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 public class BlockItemTransactionDataManager extends DataManager<BlockItemTransactionData> {
 
     @Override
     public String getCreateTableSQL() {
-        return "CREATE TABLE IF NOT EXISTS blockItemTransactions " +
-                "(id INTEGER PRIMARY KEY, timestamp DATETIME NOT NULL, lastTimestamp DATETIME NOT NULL, count INTEGER NOT NULL DEFAULT 1, posID INTEGER NOT NULL, dimID INTEGER NOT NULL, itemID INTEGER NOT NULL, amount INTEGER NOT NULL, sourceID INTEGER NOT NULL, " +
-                "FOREIGN KEY (posID) REFERENCES positions(posID)," +
-                "FOREIGN KEY (dimID) REFERENCES dimensions(dimID)," +
-                "FOREIGN KEY (itemID) REFERENCES items(itemID)," +
-                "FOREIGN KEY (sourceID) REFERENCES sources(sourceID));";
+        return "CREATE TABLE IF NOT EXISTS blockItemTransactions "
+                + "(id INTEGER PRIMARY KEY, timestamp DATETIME NOT NULL, lastTimestamp DATETIME NOT NULL, count INTEGER NOT NULL DEFAULT 1, posID INTEGER NOT NULL, dimID INTEGER NOT NULL, itemID INTEGER NOT NULL, amount INTEGER NOT NULL, sourceID INTEGER NOT NULL, "
+                + "FOREIGN KEY (posID) REFERENCES positions(posID),"
+                + "FOREIGN KEY (dimID) REFERENCES dimensions(dimID),"
+                + "FOREIGN KEY (itemID) REFERENCES items(itemID),"
+                + "FOREIGN KEY (sourceID) REFERENCES sources(sourceID));";
     }
 
     @Override
     protected String getRetrieveSQL() {
-        return "SELECT timestamp, count, positions.x, positions.y, positions.z, dimensions.dimension, " +
-                "items.item, amount, sources.source, sources.sourceDesc FROM blockItemTransactions";
+        return "SELECT timestamp, count, positions.x, positions.y, positions.z, dimensions.dimension, "
+                + "items.item, amount, sources.source, sources.sourceDesc FROM blockItemTransactions";
     }
 
     @Override
@@ -39,12 +40,13 @@ public class BlockItemTransactionDataManager extends DataManager<BlockItemTransa
         return "CREATE INDEX IF NOT EXISTS idx_blockItemInteractions_posID ON blockItemTransactions (posID);";
     }
 
-    protected String getInsertSQL(){
-        return "INSERT INTO blockItemTransactions (timestamp, lastTimestamp, count, posID, dimID, itemID, amount, sourceID) " +
-                "VALUES (?, ?, 1, ?, ?, ?, ?, ?);";
+    protected String getInsertSQL() {
+        return "INSERT INTO blockItemTransactions (timestamp, lastTimestamp, count, posID, dimID, itemID, amount, sourceID) "
+                + "VALUES (?, ?, 1, ?, ?, ?, ?, ?);";
     }
 
-    protected void setInsertPreparedStatementValues(PreparedStatement preparedStatement, BlockItemTransactionData data) throws SQLException {
+    protected void setInsertPreparedStatementValues(PreparedStatement preparedStatement, BlockItemTransactionData data)
+            throws SQLException {
         int posID = DatabaseManager.POSITION_TABLE_MANAGER.getForeignKeyInDatabase(data.position);
         int dimID = DatabaseManager.DIMENSION_TABLE_MANAGER.getForeignKeyInDatabase(data.dimension);
         int itemID = DatabaseManager.ITEM_TABLE_MANAGER.getForeignKeyInDatabase(data.item);
@@ -61,12 +63,13 @@ public class BlockItemTransactionDataManager extends DataManager<BlockItemTransa
 
     @Override
     protected String getUpdateSQL() {
-        return "UPDATE blockItemTransactions SET count = count + 1, lastTimestamp = ? " +
-                "WHERE posID = ? AND dimID = ? AND itemID = ? AND amount = ? AND sourceID = ? AND (? - lastTimestamp) <= ?;";
+        return "UPDATE blockItemTransactions SET count = count + 1, lastTimestamp = ? "
+                + "WHERE posID = ? AND dimID = ? AND itemID = ? AND amount = ? AND sourceID = ? AND (? - lastTimestamp) <= ?;";
     }
 
     @Override
-    protected void setUpdatePreparedStatementValues(PreparedStatement preparedStatement, BlockItemTransactionData data) throws SQLException {
+    protected void setUpdatePreparedStatementValues(PreparedStatement preparedStatement, BlockItemTransactionData data)
+            throws SQLException {
         int posID = DatabaseManager.POSITION_TABLE_MANAGER.getForeignKeyInDatabase(data.position);
         int dimID = DatabaseManager.DIMENSION_TABLE_MANAGER.getForeignKeyInDatabase(data.dimension);
         int itemID = DatabaseManager.ITEM_TABLE_MANAGER.getForeignKeyInDatabase(data.item);
@@ -84,36 +87,35 @@ public class BlockItemTransactionDataManager extends DataManager<BlockItemTransa
 
     @Override
     protected void appendFiltersToSQL(BlockItemTransactionData data, StringBuilder query) {
-        if(data.position != null) query.append(" AND positions.x = ? AND positions.y = ? AND positions.z = ?");
-        if(data.dimension != null) query.append(" AND dimensions.dimension = ?");
-        if(data.item != null) query.append(" AND items.item = ?");
-        //Amount is not included as we never filter by amount
-        if(data.source != null) query.append(" AND sources.source = ? AND sources.sourceDesc = ?");
+        if (data.position != null) query.append(" AND positions.x = ? AND positions.y = ? AND positions.z = ?");
+        if (data.dimension != null) query.append(" AND dimensions.dimension = ?");
+        if (data.item != null) query.append(" AND items.item = ?");
+        // Amount is not included as we never filter by amount
+        if (data.source != null) query.append(" AND sources.source = ? AND sources.sourceDesc = ?");
         query.append(" ORDER BY timestamp");
     }
 
     @Override
     public void appendJoinsToSQL(StringBuilder query) {
-        query.append(
-                " JOIN positions ON blockItemTransactions.posID = positions.posID" +
-                " JOIN dimensions ON blockItemTransactions.dimID = dimensions.dimID" +
-                " JOIN items ON blockItemTransactions.itemID = items.itemID" +
-                " JOIN sources ON blockItemTransactions.sourceID = sources.sourceID"
-        );
+        query.append(" JOIN positions ON blockItemTransactions.posID = positions.posID"
+                + " JOIN dimensions ON blockItemTransactions.dimID = dimensions.dimID"
+                + " JOIN items ON blockItemTransactions.itemID = items.itemID"
+                + " JOIN sources ON blockItemTransactions.sourceID = sources.sourceID");
     }
 
     @Override
-    protected int setRetrievePreparedStatementValues(PreparedStatement preparedStatement, BlockItemTransactionData data) throws SQLException {
+    protected int setRetrievePreparedStatementValues(PreparedStatement preparedStatement, BlockItemTransactionData data)
+            throws SQLException {
         int index = 1;
-        if(data.position != null) {
+        if (data.position != null) {
             preparedStatement.setInt(index++, data.position.getX());
             preparedStatement.setInt(index++, data.position.getY());
             preparedStatement.setInt(index++, data.position.getZ());
         }
-        if(data.dimension != null) preparedStatement.setString(index++, data.dimension);
-        if(data.item != null) preparedStatement.setString(index++, data.item);
-        //Amount is not included as we never filter by amount
-        if(data.source != null){
+        if (data.dimension != null) preparedStatement.setString(index++, data.dimension);
+        if (data.item != null) preparedStatement.setString(index++, data.item);
+        // Amount is not included as we never filter by amount
+        if (data.source != null) {
             preparedStatement.setString(index++, data.source.source());
             preparedStatement.setString(index++, data.source.sourceDesc());
         }
@@ -129,7 +131,6 @@ public class BlockItemTransactionDataManager extends DataManager<BlockItemTransa
                 set.getString("dimension"),
                 set.getString("item"),
                 set.getInt("amount"),
-                new SourceData(set.getString("source"), set.getString("sourceDesc"))
-        );
+                new SourceData(set.getString("source"), set.getString("sourceDesc")));
     }
 }

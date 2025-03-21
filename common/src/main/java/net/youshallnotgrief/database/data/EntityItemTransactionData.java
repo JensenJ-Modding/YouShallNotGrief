@@ -1,12 +1,13 @@
 package net.youshallnotgrief.database.data;
 
+import java.sql.Timestamp;
+
 import net.minecraft.network.chat.Component;
+
 import net.youshallnotgrief.database.manager.DatabaseManager;
 import net.youshallnotgrief.util.InventoryUtils;
 
-import java.sql.Timestamp;
-
-public class EntityItemTransactionData extends BaseData{
+public class EntityItemTransactionData extends BaseData {
 
     public String entityUUID;
     public String item;
@@ -14,8 +15,9 @@ public class EntityItemTransactionData extends BaseData{
     public int amount;
     public SourceData source;
 
-    //Used for constructing insertion data
-    public EntityItemTransactionData(Timestamp timestamp, int count, String entityUUID, String item, int amount, SourceData source) {
+    // Used for constructing insertion data
+    public EntityItemTransactionData(
+            Timestamp timestamp, int count, String entityUUID, String item, int amount, SourceData source) {
         super(timestamp);
         this.entityUUID = entityUUID;
         this.item = item;
@@ -24,7 +26,7 @@ public class EntityItemTransactionData extends BaseData{
         this.source = source;
     }
 
-    //Used for constructing query data
+    // Used for constructing query data
     public EntityItemTransactionData(String entityUUID) {
         super(null);
         this.entityUUID = entityUUID;

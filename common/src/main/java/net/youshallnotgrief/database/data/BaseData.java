@@ -1,8 +1,8 @@
 package net.youshallnotgrief.database.data;
 
-import net.minecraft.network.chat.Component;
-
 import java.sql.Timestamp;
+
+import net.minecraft.network.chat.Component;
 
 public abstract class BaseData {
 
@@ -13,6 +13,8 @@ public abstract class BaseData {
     }
 
     public abstract void queue();
+
     public abstract void queueForeignTables();
+
     public abstract Component formatDataForInspection();
 }

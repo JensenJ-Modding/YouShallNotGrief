@@ -1,13 +1,14 @@
 package net.youshallnotgrief.database.data;
 
+import java.sql.Timestamp;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+
 import net.youshallnotgrief.database.manager.DatabaseManager;
 import net.youshallnotgrief.util.InventoryUtils;
 
-import java.sql.Timestamp;
-
-public class BlockItemTransactionData extends BaseData{
+public class BlockItemTransactionData extends BaseData {
 
     public BlockPos position;
     public String dimension;
@@ -16,8 +17,15 @@ public class BlockItemTransactionData extends BaseData{
     public int amount;
     public SourceData source;
 
-    //Used for constructing insertion data
-    public BlockItemTransactionData(Timestamp timestamp, int count, BlockPos position, String dimension, String item, int amount, SourceData source) {
+    // Used for constructing insertion data
+    public BlockItemTransactionData(
+            Timestamp timestamp,
+            int count,
+            BlockPos position,
+            String dimension,
+            String item,
+            int amount,
+            SourceData source) {
         super(timestamp);
         this.position = position;
         this.dimension = dimension;
@@ -27,7 +35,7 @@ public class BlockItemTransactionData extends BaseData{
         this.source = source;
     }
 
-    //Used for constructing query data
+    // Used for constructing query data
     public BlockItemTransactionData(BlockPos position, String dimension) {
         super(null);
         this.position = position;

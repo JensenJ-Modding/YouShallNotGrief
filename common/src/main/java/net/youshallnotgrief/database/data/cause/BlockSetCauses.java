@@ -1,10 +1,9 @@
 package net.youshallnotgrief.database.data.cause;
 
-import net.youshallnotgrief.YouShallNotGriefMod;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import net.youshallnotgrief.YouShallNotGriefMod;
 
 public class BlockSetCauses {
     private static final Map<String, BlockSetCause> CAUSES = new HashMap<>();
@@ -43,16 +42,17 @@ public class BlockSetCauses {
     public static final BlockSetCause INTERACTED = registerCause(new BlockSetCause("interacted"));
     public static final BlockSetCause FALLBACK = registerCause(new BlockSetCauseWithSourceFallback("fallback"));
 
-    private static BlockSetCause registerCause(BlockSetCause cause){
-        if(CAUSES.containsKey(cause.getDatabaseTag())){
+    private static BlockSetCause registerCause(BlockSetCause cause) {
+        if (CAUSES.containsKey(cause.getDatabaseTag())) {
             YouShallNotGriefMod.LOGGER.fatal("Error when initialising BlockSetCauses");
-            throw new IllegalStateException(cause.getDatabaseTag() + " already exists in the CAUSES map. It was most likely declared twice accidentally.");
+            throw new IllegalStateException(cause.getDatabaseTag()
+                    + " already exists in the CAUSES map. It was most likely declared twice accidentally.");
         }
         CAUSES.put(cause.getDatabaseTag(), cause);
         return cause;
     }
 
-    public static BlockSetCause getCauseFromTag(String tag){
+    public static BlockSetCause getCauseFromTag(String tag) {
         return CAUSES.get(tag);
     }
 }

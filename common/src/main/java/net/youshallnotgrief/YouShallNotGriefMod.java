@@ -1,27 +1,29 @@
 package net.youshallnotgrief;
 
+import java.util.function.Supplier;
+
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+
 import com.google.common.base.Suppliers;
 import dev.architectury.event.CompoundEventResult;
 import dev.architectury.event.events.common.*;
 import dev.architectury.registry.registries.RegistrarManager;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.player.Player;
 import net.youshallnotgrief.database.manager.DatabaseLifecycleManager;
 import net.youshallnotgrief.event.BlockEvents;
 import net.youshallnotgrief.event.EntityEvents;
 import net.youshallnotgrief.event.KeyEvents;
-import net.youshallnotgrief.network.NetworkRegistry;
 import net.youshallnotgrief.inspection.CommandManager;
 import net.youshallnotgrief.inspection.InspectionMode;
+import net.youshallnotgrief.network.NetworkRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.function.Supplier;
 
 public class YouShallNotGriefMod {
     public static final String MOD_ID = "youshallnotgrief";
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
-    public static final Supplier<RegistrarManager> REGISTRY_MANAGER = Suppliers.memoize(() -> RegistrarManager.get(YouShallNotGriefMod.MOD_ID));
+    public static final Supplier<RegistrarManager> REGISTRY_MANAGER =
+            Suppliers.memoize(() -> RegistrarManager.get(YouShallNotGriefMod.MOD_ID));
 
     public static void init() {
         DatabaseLifecycleManager.registerLifecycleEvents();
@@ -31,21 +33,20 @@ public class YouShallNotGriefMod {
         EntityEvents.registerEvents();
         NetworkRegistry.registerClientToServerPackets();
 
-
         InteractionEvent.RIGHT_CLICK_ITEM.register((Player player, InteractionHand hand) -> {
             return CompoundEventResult.pass();
         });
 
-        //Mixins
+        // Mixins
         //  Fire
         //  Adding and removing items from inventory
         //  Non player break / place, maybe remove block events and just mixin directly
 
-        //EntityEvent
+        // EntityEvent
         //  Entity hurt / death
         //  Entity tame
 
-        //InteractionEvents
+        // InteractionEvents
         //  RightClickBlock
         //    Door
         //    Anything that has a menu, chest, furnace, enchant table etc.

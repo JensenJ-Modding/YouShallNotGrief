@@ -1,23 +1,21 @@
 package net.youshallnotgrief.database.tables.foreign;
 
-import net.youshallnotgrief.database.manager.ForeignTableManager;
-
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+
+import net.youshallnotgrief.database.manager.ForeignTableManager;
 
 public class ItemTableManager extends ForeignTableManager<String> {
 
     @Override
     public String getCreateTableSQL() {
-        return "CREATE TABLE IF NOT EXISTS items " +
-                "(itemID INTEGER PRIMARY KEY, item TEXT NOT NULL, " +
-                "UNIQUE(item));";
+        return "CREATE TABLE IF NOT EXISTS items " + "(itemID INTEGER PRIMARY KEY, item TEXT NOT NULL, "
+                + "UNIQUE(item));";
     }
 
     @Override
     public String getInsertSQL() {
-        return "INSERT INTO items (item) " +
-                "VALUES (?) ON CONFLICT(item) DO NOTHING;";
+        return "INSERT INTO items (item) " + "VALUES (?) ON CONFLICT(item) DO NOTHING;";
     }
 
     @Override
