@@ -1,7 +1,6 @@
 package net.youshallnotgrief.mixin.blocks;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -28,13 +27,12 @@ public class DragonEggBlockMixin {
 
     @Unique private Player youshallnotgrief$player;
 
-    @Inject(method = "use", at = @At("HEAD"))
+    @Inject(method = "useWithoutItem", at = @At("HEAD"))
     private void youshallnotgrief$CapturePlayer1(
             BlockState blockState,
             Level level,
             BlockPos blockPos,
             Player player,
-            InteractionHand interactionHand,
             BlockHitResult blockHitResult,
             CallbackInfoReturnable<InteractionResult> cir) {
         youshallnotgrief$player = player;

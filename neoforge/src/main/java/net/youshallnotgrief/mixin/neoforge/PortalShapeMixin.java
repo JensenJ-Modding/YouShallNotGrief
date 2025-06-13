@@ -1,4 +1,4 @@
-package net.youshallnotgrief.mixin;
+package net.youshallnotgrief.mixin.neoforge;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -19,7 +19,7 @@ import net.youshallnotgrief.util.BlockUtils;
 public class PortalShapeMixin {
 
     @WrapOperation(
-            method = "method_30488",
+            method = "lambda$createPortalBlocks$1",
             at =
                     @At(
                             value = "INVOKE",

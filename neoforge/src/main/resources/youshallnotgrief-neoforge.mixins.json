@@ -1,16 +1,15 @@
 {
   "required": true,
-  "package": "net.youshallnotgrief.mixin.forge",
+  "package": "net.youshallnotgrief.mixin.neoforge",
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
   "client": [
   ],
   "mixins": [
-    "ExplosionMixin",
-    "FireBlockMixin",
     "AnvilMenuMixin",
+    "HarvestFarmlandMixin",
     "HoeItemMixin",
-    "HarvestFarmlandMixin"
+    "PortalShapeMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -3,7 +3,7 @@ package net.youshallnotgrief.mixin.feature;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.block.grower.AbstractTreeGrower;
+import net.minecraft.world.level.block.grower.TreeGrower;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 
@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import net.youshallnotgrief.util.mixin.MixinDataHolder;
 
-@Mixin(value = AbstractTreeGrower.class, priority = 10100)
+@Mixin(value = TreeGrower.class, priority = 10100)
 public abstract class AbstractTreeGrowerMixin {
 
     @Inject(

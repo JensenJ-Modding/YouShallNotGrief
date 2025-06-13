@@ -49,7 +49,7 @@ public class InspectionMode {
                     if (guardInspectionModeInteraction(player, hand)) return EventResult.pass();
 
                     BlockPos position = pos;
-                    if (player.isCrouching()) {
+                    if (player.isShiftKeyDown()) {
                         position = pos.relative(face, 1);
                     }
 

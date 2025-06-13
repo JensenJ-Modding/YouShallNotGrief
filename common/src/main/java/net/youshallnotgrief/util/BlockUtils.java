@@ -50,7 +50,7 @@ public class BlockUtils {
 
     public static Block getBlockFromString(String resourceLocation) {
         try {
-            return BLOCKS_REGISTRY.get(new ResourceLocation(resourceLocation));
+            return BLOCKS_REGISTRY.get(ResourceLocation.parse(resourceLocation));
         } catch (ResourceLocationException exception) {
             return null;
         }
@@ -107,7 +107,11 @@ public class BlockUtils {
         boolean wasSet = originalSet.call(level, pos, state, i);
         if (wasSet) {
             if (!level.isClientSide()) {
-                callback.accept(oldState);
+                try {
+                    callback.accept(oldState);
+                } catch (Exception e) {
+                    YouShallNotGriefMod.LOGGER.error("Failed to wrapLevelSetBlock: {}", e.toString());
+                }
             }
         }
         return wasSet;
@@ -125,7 +129,11 @@ public class BlockUtils {
         boolean wasSet = originalSet.call(level, pos, state);
         if (wasSet) {
             if (!level.isClientSide()) {
-                callback.accept(oldState);
+                try {
+                    callback.accept(oldState);
+                } catch (Exception e) {
+                    YouShallNotGriefMod.LOGGER.error("Failed to wrapLevelSetBlockAndUpdate: {}", e.toString());
+                }
             }
         }
         return wasSet;
@@ -139,7 +147,11 @@ public class BlockUtils {
         boolean wasSet = originalRemove.call(level, pos, b);
         if (wasSet) {
             if (!level.isClientSide()) {
-                callback.accept(oldState);
+                try {
+                    callback.accept(oldState);
+                } catch (Exception e) {
+                    YouShallNotGriefMod.LOGGER.error("Failed to wrapLevelRemoveBlock: {}", e.toString());
+                }
             }
         }
         return wasSet;
@@ -157,7 +169,11 @@ public class BlockUtils {
         boolean wasSet = originalRemove.call(level, pos, b, entity);
         if (wasSet) {
             if (!level.isClientSide()) {
-                callback.accept(oldState);
+                try {
+                    callback.accept(oldState);
+                } catch (Exception e) {
+                    YouShallNotGriefMod.LOGGER.error("Failed to wrapLevelDestroyBlock: {}", e.toString());
+                }
             }
         }
         return wasSet;

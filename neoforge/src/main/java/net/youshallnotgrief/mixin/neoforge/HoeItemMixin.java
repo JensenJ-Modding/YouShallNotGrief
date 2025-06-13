@@ -1,4 +1,4 @@
-package net.youshallnotgrief.mixin.forge;
+package net.youshallnotgrief.mixin.neoforge;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.HoeItem;
@@ -20,7 +20,7 @@ import net.youshallnotgrief.util.BlockUtils;
 public abstract class HoeItemMixin {
 
     @WrapOperation(
-            method = "lambda$changeIntoState$3",
+            method = "lambda$changeIntoState$2",
             at =
                     @At(
                             value = "INVOKE",
@@ -41,7 +41,7 @@ public abstract class HoeItemMixin {
     }
 
     @WrapOperation(
-            method = "lambda$changeIntoStateAndDropItem$4",
+            method = "lambda$changeIntoStateAndDropItem$3",
             at =
                     @At(
                             value = "INVOKE",

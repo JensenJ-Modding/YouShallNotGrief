@@ -42,7 +42,7 @@ public class InventoryUtils {
 
     public static Item getItemFromString(String resourceLocation) {
         try {
-            return ITEMS_REGISTRY.get(new ResourceLocation(resourceLocation));
+            return ITEMS_REGISTRY.get(ResourceLocation.parse(resourceLocation));
         } catch (ResourceLocationException exception) {
             return null;
         }

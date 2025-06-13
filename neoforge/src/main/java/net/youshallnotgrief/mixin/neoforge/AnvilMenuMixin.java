@@ -1,4 +1,4 @@
-package net.youshallnotgrief.mixin.forge;
+package net.youshallnotgrief.mixin.neoforge;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
@@ -19,7 +19,7 @@ import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.database.data.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
 
-@Mixin(value = AnvilMenu.class, priority = 10100)
+@Mixin(value = AnvilMenu.class, priority = 10100, remap = false)
 public abstract class AnvilMenuMixin {
 
     @WrapOperation(

@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[47,)"
+loaderVersion = "[4,)"
 issueTrackerURL = "https://github.com/JensenJ-Modding/YouShallNotGrief/issues"
 license = "MIT License"
 
@@ -14,29 +14,28 @@ Adds logging utilities used to catch griefers and thieves.
 logoFile = "logo.png"
 
 [[dependencies.youshallnotgrief]]
-modId = "forge"
-mandatory = true
-versionRange = "[47,)"
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.youshallnotgrief]]
 modId = "minecraft"
-mandatory = true
-versionRange = "[1.20.1,)"
+type = "required"
+versionRange = "[1.21.1,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.youshallnotgrief]]
 modId = "architectury"
-mandatory = true
-versionRange = "[9.2.14,)"
+type = "required"
+versionRange = "[13.0.8,)"
 ordering = "AFTER"
 side = "BOTH"
 
-[[dependencies.youshallnotgrief]]
-modId = "sqlite_jdbc"
-mandatory = true
-versionRange = "[3.41.2.1,)"
-ordering = "AFTER"
-side = "BOTH"
+[[mixins]]
+config = "youshallnotgrief-neoforge.mixins.json"
+
+[[mixins]]
+config = "youshallnotgrief-common.mixins.json"

@@ -39,7 +39,7 @@ public class EntityUtils {
 
     public static EntityType<?> getEntityFromString(String resourceLocation) {
         try {
-            return ENTITY_REGISTRY.get(new ResourceLocation(resourceLocation));
+            return ENTITY_REGISTRY.get(ResourceLocation.parse(resourceLocation));
         } catch (ResourceLocationException exception) {
             return null;
         }

@@ -1,14 +1,15 @@
 package net.youshallnotgrief.event;
 
 import net.minecraft.client.KeyMapping;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.networking.NetworkManager;
 import dev.architectury.registry.client.keymappings.KeyMappingRegistry;
 import io.netty.buffer.Unpooled;
-import net.youshallnotgrief.network.NetworkRegistry;
+import net.youshallnotgrief.network.InspectPacket;
 
 public class KeyEvents {
 
@@ -23,8 +24,8 @@ public class KeyEvents {
 
         ClientTickEvent.CLIENT_POST.register(minecraft -> {
             while (KEYMAPPING_INSPECT.consumeClick()) {
-                FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-                NetworkManager.sendToServer(NetworkRegistry.INSPECT_PACKET_ID, buf);
+                NetworkManager.sendToServer(
+                        new InspectPacket(new RegistryFriendlyByteBuf(Unpooled.buffer(), RegistryAccess.EMPTY)));
             }
         });
     }

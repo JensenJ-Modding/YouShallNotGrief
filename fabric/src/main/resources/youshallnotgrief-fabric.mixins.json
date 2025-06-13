@@ -6,11 +6,9 @@
   "client": [
   ],
   "mixins": [
-    "ExplosionMixin",
-    "FireBlockMixin",
     "AnvilMenuMixin",
     "HoeItemMixin",
-    "ChangeOverTimeBlockMixin"
+    "PortalShapeMixin"
   ],
   "injectors": {
     "defaultRequire": 1

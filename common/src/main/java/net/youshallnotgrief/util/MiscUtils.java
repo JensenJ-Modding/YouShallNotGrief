@@ -13,11 +13,11 @@ public class MiscUtils {
     }
 
     public static TextColor getTextColourFromConfig(String configColour) {
-        TextColor colour = TextColor.parseColor(configColour);
-        if (colour == null) {
+        try {
+            return TextColor.parseColor(configColour).getOrThrow();
+        } catch (IllegalStateException e) {
             YouShallNotGriefMod.LOGGER.error("Failed to load config value for colour: {}", configColour);
             return TextColor.fromLegacyFormat(ChatFormatting.WHITE);
         }
-        return colour;
     }
 }

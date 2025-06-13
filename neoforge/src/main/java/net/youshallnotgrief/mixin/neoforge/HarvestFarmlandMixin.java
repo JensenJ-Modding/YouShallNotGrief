@@ -1,37 +1,40 @@
-package net.youshallnotgrief.mixin.fabric;
+package net.youshallnotgrief.mixin.neoforge;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.block.ChangeOverTimeBlock;
+import net.minecraft.world.entity.ai.behavior.HarvestFarmland;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.level.block.state.BlockState;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 
 import net.youshallnotgrief.config.ServerConfig;
 import net.youshallnotgrief.database.data.cause.BlockSetCauses;
 import net.youshallnotgrief.util.BlockUtils;
 
-// A forge version of this does not exist on 1.20.1, as mixin 0.8.5 (provided by forge 1.20.1) doesn't seem to work with
-// default method interface injection
-// TODO: Fix in neoforge versions
-@Mixin(value = ChangeOverTimeBlock.class, priority = 10100)
-public interface ChangeOverTimeBlockMixin {
+@Mixin(value = HarvestFarmland.class, priority = 10100)
+public class HarvestFarmlandMixin {
 
     @WrapOperation(
-            method = "method_34726",
+            method = "tick(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/npc/Villager;J)V",
             at =
                     @At(
                             value = "INVOKE",
                             target =
                                     "Lnet/minecraft/server/level/ServerLevel;setBlockAndUpdate(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)Z"))
-    private static boolean youshallnotgrief$logChangeOverTimeBlock(
-            ServerLevel level, BlockPos pos, BlockState state, Operation<Boolean> original) {
+    private boolean youshallnotgrief$logVillagerPlaceCrops(
+            ServerLevel level,
+            BlockPos pos,
+            BlockState state,
+            Operation<Boolean> original,
+            @Local(argsOnly = true) Villager entity) {
         return BlockUtils.wrapLevelSetBlockAndUpdate(level, pos, state, original, oldState -> {
-            if (ServerConfig.logOxidization.get()) {
-                BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.OXIDIZATION, null, "");
+            if (ServerConfig.logVillagerHarvesting.get()) {
+                BlockUtils.addToDatabase(pos, level, oldState, state, BlockSetCauses.PLACED, entity, "");
             }
         });
     }

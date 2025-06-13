@@ -1,30 +1,19 @@
 plugins {
-    id 'com.github.johnrengelman.shadow'
+    id 'com.gradleup.shadow'
 }
 
 repositories {
     maven { url = "https://mvn.devos.one/snapshots/" }
     maven { url = "https://mvn.devos.one/releases/" }
-    maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" }
     maven { url = "https://maven.jamieswhiteshirt.com/libs-release" }
     maven { url = "https://jitpack.io/" }
     maven {url = "https://api.modrinth.com/maven"}
-    maven { // Flywheel
-        url = "https://maven.tterrag.com/"
-        content {
-            // need to be specific here due to version overlaps
-            includeGroup("com.jozufozu.flywheel")
-        }
-    }
 }
 
 dependencies {
     // SQLite Driver
     implementation "org.xerial:sqlite-jdbc:$rootProject.sqlite_fabric_dev_version"
     include "maven.modrinth:sqlite-jdbc:${sqlite_version}"
-
-    //Dependencies for testing
-    modImplementation "com.simibubi.create:create-fabric-${minecraft_version}:${create_fabric_version}"
 }
 
-apply from: 'https://raw.githubusercontent.com/JensenJ-Modding/Mod-Resources/refs/heads/main/1.20.1/Gradle/fabric-build.gradle'
+apply from: 'https://raw.githubusercontent.com/JensenJ-Modding/Mod-Resources/refs/heads/main/1.21.1/Gradle/fabric-build.gradle'
