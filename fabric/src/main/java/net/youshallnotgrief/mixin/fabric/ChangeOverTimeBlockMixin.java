@@ -1,4 +1,4 @@
-package net.youshallnotgrief.mixin.blocks;
+package net.youshallnotgrief.mixin.fabric;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;

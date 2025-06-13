@@ -19,7 +19,6 @@
     "blocks.BuddingAmethystBlockMixin",
     "blocks.CampfireBlockMixin",
     "blocks.CarvedPumpkinBlockMixin",
-    "blocks.ChangeOverTimeBlockMixin",
     "blocks.DoorBlockMixin",
     "blocks.DragonEggBlockMixin",
     "blocks.FarmBlockMixin",
