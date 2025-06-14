@@ -23,9 +23,9 @@ repositories {
 }
 
 dependencies {
-    // SQLite Driver - The one on modrinth doesn't work with NeoForge yet, so we are using a hard linked one here
+    // SQLite Driver - The one on modrinth doesn't work with NeoForge yet, so we are using a hard linked one from our libs folder
     // This file is from https://github.com/jblemee/minecraft-sqlite-jdbc/releases/tag/v1.21-neoforge
-    modImplementation(include name: 'sqlite-jdbc-3.49.1.0+2025-04-30-all')
+    modImplementation(include 'org.sqlite:sqlite-jdbc:3.49.1.0+2025-04-30-all')
 
     //Dependencies for testing
     implementation("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false }
