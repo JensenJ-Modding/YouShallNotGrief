@@ -30,7 +30,7 @@ public class TreeFeatureMixin {
     }
 
     @WrapOperation(
-            method = "method_35364",
+            method = {"method_35364", "lambda$place$5"},
             at =
                     @At(
                             value = "INVOKE",
@@ -51,7 +51,7 @@ public class TreeFeatureMixin {
     }
 
     @WrapOperation(
-            method = "method_43162",
+            method = {"method_43162", "lambda$place$6"},
             at =
                     @At(
                             value = "INVOKE",
@@ -72,7 +72,7 @@ public class TreeFeatureMixin {
     }
 
     @WrapOperation(
-            method = "method_49238",
+            method = {"method_49238", "lambda$place$7"},
             at =
                     @At(
                             value = "INVOKE",

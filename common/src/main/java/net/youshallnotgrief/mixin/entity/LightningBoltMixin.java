@@ -69,7 +69,7 @@ public class LightningBoltMixin {
     }
 
     @WrapOperation(
-            method = "method_34708",
+            method = {"method_34708", "lambda$randomStepCleaningCopper$2"},
             at =
                     @At(
                             value = "INVOKE",
