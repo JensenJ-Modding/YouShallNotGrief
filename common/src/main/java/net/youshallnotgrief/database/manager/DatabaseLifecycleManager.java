@@ -23,7 +23,7 @@ public class DatabaseLifecycleManager {
     public static ExecutorService executorService = null;
 
     public static void registerLifecycleEvents() {
-        LifecycleEvent.SERVER_STARTED.register((MinecraftServer server) -> {
+        LifecycleEvent.SERVER_BEFORE_START.register((MinecraftServer server) -> {
             minecraftServer = server;
             threadNumber.set(1);
             executorService = Executors.newFixedThreadPool(ServerConfig.databaseThreadCount.get(), runnable -> {
@@ -101,7 +101,7 @@ public class DatabaseLifecycleManager {
             }
         } catch (SQLException e) {
             YouShallNotGriefMod.LOGGER.error("Failed to connect to database: ");
-            YouShallNotGriefMod.LOGGER.error(e.toString());
+            throw new RuntimeException(e.toString());
         }
         YouShallNotGriefMod.LOGGER.info("Established database connection.");
 
