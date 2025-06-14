@@ -20,7 +20,7 @@ import net.youshallnotgrief.util.BlockUtils;
 public abstract class HoneycombItemMixin {
 
     @WrapOperation(
-            method = "method_34719",
+            method = {"method_34719", "lambda$useOn$2"},
             at =
                     @At(
                             value = "INVOKE",

@@ -1,4 +1,4 @@
-package net.youshallnotgrief.mixin.fabric;
+package net.youshallnotgrief.mixin.blocks;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -18,7 +18,7 @@ import net.youshallnotgrief.util.BlockUtils;
 public interface ChangeOverTimeBlockMixin {
 
     @WrapOperation(
-            method = "method_54763",
+            method = {"method_54763", "lambda$changeOverTime$0"},
             at =
                     @At(
                             value = "INVOKE",
