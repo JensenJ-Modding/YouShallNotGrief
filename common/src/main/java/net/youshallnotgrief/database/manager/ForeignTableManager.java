@@ -11,12 +11,13 @@ import java.util.concurrent.TimeUnit;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import net.youshallnotgrief.YouShallNotGriefMod;
+import net.youshallnotgrief.util.MiscUtils;
 
 public abstract class ForeignTableManager<InsertData> extends TableManager<InsertData> {
 
     private final Cache<InsertData, Integer> dataToDatabaseForeignKeyCache = CacheBuilder.newBuilder()
-            .maximumSize(50)
-            .expireAfterAccess(5, TimeUnit.MINUTES)
+            .maximumSize(500)
+            .expireAfterAccess(2, TimeUnit.MINUTES)
             .build();
 
     @Override
@@ -62,6 +63,9 @@ public abstract class ForeignTableManager<InsertData> extends TableManager<Inser
 
     // Should be called when the database is closed, as caches may not be correct with a different world/server.
     public void clearCache() {
+        MiscUtils.logIfEnabled(
+                "Clearing cache with {} entries",
+                dataToDatabaseForeignKeyCache.asMap().size());
         dataToDatabaseForeignKeyCache.asMap().clear();
     }
 

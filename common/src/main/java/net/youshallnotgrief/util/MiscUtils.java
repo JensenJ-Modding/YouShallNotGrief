@@ -4,7 +4,9 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.world.level.Level;
 
+import dev.architectury.platform.Platform;
 import net.youshallnotgrief.YouShallNotGriefMod;
+import net.youshallnotgrief.config.ServerConfig;
 
 public class MiscUtils {
 
@@ -19,5 +21,21 @@ public class MiscUtils {
             YouShallNotGriefMod.LOGGER.error("Failed to load config value for colour: {}", configColour);
             return TextColor.fromLegacyFormat(ChatFormatting.WHITE);
         }
+    }
+
+    public static void logIfEnabled(String message) {
+        if (shouldLogDatabaseActions()) {
+            YouShallNotGriefMod.LOGGER.info(message);
+        }
+    }
+
+    public static void logIfEnabled(String message, Object... params) {
+        if (shouldLogDatabaseActions()) {
+            YouShallNotGriefMod.LOGGER.info(message, params);
+        }
+    }
+
+    public static boolean shouldLogDatabaseActions() {
+        return Platform.isDevelopmentEnvironment() || ServerConfig.debugLogDatabaseActions.get();
     }
 }

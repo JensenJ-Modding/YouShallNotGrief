@@ -19,6 +19,7 @@ public class ServerConfig {
     public static final ModConfigSpec.ConfigValue<Integer> databaseThreadCount;
     public static final ModConfigSpec.ConfigValue<Integer> databaseQueueSize;
     public static final ModConfigSpec.ConfigValue<Integer> databaseMergeTime;
+    public static final ModConfigSpec.ConfigValue<Integer> databaseExitTime;
 
     // Inspection settings
     public static final ModConfigSpec.ConfigValue<String> inspectionPrimaryColour;
@@ -30,6 +31,7 @@ public class ServerConfig {
     public static final ModConfigSpec.ConfigValue<Boolean> inspectionOpNeeded;
 
     // Debug settings
+    public static final ModConfigSpec.ConfigValue<Boolean> debugLogDatabaseActions;
     public static final ModConfigSpec.ConfigValue<Boolean> debugLogUnhandledBlockSets;
     public static final ModConfigSpec.ConfigValue<Boolean> debugLogMultipleTimes;
 
@@ -92,11 +94,14 @@ public class ServerConfig {
         databaseThreadCount = BUILDER.comment("Number of threads the mod should use at any one time. [Default: 2]")
                 .defineInRange("databaseThreadCount", 2, 1, 8);
         databaseQueueSize = BUILDER.comment(
-                        "Number of interactions the mod should queue before committing it into the database. [Default: 50]")
-                .defineInRange("databaseQueueSize", 50, 1, Integer.MAX_VALUE);
+                        "Number of interactions the mod should queue before committing it into the database. [Default: 500]")
+                .defineInRange("databaseQueueSize", 500, 1, Integer.MAX_VALUE);
         databaseMergeTime = BUILDER.comment(
-                        "If a similar interaction within this timeframe occurs, it is merged together. [Default: 20]")
-                .defineInRange("databaseMergeTime", 20, 1, Integer.MAX_VALUE);
+                        "If a similar interaction within this timeframe occurs in seconds, it is merged together. [Default: 30]")
+                .defineInRange("databaseMergeTime", 30, 1, Integer.MAX_VALUE);
+        databaseExitTime = BUILDER.comment(
+                        "How long should we wait for threads to finish work before killing them on world close. [Default: 30]")
+                .defineInRange("databaseExitTime", 30, 0, Integer.MAX_VALUE);
         BUILDER.pop();
 
         BUILDER.comment("Inspection mode settings").push(CATEGORY_INSPECTION);
@@ -122,6 +127,9 @@ public class ServerConfig {
         BUILDER.pop();
 
         BUILDER.comment("Dev/debug settings").push(CATEGORY_DEBUG);
+        debugLogDatabaseActions = BUILDER.comment(
+                        "Should actions being performed by the database be logged to the console? [Default: false]")
+                .define("debugLogDatabaseActions", false);
         debugLogUnhandledBlockSets = BUILDER.comment(
                         "Should calls to Level.setBlock not wrapped by the mod be logged to console? [Default: false]")
                 .define("debugLogUnhandledBlockSets", false);

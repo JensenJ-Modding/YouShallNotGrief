@@ -18,6 +18,7 @@ import net.youshallnotgrief.database.tables.BlockItemTransactionDataManager;
 import net.youshallnotgrief.database.tables.EntityItemTransactionDataManager;
 import net.youshallnotgrief.database.tables.foreign.*;
 import net.youshallnotgrief.inspection.InspectionMode;
+import net.youshallnotgrief.util.MiscUtils;
 
 public class DatabaseManager {
 
@@ -76,6 +77,7 @@ public class DatabaseManager {
             }
 
             if (isCommitting.compareAndSet(false, true)) {
+                MiscUtils.logIfEnabled("Performing new database commit with {} entries", QUEUE_SIZE);
                 if (DatabaseLifecycleManager.executorService == null) {
                     return;
                 }
@@ -88,14 +90,15 @@ public class DatabaseManager {
                 DatabaseLifecycleManager.executorService.submit(() -> {
                     Connection database = DatabaseLifecycleManager.getDatabaseConnection();
                     if (database == null) {
+                        MiscUtils.logIfEnabled("Database connection was null, cancelling commit");
                         isCommitting.set(false);
                         return;
                     }
-
                     TABLE_MANAGERS.forEach(TableManager::commitTable);
                     DATA_MANAGERS.forEach(TableManager::commitTable);
 
                     isCommitting.set(false);
+                    MiscUtils.logIfEnabled("Finished committing to database");
                 });
             }
         } catch (RejectedExecutionException e) {
@@ -105,16 +108,20 @@ public class DatabaseManager {
     }
 
     public static void clearCaches() {
+        MiscUtils.logIfEnabled("Clearing database caches");
         TABLE_MANAGERS.forEach(ForeignTableManager::clearCache);
     }
 
     protected static void startupQueries() {
         Path dbPath = Paths.get(DatabaseLifecycleManager.getDatabaseWorldPath());
         Path tempPath = dbPath.resolve("temp");
+
+        MiscUtils.logIfEnabled("Executing database startup queries");
         executeSetupQuery("PRAGMA temp_store_directory = '" + tempPath + "';");
         TABLE_MANAGERS.forEach((manager) -> executeSetupQuery(manager.getCreateTableSQL()));
         DATA_MANAGERS.forEach((manager) -> executeSetupQuery(manager.getCreateTableSQL()));
         DATA_MANAGERS.forEach((manager) -> executeSetupQuery(manager.getCreateIndexSQL()));
+        MiscUtils.logIfEnabled("Executed database startup queries");
     }
 
     private static void executeSetupQuery(String query) {

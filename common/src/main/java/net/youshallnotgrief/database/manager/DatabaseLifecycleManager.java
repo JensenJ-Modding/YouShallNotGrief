@@ -38,9 +38,8 @@ public class DatabaseLifecycleManager {
 
         LifecycleEvent.SERVER_STOPPED.register((MinecraftServer server) -> {
             DatabaseManager.commitQueuedToDatabase();
-            DatabaseManager.clearCaches();
             minecraftServer = null;
-            int threadTimeout = 10;
+            int threadTimeout = ServerConfig.databaseExitTime.get();
             executorService.shutdown();
             YouShallNotGriefMod.LOGGER.info(
                     "Shutting down database threads. Waiting {} seconds before closing forcefully.", threadTimeout);
@@ -55,6 +54,7 @@ public class DatabaseLifecycleManager {
                 YouShallNotGriefMod.LOGGER.error("Thread shutdown was interrupted.");
             }
 
+            DatabaseManager.clearCaches();
             if (cachedDatabaseConnection == null) {
                 return;
             }

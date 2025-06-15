@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 
 import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.inspection.RetrieveResult;
+import net.youshallnotgrief.util.MiscUtils;
 
 public abstract class DataManager<InsertData> extends TableManager<InsertData> {
 
@@ -109,13 +110,11 @@ public abstract class DataManager<InsertData> extends TableManager<InsertData> {
     public void retrieveFromDatabase(
             InsertData data, int limit, int offset, Consumer<RetrieveResult<InsertData>> callback) {
         if (DatabaseLifecycleManager.executorService == null) return;
-
         Callable<RetrieveResult<InsertData>> task = () -> {
             Connection database = DatabaseLifecycleManager.getDatabaseConnection();
             if (database == null) {
                 return null;
             }
-
             int count = getCountFromDatabase(data, database);
             if (count == -1) {
                 return null;
@@ -142,9 +141,8 @@ public abstract class DataManager<InsertData> extends TableManager<InsertData> {
         if (database == null) {
             return;
         }
-
-        for (InsertData data : COMMITTING_QUEUED_DATA) {
-            try (PreparedStatement updatePreparedStatement = database.prepareStatement(getUpdateSQL())) {
+        try (PreparedStatement updatePreparedStatement = database.prepareStatement(getUpdateSQL())) {
+            for (InsertData data : COMMITTING_QUEUED_DATA) {
                 setUpdatePreparedStatementValues(updatePreparedStatement, data);
                 int updatedRows = updatePreparedStatement.executeUpdate();
 
@@ -153,21 +151,25 @@ public abstract class DataManager<InsertData> extends TableManager<InsertData> {
                     setInsertPreparedStatementValues(insertPreparedStatement, data);
                     insertPreparedStatement.executeUpdate();
                 }
-
-                database.commit();
-            } catch (SQLException e) {
-                YouShallNotGriefMod.LOGGER.error("Error inserting or updating data in database:");
-                YouShallNotGriefMod.LOGGER.error(e.toString());
-                YouShallNotGriefMod.LOGGER.error(getUpdateSQL());
-                YouShallNotGriefMod.LOGGER.error(getInsertSQL());
-                try {
-                    database.rollback();
-                } catch (SQLException ex) {
-                    YouShallNotGriefMod.LOGGER.error("Error performing rollback of database:");
-                    YouShallNotGriefMod.LOGGER.error(ex.toString());
-                }
             }
+            database.commit();
+        } catch (SQLException e) {
+            YouShallNotGriefMod.LOGGER.error("Error inserting or updating data in database:");
+            YouShallNotGriefMod.LOGGER.error(e.toString());
+            YouShallNotGriefMod.LOGGER.error(getUpdateSQL());
+            YouShallNotGriefMod.LOGGER.error(getInsertSQL());
+            try {
+                database.rollback();
+            } catch (SQLException ex) {
+                YouShallNotGriefMod.LOGGER.error("Error performing rollback of database:");
+                YouShallNotGriefMod.LOGGER.error(ex.toString());
+            }
+            YouShallNotGriefMod.LOGGER.error(
+                    "Skipped writing {} elements because of above error. These elements have been discarded to prevent further errors.",
+                    COMMITTING_QUEUED_DATA.size());
         }
+
         COMMITTING_QUEUED_DATA.clear();
+        MiscUtils.logIfEnabled("Finished inserting data.");
     }
 }
