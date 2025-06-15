@@ -10,7 +10,6 @@ import java.util.function.Consumer;
 
 import net.youshallnotgrief.YouShallNotGriefMod;
 import net.youshallnotgrief.inspection.RetrieveResult;
-import net.youshallnotgrief.util.MiscUtils;
 
 public abstract class DataManager<InsertData> extends TableManager<InsertData> {
 
@@ -170,6 +169,5 @@ public abstract class DataManager<InsertData> extends TableManager<InsertData> {
         }
 
         COMMITTING_QUEUED_DATA.clear();
-        MiscUtils.logIfEnabled("Finished inserting data.");
     }
 }
